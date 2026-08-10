@@ -38,11 +38,18 @@
       "active": true,
       "description": "A tiny programmable creature computer. Display, six buttons, RGB, vibration and IR trading built into a keychain.",
       "specs": {
-        "Display": "1.1\" monochrome LCD",
-        "Input": "6-button cluster",
-        "Comms": "IR, device-to-device",
-        "Power": "USB-C rechargeable",
-        "Programmable": "Yes — RODDY Kreature SDK"
+        "Processor": "ESP32-C3 32-bit RISC-V",
+        "Display": "1.69\" 240×280 color TFT",
+        "Input": "6 buttons — D-pad + A/B",
+        "Audio": "I²S digital audio + speaker",
+        "Haptics": "Vibration motor",
+        "Comms": "IR TX/RX — device-to-device",
+        "Wireless": "Wi-Fi + Bluetooth LE",
+        "Storage": "4 MB flash",
+        "Power": "Rechargeable Li-ion battery",
+        "Charging": "USB-C",
+        "Programmable": "Yes — Basic, C",
+        "Form Factor": "Pocket / keychain handheld"
       },
       "image": "img/products/keychain-kreatures.jpg"
     },
