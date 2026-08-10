@@ -10,7 +10,7 @@ export const DEFAULT_CATEGORIES = [
   { id: "games", name: "Games", code: "RODDY GAMES" },
   { id: "computers", name: "Computers", code: "RODDY COMPUTERS" },
   { id: "pocket", name: "Pocket", code: "RODDY POCKET" },
-  { id: "labs", name: "Labs", code: "RODDY LABS" },
+  { id: "labs", name: "Labs", code: "RODDY KITS" },
   { id: "objects", name: "Objects", code: "RODDY OBJECTS" },
 ];
 

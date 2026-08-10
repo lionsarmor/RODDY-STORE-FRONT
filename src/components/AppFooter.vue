@@ -1,6 +1,7 @@
 <script setup>
 import { useThemeStore } from "../stores/theme";
 import RoddyLogo from "./RoddyLogo.vue";
+import RotatingTagline from "./RotatingTagline.vue";
 
 const theme = useThemeStore();
 </script>
@@ -12,7 +13,7 @@ const theme = useThemeStore();
         <div>
           <RoddyLogo kind="full_logo" class="h-7 w-auto" />
           <p class="mt-3 max-w-[32ch] text-sm text-text-dim">
-            Modern technology from a future we were promised. Currently running the
+            <RotatingTagline tag="span" /> Currently running the
             <strong class="text-text">{{ theme.current.label }}</strong> edition — click the logo to shift eras.
           </p>
         </div>

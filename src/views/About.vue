@@ -1,8 +1,12 @@
+<script setup>
+import RotatingTagline from "../components/RotatingTagline.vue";
+</script>
+
 <template>
   <div class="border-b border-border py-10">
     <div class="mx-auto max-w-6xl px-6">
       <h1 class="mb-2 font-mono text-3xl uppercase tracking-wide">The brand map</h1>
-      <p class="text-text-dim">RODDY ● Modern technology from a future we were promised.</p>
+      <p class="text-text-dim">RODDY ● <RotatingTagline tag="span" /></p>
     </div>
   </div>
   <div class="mx-auto max-w-[68ch] px-6 py-12">
@@ -42,7 +46,7 @@
       <strong class="text-text">RODDY GAMES</strong> — boxed physical games, cartridges, collector editions.<br>
       <strong class="text-text">RODDY COMPUTERS</strong> — programmable machines that boot straight to READY.<br>
       <strong class="text-text">RODDY POCKET</strong> — Keychain Kreatures, handhelds, tiny electronic toys.<br>
-      <strong class="text-text">RODDY LABS</strong> — dev boards, programmers, cables, kits.<br>
+      <strong class="text-text">RODDY KITS</strong> — dev boards, programmers, cables, kits.<br>
       <strong class="text-text">RODDY OBJECTS</strong> — shirts, pins, prints, physical brand artifacts.
     </p>
 

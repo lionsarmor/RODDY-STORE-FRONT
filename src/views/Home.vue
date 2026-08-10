@@ -2,6 +2,7 @@
 import { computed } from "vue";
 import { useCatalogStore } from "../stores/catalog";
 import ProductCard from "../components/ProductCard.vue";
+import RotatingTagline from "../components/RotatingTagline.vue";
 
 const catalog = useCatalogStore();
 const featured = computed(() => catalog.products.filter((p) => p.featured && p.active));
@@ -11,7 +12,7 @@ const featured = computed(() => catalog.products.filter((p) => p.featured && p.a
   <section class="border-b border-border py-16 sm:py-20">
     <div class="mx-auto max-w-6xl px-6">
       <p class="mb-4 font-mono text-xs uppercase tracking-widest text-brand">
-        RODDY <span class="text-[0.7em]">●</span> Modern technology from a future we were promised.
+        RODDY <span class="text-[0.7em]">●</span> <RotatingTagline tag="span" />
       </p>
       <h1 class="mb-4 font-mono text-4xl leading-tight sm:text-6xl">
         Play it.<br>Open it.<br>Program it.<br>Keep it.

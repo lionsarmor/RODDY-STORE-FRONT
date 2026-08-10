@@ -130,6 +130,18 @@
   animation: boing-bounce 3.2s cubic-bezier(0.45, 0, 0.55, 1) infinite;
 }
 
+/* Vue <Transition name="tagline-fade"> — used by RotatingTagline.vue so
+   every "future we were promised" slot fades between lines instead of
+   snapping. */
+.tagline-fade-enter-active,
+.tagline-fade-leave-active {
+  transition: opacity 0.6s ease;
+}
+.tagline-fade-enter-from,
+.tagline-fade-leave-to {
+  opacity: 0;
+}
+
 @utility crt-scanlines {
   position: fixed;
   inset: 0;
