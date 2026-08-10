@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="250" viewBox="0 0 1000 250">
+
+<defs>
+ <filter id="glow" x="-40%" y="-70%" width="180%" height="240%">
+  <feGaussianBlur stdDeviation="8" result="b"/>
+  <feFlood flood-color="#C54CFF" flood-opacity="0.72" result="f"/>
+  <feComposite in="f" in2="b" operator="in" result="g"/>
+  <feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge>
+ </filter>
+ <filter id="redglow" x="-80%" y="-80%" width="260%" height="260%">
+  <feGaussianBlur stdDeviation="8" result="b"/>
+  <feFlood flood-color="#FF2B22" flood-opacity=".75" result="f"/>
+  <feComposite in="f" in2="b" operator="in" result="g"/>
+  <feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge>
+ </filter>
+</defs>
+<g fill="none" stroke="#C54CFF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)">
+ <rect x="15" y="20" width="970" height="210" rx="105.0" ry="105.0"/>
+ 
+        <g transform="translate(80 62.0) scale(1.05 1.05)">
+          
+<g id="wordmark">
+  <!-- R -->
+  <path d="M0 120 V0 H92 Q132 0 132 36 Q132 72 92 72 H0 M68 72 L132 120"/>
+  <!-- O -->
+  <rect x="158" y="0" width="126" height="120" rx="35" ry="35"/>
+  <!-- D -->
+  <path d="M310 0 V120 H380 Q442 120 442 60 Q442 0 380 0 Z"/>
+  <!-- D -->
+  <path d="M468 0 V120 H538 Q600 120 600 60 Q600 0 538 0 Z"/>
+  <!-- Y -->
+  <path d="M626 0 V34 Q626 72 662 72 Q698 72 698 34 V0 M662 72 V120"/>
+</g>
+
+        </g>
+</g>
+<circle cx="905" cy="125" r="26" fill="none" stroke="#FF2B22" stroke-width="8" filter="url(#redglow)"/>
+</svg>

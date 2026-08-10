@@ -1,0 +1,181 @@
+/* Per-theme CSS custom-property sets. Applied via [data-theme] on <html>.
+   Values are the exact hex fills from public/img/logos/RODDY_SVG_BRAND_PACK —
+   see src/theme-data.js for the matching logo asset + swatch metadata.
+   "industrial" is pixel-matched to the literal master artwork and is the
+   default theme (also declared as the :root fallback so there's never a
+   flash of unstyled color before [data-theme] is set). */
+
+/* "industrial" (the master colorway) is declared as the :root default in
+   src/styles/main.css's @theme block — Tailwind's token registration doubles
+   as the fallback, so there's no separate [data-theme="industrial"] rule
+   needed here: switching away from any other theme naturally falls back to
+   those :root values. */
+
+[data-theme="blueprint"] {
+  --color-bg: #f5f5f2;
+  --color-bg-alt: #ffffff;
+  --color-panel: #ffffff;
+  --color-text: #15161a;
+  --color-text-dim: #5a5d66;
+  --color-accent: #15161a;
+  --color-accent-text: #f5f5f2;
+  --color-brand: #e5322d;
+  --color-border: #15161a;
+  --color-glow: transparent;
+}
+
+[data-theme="neon-cyan"] {
+  --color-bg: #0a0b0d;
+  --color-bg-alt: #131519;
+  --color-panel: #15171c;
+  --color-text: #eef8fb;
+  --color-text-dim: #8fa4ac;
+  --color-accent: #10d7f4;
+  --color-accent-text: #0a0b0d;
+  --color-brand: #ff2b2b;
+  --color-border: #2a3237;
+  --color-glow: #10d7f4;
+}
+
+[data-theme="neon-magenta"] {
+  --color-bg: #0d0a0d;
+  --color-bg-alt: #171217;
+  --color-panel: #19141a;
+  --color-text: #fbeff6;
+  --color-text-dim: #ac8fa4;
+  --color-accent: #f21a83;
+  --color-accent-text: #0d0a0d;
+  --color-brand: #ff3b35;
+  --color-border: #332229;
+  --color-glow: #f21a83;
+}
+
+[data-theme="neon-lime"] {
+  --color-bg: #0a0d09;
+  --color-bg-alt: #131912;
+  --color-panel: #151a13;
+  --color-text: #f1fbee;
+  --color-text-dim: #9bac8f;
+  --color-accent: #82e52d;
+  --color-accent-text: #0a0d09;
+  --color-brand: #ff382e;
+  --color-border: #26301f;
+  --color-glow: #82e52d;
+}
+
+[data-theme="neon-orange"] {
+  --color-bg: #0d0a09;
+  --color-bg-alt: #191411;
+  --color-panel: #1a1512;
+  --color-text: #fbf1ee;
+  --color-text-dim: #ac988f;
+  --color-accent: #ff7118;
+  --color-accent-text: #0d0a09;
+  --color-brand: #ff3a28;
+  --color-border: #332720;
+  --color-glow: #ff7118;
+}
+
+[data-theme="neon-violet"] {
+  --color-bg: #0a0a0d;
+  --color-bg-alt: #141319;
+  --color-panel: #16141a;
+  --color-text: #f2eefb;
+  --color-text-dim: #948fac;
+  --color-accent: #a966ff;
+  --color-accent-text: #0a0a0d;
+  --color-brand: #ff3952;
+  --color-border: #282233;
+  --color-glow: #a966ff;
+}
+
+[data-theme="field-olive"] {
+  --color-bg: #1b1c15;
+  --color-bg-alt: #23241b;
+  --color-panel: #262719;
+  --color-text: #eeeee2;
+  --color-text-dim: #a3a48f;
+  --color-accent: #72784b;
+  --color-accent-text: #1b1c15;
+  --color-brand: #c74632;
+  --color-border: #3a3c29;
+  --color-glow: transparent;
+}
+
+[data-theme="field-slate"] {
+  --color-bg: #141819;
+  --color-bg-alt: #1b2123;
+  --color-panel: #1c2325;
+  --color-text: #e9eff0;
+  --color-text-dim: #8fa0a4;
+  --color-accent: #536b79;
+  --color-accent-text: #141819;
+  --color-brand: #c74632;
+  --color-border: #2a3437;
+  --color-glow: transparent;
+}
+
+[data-theme="field-sand"] {
+  --color-bg: #e7e0d1;
+  --color-bg-alt: #f1ece0;
+  --color-panel: #f6f2e8;
+  --color-text: #242017;
+  --color-text-dim: #6b6250;
+  --color-accent: #a9987d;
+  --color-accent-text: #242017;
+  --color-brand: #b94a38;
+  --color-border: #242017;
+  --color-glow: transparent;
+}
+
+[data-theme="pocket-mint"] {
+  --color-bg: #f3faf7;
+  --color-bg-alt: #ffffff;
+  --color-panel: #ffffff;
+  --color-text: #1c2622;
+  --color-text-dim: #5f7871;
+  --color-accent: #9ddccf;
+  --color-accent-text: #1c2622;
+  --color-brand: #efa4ae;
+  --color-border: #1c2622;
+  --color-glow: transparent;
+}
+
+[data-theme="pocket-lavender"] {
+  --color-bg: #f8f4fb;
+  --color-bg-alt: #ffffff;
+  --color-panel: #ffffff;
+  --color-text: #211c26;
+  --color-text-dim: #736a80;
+  --color-accent: #b99acf;
+  --color-accent-text: #211c26;
+  --color-brand: #e18cb8;
+  --color-border: #211c26;
+  --color-glow: transparent;
+}
+
+[data-theme="pocket-peach"] {
+  --color-bg: #fbf5f1;
+  --color-bg-alt: #ffffff;
+  --color-panel: #ffffff;
+  --color-text: #261e1c;
+  --color-text-dim: #806a63;
+  --color-accent: #f2a084;
+  --color-accent-text: #261e1c;
+  --color-brand: #8fc6bd;
+  --color-border: #261e1c;
+  --color-glow: transparent;
+}
+
+[data-theme="collector-gold"] {
+  --color-bg: #0c0a04;
+  --color-bg-alt: #171207;
+  --color-panel: #191408;
+  --color-text: #fbf6e6;
+  --color-text-dim: #ac9f7c;
+  --color-accent: #f3c51b;
+  --color-accent-text: #0c0a04;
+  --color-brand: #f3c51b;
+  --color-border: #332a11;
+  --color-glow: #f3c51b;
+}

@@ -1,0 +1,14 @@
+{
+  "name": "roddy-checkout-worker",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "secret:stripe": "wrangler secret put STRIPE_SECRET_KEY"
+  },
+  "devDependencies": {
+    "wrangler": "^3.90.0"
+  }
+}

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="300" viewBox="0 0 1200 300">
+
+<rect x="22" y="28" width="1156" height="244" rx="122.0" ry="122.0" fill="none" stroke="#E0C15A" stroke-width="10"/>
+<g transform="translate(92,57.0) scale(1.55)"><g fill="#E0C15A" stroke="none" stroke-width="0" stroke-linejoin="round" stroke-linecap="round"><g transform="translate(0,0)"><path fill-rule="evenodd" d="M0,120 L0,44 L22,44 L22,0 L82,0 Q112,0 112,28 L112,40 Q112,66 84,66 L62,66 L114,120 L78,120 L36,74 L22,74 L22,120 Z M48,20 L80,20 Q88,20 88,28 L88,38 Q88,46 80,46 L48,46 Z"/></g><g transform="translate(132,0)"><path fill-rule="evenodd" d="M22,0 H92 Q114,0 114,22 V98 Q114,120 92,120 H22 Q0,120 0,98 V22 Q0,0 22,0 Z M32,24 H82 Q90,24 90,32 V88 Q90,96 82,96 H32 Q24,96 24,88 V32 Q24,24 32,24 Z"/></g><g transform="translate(264,0)"><path fill-rule="evenodd" d="M0,0 H66 Q114,0 114,48 V72 Q114,120 66,120 H0 Z M26,24 H62 Q88,24 88,48 V72 Q88,96 62,96 H26 Z"/></g><g transform="translate(396,0)"><path fill-rule="evenodd" d="M0,0 H66 Q114,0 114,48 V72 Q114,120 66,120 H0 Z M26,24 H62 Q88,24 88,48 V72 Q88,96 62,96 H26 Z"/></g><g transform="translate(528,0)"><path d="M0,0 H26 V34 Q26,54 46,54 H68 Q88,54 88,34 V0 H114 V42 Q114,74 82,80 V120 H56 V80 Q0,74 0,42 Z"/></g></g></g>
+<circle cx="1080" cy="150.0" r="34" fill="#D86A63"/>
+</svg>

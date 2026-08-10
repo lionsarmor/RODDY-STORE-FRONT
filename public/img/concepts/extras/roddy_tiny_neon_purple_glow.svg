@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="260" height="160" viewBox="0 0 260 160">
+
+<defs>
+ <filter id="glow" x="-40%" y="-70%" width="180%" height="240%">
+  <feGaussianBlur stdDeviation="8" result="b"/>
+  <feFlood flood-color="#C54CFF" flood-opacity="0.72" result="f"/>
+  <feComposite in="f" in2="b" operator="in" result="g"/>
+  <feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge>
+ </filter>
+ <filter id="redglow" x="-80%" y="-80%" width="260%" height="260%">
+  <feGaussianBlur stdDeviation="8" result="b"/>
+  <feFlood flood-color="#FF2B22" flood-opacity=".75" result="f"/>
+  <feComposite in="f" in2="b" operator="in" result="g"/>
+  <feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge>
+ </filter>
+</defs>
+<g fill="none" stroke="#C54CFF" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)">
+ <rect x="10" y="15" width="240" height="130" rx="65.0" ry="65.0"/>
+ 
+        <g transform="translate(45 39.199999999999996) scale(0.68 0.68)">
+          <path d="M0 120 V0 H92 Q132 0 132 36 Q132 72 92 72 H0 M68 72 L132 120"/>
+        </g>
+</g>
+<circle cx="202" cy="80" r="17" fill="none" stroke="#FF2B22" stroke-width="7" filter="url(#redglow)"/>
+</svg>

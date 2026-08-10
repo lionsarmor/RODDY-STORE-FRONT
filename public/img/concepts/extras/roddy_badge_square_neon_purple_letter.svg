@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+<defs>
+<filter id="mainGlow" x="-40%" y="-80%" width="180%" height="260%">
+<feGaussianBlur stdDeviation="8" result="blur"/>
+<feFlood flood-color="#D946EF" flood-opacity="0.75" result="flood"/>
+<feComposite in="flood" in2="blur" operator="in" result="glow"/>
+<feMerge><feMergeNode in="glow"/><feMergeNode in="SourceGraphic"/></feMerge>
+</filter>
+<filter id="dotGlow" x="-100%" y="-100%" width="300%" height="300%">
+<feGaussianBlur stdDeviation="8" result="blur"/>
+<feFlood flood-color="#FF5A22" flood-opacity=".72" result="flood"/>
+<feComposite in="flood" in2="blur" operator="in" result="glow"/>
+<feMerge><feMergeNode in="glow"/><feMergeNode in="SourceGraphic"/></feMerge>
+</filter>
+</defs><rect x="18" y="18" width="220" height="220" rx="54" ry="54" fill="none" stroke="#D946EF" stroke-width="9" filter="url(#mainGlow)"/><g transform="translate(48,68) scale(.92)" fill="none" stroke="#D946EF" stroke-width="10" stroke-linejoin="round" stroke-linecap="round" filter="url(#mainGlow)"><path fill-rule="evenodd" d="M0,120 L0,44 L22,44 L22,0 L82,0 Q112,0 112,28 L112,40 Q112,66 84,66 L62,66 L114,120 L78,120 L36,74 L22,74 L22,120 Z M48,20 L80,20 Q88,20 88,28 L88,38 Q88,46 80,46 L48,46 Z"/></g></svg>

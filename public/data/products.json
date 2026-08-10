@@ -1,0 +1,294 @@
+{
+  "categories": [
+    {
+      "id": "games",
+      "name": "Games",
+      "code": "RODDY GAMES"
+    },
+    {
+      "id": "computers",
+      "name": "Computers",
+      "code": "RODDY COMPUTERS"
+    },
+    {
+      "id": "pocket",
+      "name": "Pocket",
+      "code": "RODDY POCKET"
+    },
+    {
+      "id": "labs",
+      "name": "Labs",
+      "code": "RODDY LABS"
+    },
+    {
+      "id": "objects",
+      "name": "Objects",
+      "code": "RODDY OBJECTS"
+    }
+  ],
+  "products": [
+    {
+      "id": "keychain-kreatures",
+      "sku": "R-001",
+      "name": "Keychain Kreatures",
+      "category": "pocket",
+      "price": 39,
+      "stock": 42,
+      "featured": true,
+      "active": true,
+      "description": "A tiny programmable creature computer. Display, six buttons, RGB, vibration and IR trading built into a keychain.",
+      "specs": {
+        "Display": "1.1\" monochrome LCD",
+        "Input": "6-button cluster",
+        "Comms": "IR, device-to-device",
+        "Power": "USB-C rechargeable",
+        "Programmable": "Yes — RODDY Kreature SDK"
+      }
+    },
+    {
+      "id": "starfall",
+      "sku": "R-002",
+      "name": "Starfall",
+      "category": "games",
+      "price": 34,
+      "stock": 18,
+      "featured": true,
+      "active": true,
+      "description": "Boxed physical release. Manual, cartridge and catalog card included. A signal-chasing arcade shooter set above a dead orbital relay.",
+      "specs": {
+        "Format": "RODDY cartridge",
+        "Players": "1",
+        "Box contents": "Cartridge, manual, sticker, catalog card",
+        "Catalog no.": "R-002"
+      }
+    },
+    {
+      "id": "night-shift",
+      "sku": "R-003",
+      "name": "Night Shift",
+      "category": "games",
+      "price": 34,
+      "stock": 12,
+      "featured": false,
+      "active": true,
+      "description": "You run the graveyard shift at a station that isn't supposed to receive visitors. A slow-burn terminal thriller.",
+      "specs": {
+        "Format": "RODDY cartridge",
+        "Players": "1",
+        "Box contents": "Cartridge, manual, sticker, catalog card",
+        "Catalog no.": "R-003"
+      }
+    },
+    {
+      "id": "signal-lost",
+      "sku": "R-004",
+      "name": "Signal Lost",
+      "category": "games",
+      "price": 36,
+      "stock": 7,
+      "featured": false,
+      "active": true,
+      "description": "Triangulate a dying transmission across a procedurally-scrambled band map before the signal goes quiet for good.",
+      "specs": {
+        "Format": "RODDY cartridge",
+        "Players": "1-2",
+        "Box contents": "Cartridge, manual, sticker, catalog card",
+        "Catalog no.": "R-004"
+      }
+    },
+    {
+      "id": "gridrunner",
+      "sku": "R-005",
+      "name": "Gridrunner",
+      "category": "games",
+      "price": 32,
+      "stock": 25,
+      "featured": false,
+      "active": true,
+      "description": "Fast, mean, and built for high scores. A grid-combat cartridge designed to be beaten in one sitting and replayed forever.",
+      "specs": {
+        "Format": "RODDY cartridge",
+        "Players": "1-2",
+        "Box contents": "Cartridge, manual, sticker, catalog card",
+        "Catalog no.": "R-005"
+      }
+    },
+    {
+      "id": "dungeon-terminal",
+      "sku": "R-006",
+      "name": "Dungeon Terminal",
+      "category": "games",
+      "price": 38,
+      "stock": 0,
+      "featured": false,
+      "active": true,
+      "description": "A text-and-tile dungeon crawler that runs like it's talking to you over a modem. First pressing — currently sold out.",
+      "specs": {
+        "Format": "RODDY cartridge",
+        "Players": "1",
+        "Box contents": "Cartridge, manual, sticker, catalog card",
+        "Catalog no.": "R-006"
+      }
+    },
+    {
+      "id": "computer-system-r100",
+      "sku": "R-007",
+      "name": "RODDY Computer System — R-100",
+      "category": "computers",
+      "price": 329,
+      "stock": 6,
+      "featured": true,
+      "active": true,
+      "description": "Boots straight to READY. No desktop, no accounts, no update screens — a computer that starts by asking what you want to build.",
+      "specs": {
+        "Boots to": "RODDY BASIC prompt",
+        "Storage": "SD-card program storage",
+        "Video": "Composite + HDMI out",
+        "In the box": "Computer, PSU, manual, quick-start card, reference booklet"
+      }
+    },
+    {
+      "id": "portable-terminal-r150",
+      "sku": "R-008",
+      "name": "RODDY Portable Terminal — R-150",
+      "category": "computers",
+      "price": 249,
+      "stock": 4,
+      "featured": false,
+      "active": true,
+      "description": "The R-100's programming environment, folded into a battery-powered terminal small enough for a coat pocket.",
+      "specs": {
+        "Display": "7\" transflective LCD",
+        "Battery": "8hr typical",
+        "Storage": "SD-card program storage",
+        "In the box": "Terminal, USB-C cable, manual, quick-start card"
+      }
+    },
+    {
+      "id": "kreature-trade-cable",
+      "sku": "R-009",
+      "name": "Kreature Trade Cable",
+      "category": "pocket",
+      "price": 12,
+      "stock": 60,
+      "featured": false,
+      "active": true,
+      "description": "Wired link for Keychain Kreatures trading and battling when you don't want to rely on IR.",
+      "specs": {
+        "Length": "1m",
+        "Connector": "USB-C to USB-C",
+        "Compatible with": "Keychain Kreatures"
+      }
+    },
+    {
+      "id": "cartridge-programmer",
+      "sku": "R-010",
+      "name": "Cartridge Programmer",
+      "category": "labs",
+      "price": 89,
+      "stock": 15,
+      "featured": true,
+      "active": true,
+      "description": "Read, write and back up RODDY rewritable cartridges from your own computer. The tool that makes homebrew possible.",
+      "specs": {
+        "Interface": "USB-C",
+        "Supports": "RODDY rewritable cartridges",
+        "OS": "Windows, macOS, Linux",
+        "Software": "Open-source flashing utility"
+      }
+    },
+    {
+      "id": "dev-board",
+      "sku": "R-011",
+      "name": "RODDY Dev Board",
+      "category": "labs",
+      "price": 59,
+      "stock": 30,
+      "featured": false,
+      "active": true,
+      "description": "A bare-metal breakout board for prototyping your own MADE FOR RODDY hardware and peripherals.",
+      "specs": {
+        "MCU": "32-bit, RODDY reference core",
+        "GPIO": "24 pins broken out",
+        "Power": "USB-C or 5V header"
+      }
+    },
+    {
+      "id": "ir-debug-cable",
+      "sku": "R-012",
+      "name": "IR Debug Cable",
+      "category": "labs",
+      "price": 15,
+      "stock": 50,
+      "featured": false,
+      "active": true,
+      "description": "Sniff and inject IR traffic between RODDY devices for debugging community software and hardware.",
+      "specs": {
+        "Connector": "USB-C",
+        "Range": "~30cm direct line",
+        "Compatible with": "Keychain Kreatures, RODDY Labs boards"
+      }
+    },
+    {
+      "id": "seal-pin-set",
+      "sku": "R-013",
+      "name": "Enamel Seal Pin Set",
+      "category": "objects",
+      "price": 18,
+      "stock": 75,
+      "featured": false,
+      "active": true,
+      "description": "Three hard-enamel pins carrying the RODDY seal across three product-family palettes.",
+      "specs": {
+        "Set size": "3 pins",
+        "Finish": "Hard enamel, gold plating"
+      }
+    },
+    {
+      "id": "sticker-pack",
+      "sku": "R-014",
+      "name": "RODDY Sticker Pack",
+      "category": "objects",
+      "price": 8,
+      "stock": 120,
+      "featured": false,
+      "active": true,
+      "description": "Vinyl sticker sheet — badge marks across the industrial, arcade, field and pocket palettes.",
+      "specs": {
+        "Count": "8 stickers",
+        "Material": "Weatherproof vinyl"
+      }
+    },
+    {
+      "id": "logo-tee",
+      "sku": "R-015",
+      "name": "RODDY Logo Tee",
+      "category": "objects",
+      "price": 28,
+      "stock": 40,
+      "featured": false,
+      "active": true,
+      "description": "Heavyweight cotton tee, full capsule wordmark on the chest, R ● on the sleeve.",
+      "specs": {
+        "Material": "100% cotton, 6.5oz",
+        "Print": "Screen print",
+        "Sizes": "S–XXL"
+      }
+    },
+    {
+      "id": "desk-mat",
+      "sku": "R-016",
+      "name": "RODDY Desk Mat",
+      "category": "objects",
+      "price": 34,
+      "stock": 22,
+      "featured": false,
+      "active": true,
+      "description": "Stitched-edge desk mat printed with the R-100 wiring schematic.",
+      "specs": {
+        "Size": "900 x 400mm",
+        "Material": "Woven top, rubber base"
+      }
+    }
+  ]
+}
