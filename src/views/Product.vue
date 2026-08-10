@@ -55,7 +55,7 @@ async function buyNow() {
   </div>
 
   <div v-else class="mx-auto grid max-w-6xl grid-cols-1 gap-10 px-6 py-12 sm:grid-cols-2">
-    <div class="bg-spec-grid relative flex aspect-square items-center justify-center border border-border">
+    <div class="bg-spec-grid relative flex aspect-square min-h-0 items-center justify-center border border-border">
       <span class="absolute left-3 top-3 border border-border bg-panel px-1.5 py-0.5 font-mono text-[0.6rem] tracking-wide text-text-dim">
         {{ product.sku }}
       </span>

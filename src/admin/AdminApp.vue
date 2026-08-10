@@ -447,7 +447,7 @@ function moveCategory(idx, dir) {
               <div
                 v-for="(src, iidx) in p.images"
                 :key="iidx"
-                class="bg-spec-grid relative flex h-24 w-24 flex-shrink-0 items-center justify-center border-2"
+                class="bg-spec-grid relative flex h-24 w-24 min-h-0 flex-shrink-0 items-center justify-center border-2"
                 :class="iidx === 0 ? 'border-brand' : 'border-border'"
               >
                 <img :src="isPendingImage(src) ? src : productImageUrl(src)" alt="" class="h-full w-full object-cover">

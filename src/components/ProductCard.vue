@@ -10,7 +10,7 @@ defineProps({ product: { type: Object, required: true } });
     :to="`/product/${product.id}`"
     class="flex flex-col border border-border bg-panel transition-transform hover:-translate-y-0.5"
   >
-    <div class="bg-spec-grid relative flex aspect-[4/3] items-center justify-center border-b border-border">
+    <div class="bg-spec-grid relative flex aspect-[4/3] min-h-0 items-center justify-center border-b border-border">
       <span class="absolute left-2 top-2 border border-border bg-panel px-1.5 py-0.5 font-mono text-[0.6rem] tracking-wide text-text-dim">
         {{ product.sku }}
       </span>
