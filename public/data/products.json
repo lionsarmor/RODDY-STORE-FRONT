@@ -51,7 +51,9 @@
         "Programmable": "Yes — Basic, C",
         "Form Factor": "Pocket / keychain handheld"
       },
-      "images": ["img/products/keychain-kreatures.jpg"]
+      "images": [
+        "img/products/keychain-kreatures.jpg"
+      ]
     },
     {
       "id": "starfall",
@@ -69,7 +71,9 @@
         "Box contents": "Cartridge, manual, sticker, catalog card",
         "Catalog no.": "R-002"
       },
-      "images": ["img/products/starfall.jpg"]
+      "images": [
+        "img/products/starfall.jpg"
+      ]
     },
     {
       "id": "night-shift",
@@ -86,7 +90,10 @@
         "Players": "1",
         "Box contents": "Cartridge, manual, sticker, catalog card",
         "Catalog no.": "R-003"
-      }
+      },
+      "images": [
+        "img/concepts/ed3c183d-552a-4431-8978-823d3ef89324.png"
+      ]
     },
     {
       "id": "signal-lost",
@@ -103,7 +110,8 @@
         "Players": "1-2",
         "Box contents": "Cartridge, manual, sticker, catalog card",
         "Catalog no.": "R-004"
-      }
+      },
+      "images": []
     },
     {
       "id": "gridrunner",
@@ -120,7 +128,8 @@
         "Players": "1-2",
         "Box contents": "Cartridge, manual, sticker, catalog card",
         "Catalog no.": "R-005"
-      }
+      },
+      "images": []
     },
     {
       "id": "dungeon-terminal",
@@ -137,7 +146,8 @@
         "Players": "1",
         "Box contents": "Cartridge, manual, sticker, catalog card",
         "Catalog no.": "R-006"
-      }
+      },
+      "images": []
     },
     {
       "id": "computer-system-r100",
@@ -154,7 +164,8 @@
         "Storage": "SD-card program storage",
         "Video": "Composite + HDMI out",
         "In the box": "Computer, PSU, manual, quick-start card, reference booklet"
-      }
+      },
+      "images": []
     },
     {
       "id": "portable-terminal-r150",
@@ -171,7 +182,8 @@
         "Battery": "8hr typical",
         "Storage": "SD-card program storage",
         "In the box": "Terminal, USB-C cable, manual, quick-start card"
-      }
+      },
+      "images": []
     },
     {
       "id": "kreature-trade-cable",
@@ -187,7 +199,8 @@
         "Length": "1m",
         "Connector": "USB-C to USB-C",
         "Compatible with": "Keychain Kreatures"
-      }
+      },
+      "images": []
     },
     {
       "id": "cartridge-programmer",
@@ -204,7 +217,8 @@
         "Supports": "RODDY rewritable cartridges",
         "OS": "Windows, macOS, Linux",
         "Software": "Open-source flashing utility"
-      }
+      },
+      "images": []
     },
     {
       "id": "dev-board",
@@ -220,7 +234,8 @@
         "MCU": "32-bit, RODDY reference core",
         "GPIO": "24 pins broken out",
         "Power": "USB-C or 5V header"
-      }
+      },
+      "images": []
     },
     {
       "id": "ir-debug-cable",
@@ -236,7 +251,8 @@
         "Connector": "USB-C",
         "Range": "~30cm direct line",
         "Compatible with": "Keychain Kreatures, RODDY Labs boards"
-      }
+      },
+      "images": []
     },
     {
       "id": "seal-pin-set",
@@ -251,7 +267,8 @@
       "specs": {
         "Set size": "3 pins",
         "Finish": "Hard enamel, gold plating"
-      }
+      },
+      "images": []
     },
     {
       "id": "sticker-pack",
@@ -266,7 +283,8 @@
       "specs": {
         "Count": "8 stickers",
         "Material": "Weatherproof vinyl"
-      }
+      },
+      "images": []
     },
     {
       "id": "logo-tee",
@@ -282,7 +300,8 @@
         "Material": "100% cotton, 6.5oz",
         "Print": "Screen print",
         "Sizes": "S–XXL"
-      }
+      },
+      "images": []
     },
     {
       "id": "desk-mat",
@@ -297,7 +316,8 @@
       "specs": {
         "Size": "900 x 400mm",
         "Material": "Woven top, rubber base"
-      }
+      },
+      "images": []
     }
   ]
 }
