@@ -3,27 +3,27 @@
     {
       "id": "games",
       "name": "Games",
-      "code": "RODDY GAMES"
+      "code": "Indie Games"
     },
     {
       "id": "computers",
       "name": "Computers",
-      "code": "RODDY COMPUTERS"
+      "code": "Retro Style Computers"
     },
     {
       "id": "pocket",
       "name": "Pocket",
-      "code": "RODDY POCKET"
+      "code": "Our line of Pocket devices"
     },
     {
       "id": "labs",
       "name": "Labs",
-      "code": "RODDY LABS"
+      "code": "PCB kits & more"
     },
     {
       "id": "objects",
       "name": "Objects",
-      "code": "RODDY OBJECTS"
+      "code": "MERCH"
     }
   ],
   "products": [
