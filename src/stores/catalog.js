@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import { CATALOG_URL, rawAssetUrl } from "../config";
 
 export const useCatalogStore = defineStore("catalog", {
   state: () => ({
@@ -12,7 +13,10 @@ export const useCatalogStore = defineStore("catalog", {
     async load() {
       if (this.loaded) return;
       try {
-        const res = await fetch(`${import.meta.env.BASE_URL}data/products.json`, { cache: "no-store" });
+        // In prod, read straight from GitHub instead of this site's own
+        // (possibly stale, pre-rebuild) copy — see CATALOG_URL in config.js.
+        const url = import.meta.env.DEV ? `${import.meta.env.BASE_URL}data/products.json` : CATALOG_URL;
+        const res = await fetch(url, { cache: "no-store" });
         if (!res.ok) throw new Error(`Failed to load catalog: ${res.status}`);
         const data = await res.json();
         this.categories = data.categories;
@@ -57,5 +61,5 @@ export function formatPrice(amount) {
 
 /** product.image is stored relative to the site root (e.g. "img/products/starfall.jpg"). */
 export function productImageUrl(path) {
-  return `${import.meta.env.BASE_URL}${path}`;
+  return import.meta.env.DEV ? `${import.meta.env.BASE_URL}${path}` : rawAssetUrl(path);
 }

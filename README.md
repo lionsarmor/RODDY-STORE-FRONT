@@ -130,8 +130,12 @@ Edit the file by hand and commit it, or use the admin page below.
 `admin.html` (`src/admin/`) is a lightweight inventory editor. Since GitHub
 Pages can't run a database or a server, it works by talking **directly to
 the GitHub API from your browser** and committing the updated
-`data/products.json` straight to this repo — publish a change and it's live
-once the Actions workflow rebuilds (usually under a minute).
+`data/products.json` straight to this repo. The storefront and the checkout
+Worker both read that file straight from `raw.githubusercontent.com`
+(see `CATALOG_URL` in `src/config.js` and `PRODUCTS_URL` in
+`worker/wrangler.toml`) rather than from the built `dist/` copy, so a
+published change shows up on the live site within moments — it doesn't wait
+on the GitHub Actions rebuild that redeploys the rest of the app.
 
 ### One-time setup
 
@@ -153,8 +157,10 @@ once the Actions workflow rebuilds (usually under a minute).
 3. Add, edit, or delete products. Stock counts and prices live here — the
    checkout Worker reads this same file to price every cart.
 4. Hit **Publish changes to GitHub** — commits the updated
-   `data/products.json` straight to your branch, which triggers a fresh
-   Pages build.
+   `data/products.json` straight to your branch. The storefront picks it up
+   within moments (it reads the file directly from GitHub); the built site
+   itself still rebuilds via Actions in the background, but you don't need
+   to wait on that for inventory/price/stock changes to show up.
 
 **About the token:** it's only ever used client-side to call
 `api.github.com` directly — it never touches any third-party server. Check
@@ -197,17 +203,22 @@ Opens a browser window to authorize. The free tier is plenty for this.
 **3. Point the config at your actual site**
 
 Open `worker/wrangler.toml` and check these against your real GitHub Pages
-URL (pre-filled from this repo's git remote):
+URL and repo (pre-filled from this repo's git remote):
 
 ```toml
 [vars]
 SITE_URL = "https://lionsarmor.github.io/RODDY-STORE-FRONT"
-PRODUCTS_URL = "https://lionsarmor.github.io/RODDY-STORE-FRONT/data/products.json"
+PRODUCTS_URL = "https://raw.githubusercontent.com/lionsarmor/RODDY-STORE-FRONT/main/public/data/products.json"
 ALLOWED_ORIGINS = "https://lionsarmor.github.io,http://localhost:5173,http://localhost:5175"
 SHIP_TO_COUNTRIES = "US,CA"
 ```
 
-- `SITE_URL` / `PRODUCTS_URL` — update if the username or repo name ever
+- `SITE_URL` — the deployed site, used for Stripe's success/cancel redirect
+  URLs.
+- `PRODUCTS_URL` — reads straight from GitHub (not the deployed site) so the
+  Worker re-prices against whatever the admin last published, not a
+  possibly-stale pre-rebuild copy. Matches `CATALOG_URL` in
+  `src/config.js` — keep both in sync if the username or repo name ever
   change.
 - `ALLOWED_ORIGINS` — only these origins may call the Worker. Add any other
   local dev ports you use.

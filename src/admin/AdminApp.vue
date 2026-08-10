@@ -150,7 +150,7 @@ async function save() {
 
     saveStatus.text = "Publishing…";
     session.sha = await saveCatalog({ ...form, sha: session.sha }, session.catalog);
-    saveStatus.text = "Published. GitHub Pages will rebuild in about a minute.";
+    saveStatus.text = "Published — live on the storefront within moments.";
     saveStatus.kind = "ok";
   } catch (err) {
     saveStatus.text = err.message;
@@ -277,7 +277,8 @@ function moveCategory(idx, dir) {
       <h1 class="mb-3 font-mono text-2xl uppercase tracking-wide">Inventory admin</h1>
       <p class="mb-6 text-text-dim">
         Connect with a GitHub token to load, edit and publish <code>public/data/products.json</code> directly to
-        this repo. Changes go live the moment GitHub Pages rebuilds — usually under a minute.
+        this repo. The storefront reads that file straight from GitHub, so changes go live within moments —
+        no rebuild wait.
       </p>
 
       <div class="border border-border bg-panel p-6 text-left">
