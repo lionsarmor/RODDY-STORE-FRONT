@@ -22,7 +22,7 @@ defineProps({ product: { type: Object, required: true } });
         {{ stockState(product) === "out" ? "Sold out" : "Low stock" }}
       </span>
       <img v-if="product.image" :src="productImageUrl(product.image)" :alt="product.name" class="h-full w-full object-cover">
-      <RoddyLogo v-else kind="badge" class="w-[46%] opacity-90" />
+      <RoddyLogo v-else kind="badge" class="w-[72%]" />
     </div>
     <div class="flex flex-1 flex-col gap-1 p-4">
       <span class="font-mono text-[0.62rem] uppercase tracking-wide text-brand">{{ product.category }}</span>
