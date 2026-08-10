@@ -56,19 +56,20 @@
     {
       "id": "starfall",
       "sku": "R-002",
-      "name": "Starfall",
+      "name": "I KNOW WHAT I SAW",
       "category": "games",
-      "price": 34,
+      "price": 29,
       "stock": 18,
       "featured": true,
       "active": true,
-      "description": "Boxed physical release. Manual, cartridge and catalog card included. A signal-chasing arcade shooter set above a dead orbital relay.",
+      "description": "Boxed physical release. Manual, cartridge and catalog card included.An RPG Alien Abduction adventure.",
       "specs": {
         "Format": "RODDY cartridge",
         "Players": "1",
         "Box contents": "Cartridge, manual, sticker, catalog card",
         "Catalog no.": "R-002"
-      }
+      },
+      "image": "img/products/starfall.jpg"
     },
     {
       "id": "night-shift",
