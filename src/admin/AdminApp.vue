@@ -3,8 +3,10 @@ import { reactive, ref, computed, onMounted } from "vue";
 import RoddyLogo from "../components/RoddyLogo.vue";
 import SpectrumLoader from "../components/SpectrumLoader.vue";
 import { useThemeStore } from "../stores/theme";
-import { fetchCatalog, saveCatalog } from "./api";
+import { productImageUrl } from "../stores/catalog";
+import { fetchCatalog, saveCatalog, uploadFile, listRepoImages } from "./api";
 import { slugify, specsToText, textToSpecs, blankProduct, blankCategory } from "./utils";
+import { compressImage, dataUrlToBase64 } from "./image";
 
 useThemeStore(); // side-effect: theme CSS vars stay active on this page too
 
@@ -16,13 +18,17 @@ const connected = ref(false);
 const form = reactive({ owner: "", repo: "", branch: "main", token: "", remember: false });
 const session = reactive({ sha: null, catalog: null });
 const specsDraft = reactive({}); // productId -> raw textarea text, committed on blur
+const pendingImages = reactive({}); // productId -> compressed data URL, not yet published
+const imageErrors = reactive({}); // productId -> error message from a failed file read
+const repoImages = ref([]); // image paths already committed under public/img/
+const loadingRepoImages = ref(false);
 
 const connectStatus = reactive({ text: "", kind: "" });
 const editorStatus = reactive({ text: "", kind: "" });
 const saveStatus = reactive({ text: "", kind: "" });
 const saving = ref(false);
 
-const targetLabel = computed(() => `${form.owner}/${form.repo}@${form.branch}:data/products.json`);
+const targetLabel = computed(() => `${form.owner}/${form.repo}@${form.branch}:public/data/products.json`);
 
 onMounted(() => {
   let saved = null;
@@ -69,6 +75,18 @@ function seedSpecsDrafts() {
   });
 }
 
+async function loadRepoImages() {
+  loadingRepoImages.value = true;
+  try {
+    repoImages.value = await listRepoImages(form);
+  } catch (err) {
+    editorStatus.text = err.message;
+    editorStatus.kind = "error";
+  } finally {
+    loadingRepoImages.value = false;
+  }
+}
+
 async function connect() {
   if (!form.owner || !form.repo || !form.token) {
     connectStatus.text = "Owner, repo and token are required.";
@@ -86,6 +104,7 @@ async function connect() {
     connectStatus.text = "Connected.";
     connectStatus.kind = "ok";
     connected.value = true;
+    loadRepoImages(); // not awaited — fills in whenever it lands, doesn't block the editor
   } catch (err) {
     connectStatus.text = err.message;
     connectStatus.kind = "error";
@@ -100,6 +119,7 @@ async function reload() {
     session.sha = sha;
     session.catalog = catalog;
     seedSpecsDrafts();
+    loadRepoImages();
     editorStatus.text = "Reloaded from GitHub.";
     editorStatus.kind = "ok";
   } catch (err) {
@@ -113,6 +133,22 @@ async function save() {
   saveStatus.text = "Publishing…";
   saveStatus.kind = "";
   try {
+    const pendingIds = Object.keys(pendingImages);
+    for (let i = 0; i < pendingIds.length; i++) {
+      const id = pendingIds[i];
+      const product = session.catalog.products.find((p) => p.id === id);
+      if (!product) {
+        delete pendingImages[id];
+        continue;
+      }
+      saveStatus.text = `Uploading photo ${i + 1} of ${pendingIds.length}…`;
+      const path = `img/products/${id}.jpg`;
+      await uploadFile(form, `public/${path}`, dataUrlToBase64(pendingImages[id]));
+      product.image = path;
+      delete pendingImages[id];
+    }
+
+    saveStatus.text = "Publishing…";
     session.sha = await saveCatalog({ ...form, sha: session.sha }, session.catalog);
     saveStatus.text = "Published. GitHub Pages will rebuild in about a minute.";
     saveStatus.kind = "ok";
@@ -146,6 +182,8 @@ function deleteProduct(idx) {
   const p = session.catalog.products[idx];
   if (!confirm(`Delete "${p.name}" (${p.sku})? This can't be undone once published.`)) return;
   delete specsDraft[p.id];
+  delete pendingImages[p.id];
+  delete imageErrors[p.id];
   session.catalog.products.splice(idx, 1);
 }
 
@@ -156,6 +194,31 @@ function onNameInput(product, value) {
 
 function commitSpecs(product) {
   product.specs = textToSpecs(specsDraft[product.id] || "");
+}
+
+async function onImageSelected(product, event) {
+  const file = event.target.files?.[0];
+  event.target.value = ""; // allow re-selecting the same file later
+  if (!file) return;
+  delete imageErrors[product.id];
+  try {
+    pendingImages[product.id] = await compressImage(file);
+  } catch (err) {
+    imageErrors[product.id] = err.message;
+  }
+}
+
+function clearImage(product) {
+  delete pendingImages[product.id];
+  delete imageErrors[product.id];
+  product.image = "";
+}
+
+function pickExistingImage(product, path) {
+  if (!path) return;
+  delete pendingImages[product.id]; // picking a committed file overrides any staged upload
+  delete imageErrors[product.id];
+  product.image = path;
 }
 
 function addCategory() {
@@ -213,8 +276,8 @@ function moveCategory(idx, dir) {
       <p class="text-3xl text-brand">●</p>
       <h1 class="mb-3 font-mono text-2xl uppercase tracking-wide">Inventory admin</h1>
       <p class="mb-6 text-text-dim">
-        Connect with a GitHub token to load, edit and publish <code>data/products.json</code> directly to this
-        repo. Changes go live the moment GitHub Pages rebuilds — usually under a minute.
+        Connect with a GitHub token to load, edit and publish <code>public/data/products.json</code> directly to
+        this repo. Changes go live the moment GitHub Pages rebuilds — usually under a minute.
       </p>
 
       <div class="border border-border bg-panel p-6 text-left">
@@ -354,6 +417,53 @@ function moveCategory(idx, dir) {
             >
               Delete
             </button>
+          </div>
+
+          <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start">
+            <div class="bg-spec-grid relative flex h-32 w-32 flex-shrink-0 items-center justify-center border border-border">
+              <img v-if="pendingImages[p.id]" :src="pendingImages[p.id]" alt="" class="h-full w-full object-cover">
+              <img v-else-if="p.image" :src="productImageUrl(p.image)" alt="" class="h-full w-full object-cover">
+              <RoddyLogo v-else kind="badge" class="w-[46%] opacity-90" />
+            </div>
+            <div class="flex flex-1 flex-col gap-2">
+              <span class="font-mono text-[0.65rem] uppercase tracking-wide text-text-dim">Upload a new photo</span>
+              <input type="file" accept="image/*" class="font-mono text-xs" @change="onImageSelected(p, $event)">
+
+              <div class="mt-1 flex items-center justify-between">
+                <span class="font-mono text-[0.65rem] uppercase tracking-wide text-text-dim">Or use a file already in the repo</span>
+                <button type="button" class="font-mono text-[0.6rem] text-text-dim underline hover:text-brand" @click="loadRepoImages">
+                  {{ loadingRepoImages ? "Loading…" : "↻ Refresh list" }}
+                </button>
+              </div>
+              <select
+                class="border border-border bg-bg-alt px-2 py-1.5 font-mono text-xs"
+                @change="pickExistingImage(p, $event.target.value); $event.target.value = ''"
+              >
+                <option value="">{{ repoImages.length ? "Choose a file…" : "No files loaded yet — click Refresh" }}</option>
+                <option v-for="path in repoImages" :key="path" :value="path">{{ path }}</option>
+              </select>
+              <input
+                v-model.trim="p.image"
+                type="text"
+                placeholder="or type/paste a path, e.g. img/products/example.jpg"
+                class="border border-border bg-bg-alt px-2 py-1.5 font-mono text-xs"
+                @change="delete pendingImages[p.id]"
+              >
+
+              <button
+                v-if="pendingImages[p.id] || p.image"
+                type="button"
+                class="self-start border border-border px-2 py-1 font-mono text-[0.65rem] uppercase tracking-wide hover:bg-bg-alt"
+                @click="clearImage(p)"
+              >
+                Remove photo
+              </button>
+              <p v-if="imageErrors[p.id]" class="max-w-[36ch] font-mono text-[0.65rem] text-brand">{{ imageErrors[p.id] }}</p>
+              <p v-else class="max-w-[36ch] font-mono text-[0.6rem] text-text-dim">
+                Falls back to the badge mark automatically when no photo is set. An uploaded file is resized,
+                compressed, and committed when you hit Publish; picking or typing a path uses that file as-is.
+              </p>
+            </div>
           </div>
 
           <div class="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">

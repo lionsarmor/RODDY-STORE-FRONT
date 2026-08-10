@@ -1,7 +1,10 @@
-/* GitHub Contents API — reads and writes data/products.json directly from
-   the browser using a user-supplied personal access token. No backend. */
-
-const FILE_PATH = "data/products.json";
+/* GitHub Contents API — reads and writes public/data/products.json directly
+   from the browser using a user-supplied personal access token. No backend.
+   Note: this is the path in the repo's source tree (what the GitHub API
+   operates on), not the built site's URL — Vite copies public/* to the dist
+   root, so the deployed site fetches it from /data/products.json, but the
+   Contents API needs the real repo path. */
+const FILE_PATH = "public/data/products.json";
 
 export const DEFAULT_CATEGORIES = [
   { id: "games", name: "Games", code: "RODDY GAMES" },
@@ -34,8 +37,8 @@ function ghHeaders(token) {
   };
 }
 
-function contentsUrl(owner, repo) {
-  return `https://api.github.com/repos/${owner}/${repo}/contents/${FILE_PATH}`;
+function contentsUrl(owner, repo, path = FILE_PATH) {
+  return `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
 }
 
 export async function fetchCatalog({ owner, repo, branch, token }) {
@@ -79,4 +82,54 @@ export async function saveCatalog({ owner, repo, branch, token, sha }, catalog) 
     throw new Error(json.message || `GitHub PUT failed (${res.status})`);
   }
   return json.content ? json.content.sha : sha;
+}
+
+/** Uploads (or overwrites, if a file already exists at that path) a binary
+    file — used for product photos, committed alongside data/products.json. */
+export async function uploadFile({ owner, repo, branch, token }, path, base64Content) {
+  const existing = await fetch(`${contentsUrl(owner, repo, path)}?ref=${encodeURIComponent(branch)}`, {
+    headers: ghHeaders(token),
+  });
+  let sha = null;
+  if (existing.status === 200) {
+    sha = (await existing.json()).sha;
+  } else if (existing.status !== 404) {
+    const body = await existing.json().catch(() => ({}));
+    throw new Error(body.message || `GitHub GET failed (${existing.status})`);
+  }
+
+  const body = {
+    message: `Update product photo via RODDY admin (${new Date().toISOString().slice(0, 19)}Z)`,
+    content: base64Content,
+    branch,
+  };
+  if (sha) body.sha = sha;
+
+  const res = await fetch(contentsUrl(owner, repo, path), {
+    method: "PUT",
+    headers: { ...ghHeaders(token), "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(json.message || `GitHub PUT failed (${res.status})`);
+  return json;
+}
+
+/** Lists photo files already committed anywhere under public/img/ (SVGs —
+    the brand pack — are excluded), so admin can point a product at an image
+    that was placed in the repo directly instead of uploaded through here. */
+export async function listRepoImages({ owner, repo, branch, token }) {
+  const res = await fetch(
+    `https://api.github.com/repos/${owner}/${repo}/git/trees/${encodeURIComponent(branch)}?recursive=1`,
+    { headers: ghHeaders(token) }
+  );
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.message || `GitHub GET failed (${res.status})`);
+  }
+  const json = await res.json();
+  return (json.tree || [])
+    .filter((item) => item.type === "blob" && /^public\/img\/.*\.(jpe?g|png|webp|gif)$/i.test(item.path))
+    .map((item) => item.path.replace(/^public\//, ""))
+    .sort();
 }

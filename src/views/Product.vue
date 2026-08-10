@@ -1,6 +1,6 @@
 <script setup>
 import { computed, ref } from "vue";
-import { useCatalogStore, stockState, stockLabel, formatPrice } from "../stores/catalog";
+import { useCatalogStore, stockState, stockLabel, formatPrice, productImageUrl } from "../stores/catalog";
 import { useCartStore } from "../stores/cart";
 import { useUiStore } from "../stores/ui";
 import { useCheckoutStore } from "../stores/checkout";
@@ -51,7 +51,8 @@ async function buyNow() {
       >
         {{ state === "out" ? "Sold out" : "Low stock" }}
       </span>
-      <RoddyLogo kind="badge" class="w-[40%]" />
+      <img v-if="product.image" :src="productImageUrl(product.image)" :alt="product.name" class="h-full w-full object-cover">
+      <RoddyLogo v-else kind="badge" class="w-[40%]" />
     </div>
 
     <div>

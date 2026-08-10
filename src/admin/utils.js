@@ -45,6 +45,7 @@ export function blankProduct(existingIds) {
     featured: false,
     description: "",
     specs: {},
+    image: "",
   };
 }
 

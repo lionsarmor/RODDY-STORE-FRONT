@@ -54,3 +54,8 @@ export function stockLabel(product) {
 export function formatPrice(amount) {
   return `$${Number(amount).toFixed(2)}`;
 }
+
+/** product.image is stored relative to the site root (e.g. "img/products/starfall.jpg"). */
+export function productImageUrl(path) {
+  return `${import.meta.env.BASE_URL}${path}`;
+}

@@ -1,9 +1,10 @@
 <script setup>
 import { computed } from "vue";
-import { useCatalogStore, formatPrice } from "../stores/catalog";
+import { useCatalogStore, formatPrice, productImageUrl } from "../stores/catalog";
 import { useCartStore } from "../stores/cart";
 import { useCheckoutStore } from "../stores/checkout";
 import { useUiStore } from "../stores/ui";
+import RoddyLogo from "../components/RoddyLogo.vue";
 import SpectrumLoader from "../components/SpectrumLoader.vue";
 
 const catalog = useCatalogStore();
@@ -43,8 +44,12 @@ async function checkoutAll() {
         <div
           v-for="item in items"
           :key="item.product.id"
-          class="grid grid-cols-1 gap-4 border border-border bg-panel p-5 sm:grid-cols-[1fr_max-content] sm:items-center"
+          class="grid grid-cols-1 gap-4 border border-border bg-panel p-5 sm:grid-cols-[max-content_1fr_max-content] sm:items-center"
         >
+          <div class="bg-spec-grid relative flex h-16 w-16 flex-shrink-0 items-center justify-center border border-border">
+            <img v-if="item.product.image" :src="productImageUrl(item.product.image)" :alt="item.product.name" class="h-full w-full object-cover">
+            <RoddyLogo v-else kind="badge" class="w-[46%] opacity-90" />
+          </div>
           <div>
             <p class="font-mono text-base">{{ item.product.name }}</p>
             <p class="font-mono text-xs text-text-dim">
