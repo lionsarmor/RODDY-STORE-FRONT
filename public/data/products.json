@@ -43,7 +43,8 @@
         "Comms": "IR, device-to-device",
         "Power": "USB-C rechargeable",
         "Programmable": "Yes — RODDY Kreature SDK"
-      }
+      },
+      "image": "img/products/keychain-kreatures.jpg"
     },
     {
       "id": "starfall",
