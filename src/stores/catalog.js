@@ -1,6 +1,16 @@
 import { defineStore } from "pinia";
 import { CATALOG_URL, rawAssetUrl } from "../config";
 
+/** Older catalog data (or a repo that hasn't been re-published since the
+    single-photo -> multi-photo change) may still have a lone `image` string
+    instead of `images: []`. Normalize on the way in so every consumer
+    (storefront and admin) can assume `images` is always an array. */
+export function normalizeProduct(product) {
+  if (Array.isArray(product.images)) return product;
+  const { image, ...rest } = product;
+  return { ...rest, images: image ? [image] : [] };
+}
+
 export const useCatalogStore = defineStore("catalog", {
   state: () => ({
     categories: [],
@@ -20,7 +30,7 @@ export const useCatalogStore = defineStore("catalog", {
         if (!res.ok) throw new Error(`Failed to load catalog: ${res.status}`);
         const data = await res.json();
         this.categories = data.categories;
-        this.products = data.products;
+        this.products = (data.products || []).map(normalizeProduct);
         this.loaded = true;
       } catch (err) {
         this.error = err.message;

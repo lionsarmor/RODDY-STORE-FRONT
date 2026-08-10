@@ -47,8 +47,8 @@ async function checkoutAll() {
           class="grid grid-cols-1 gap-4 border border-border bg-panel p-5 sm:grid-cols-[max-content_1fr_max-content] sm:items-center"
         >
           <div class="bg-spec-grid relative flex h-16 w-16 flex-shrink-0 items-center justify-center border border-border">
-            <img v-if="item.product.image" :src="productImageUrl(item.product.image)" :alt="item.product.name" class="h-full w-full object-cover">
-            <RoddyLogo v-else kind="badge" class="w-[46%] opacity-90" />
+            <img v-if="item.product.images?.[0]" :src="productImageUrl(item.product.images[0])" :alt="item.product.name" class="h-full w-full object-cover">
+            <RoddyLogo v-else kind="badge" class="w-[62%]" />
           </div>
           <div>
             <p class="font-mono text-base">{{ item.product.name }}</p>

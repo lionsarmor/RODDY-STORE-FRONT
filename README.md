@@ -116,12 +116,14 @@ grid (grouped like the list above) to jump straight to any of the 14.
 ## Editing products
 
 Product data lives in `public/data/products.json`: a flat list with `sku`,
-`name`, `category`, `price`, `stock`, `description`, and `specs`. There's no
-image field — product art is generated from the brand badge mark itself (so
-it always matches whatever theme is active) rather than requiring
-photography. `price` and `name` are what the checkout Worker re-prices the
-cart against, so they're the source of truth for what a customer is actually
-charged.
+`name`, `category`, `price`, `stock`, `description`, `specs`, and `images`
+(an array of paths under `public/img/products/`, in display order — the
+first is the cover photo shown on the catalog card, and the product page
+shows the full array as a carousel). `images` can be empty; product art then
+falls back to the brand badge mark (so it always matches whatever theme is
+active) instead of requiring photography. `price` and `name` are what the
+checkout Worker re-prices the cart against, so they're the source of truth
+for what a customer is actually charged.
 
 Edit the file by hand and commit it, or use the admin page below.
 

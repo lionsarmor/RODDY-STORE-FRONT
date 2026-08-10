@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { useCatalogStore, stockState, stockLabel, formatPrice, productImageUrl } from "../stores/catalog";
 import { useCartStore } from "../stores/cart";
 import { useUiStore } from "../stores/ui";
@@ -16,6 +16,21 @@ const checkout = useCheckoutStore();
 const product = computed(() => catalog.byId(props.id));
 const state = computed(() => (product.value ? stockState(product.value) : "out"));
 const qty = ref(1);
+
+const images = computed(() => product.value?.images || []);
+const activeIndex = ref(0);
+watch(() => props.id, () => {
+  activeIndex.value = 0;
+});
+
+function prevImage() {
+  if (!images.value.length) return;
+  activeIndex.value = (activeIndex.value - 1 + images.value.length) % images.value.length;
+}
+function nextImage() {
+  if (!images.value.length) return;
+  activeIndex.value = (activeIndex.value + 1) % images.value.length;
+}
 
 function addToCart() {
   cart.add(product.value.id, Math.max(1, qty.value || 1));
@@ -51,8 +66,38 @@ async function buyNow() {
       >
         {{ state === "out" ? "Sold out" : "Low stock" }}
       </span>
-      <img v-if="product.image" :src="productImageUrl(product.image)" :alt="product.name" class="h-full w-full object-cover">
-      <RoddyLogo v-else kind="badge" class="w-[40%]" />
+      <img
+        v-if="images.length"
+        :src="productImageUrl(images[activeIndex])"
+        :alt="`${product.name} — photo ${activeIndex + 1} of ${images.length}`"
+        class="h-full w-full object-cover"
+      >
+      <RoddyLogo v-else kind="badge" class="w-[68%]" />
+
+      <template v-if="images.length">
+        <button
+          type="button"
+          class="absolute left-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center border border-border bg-panel font-mono text-base leading-none text-text transition-colors hover:border-brand hover:bg-brand hover:text-white"
+          aria-label="Previous photo"
+          @click="prevImage"
+        >
+          ◀
+        </button>
+        <button
+          type="button"
+          class="absolute right-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center border border-border bg-panel font-mono text-base leading-none text-text transition-colors hover:border-brand hover:bg-brand hover:text-white"
+          aria-label="Next photo"
+          @click="nextImage"
+        >
+          ▶
+        </button>
+        <span
+          v-if="images.length > 1"
+          class="absolute bottom-3 left-1/2 -translate-x-1/2 border border-border bg-panel px-2 py-1 font-mono text-[0.65rem] tracking-wide text-text-dim"
+        >
+          {{ activeIndex + 1 }} / {{ images.length }}
+        </span>
+      </template>
     </div>
 
     <div>

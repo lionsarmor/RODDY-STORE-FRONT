@@ -51,7 +51,7 @@
         "Programmable": "Yes — Basic, C",
         "Form Factor": "Pocket / keychain handheld"
       },
-      "image": "img/products/keychain-kreatures.jpg"
+      "images": ["img/products/keychain-kreatures.jpg"]
     },
     {
       "id": "starfall",
@@ -69,7 +69,7 @@
         "Box contents": "Cartridge, manual, sticker, catalog card",
         "Catalog no.": "R-002"
       },
-      "image": "img/products/starfall.jpg"
+      "images": ["img/products/starfall.jpg"]
     },
     {
       "id": "night-shift",
