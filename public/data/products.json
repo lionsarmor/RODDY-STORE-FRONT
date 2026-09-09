@@ -82,6 +82,11 @@
       "id": "new-tag-2",
       "label": "COMMANDER X6",
       "color": "#6826e3"
+    },
+    {
+      "id": "new-tag-3",
+      "label": "PC",
+      "color": "#000000"
     }
   ],
   "products": [
