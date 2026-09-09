@@ -226,7 +226,16 @@
         "Catalog no.": "R-002"
       },
       "images": [
-        "img/products/starfall.jpg"
+        "img/products/starfall.jpg",
+        "img/products/roddy-7e077071-9625-489f-8e38-c04d0226ddec.jpg",
+        "img/products/roddy-4f405eb6-d07e-4cae-b82f-473f00846028.jpg",
+        "img/products/roddy-b7d72ae2-da50-45db-af03-f125d6790307.jpg",
+        "img/products/roddy-259d6835-cdba-4a1e-824d-c53c033fea77.jpg",
+        "img/products/roddy-97c13518-7877-4832-b430-55804b71cb8f.jpg",
+        "img/products/roddy-7b6aba01-83f6-4fab-a07f-2c5a87980f06.jpg",
+        "img/products/roddy-5102e908-e94c-4d94-a4ce-be3b2f2cc8a1.jpg",
+        "img/products/roddy-50c4666c-3f56-4c5c-9d4c-81e65513409e.jpg",
+        "img/products/roddy-67c39b93-2826-4ac0-b9c0-bc1e42bd79dd.jpg"
       ],
       "type": "digital",
       "status": "coming-soon",
@@ -234,10 +243,11 @@
       "tags": [
         "esp32",
         "ai-assisted",
-        "free"
+        "free",
+        "new-tag-3"
       ],
       "shortDescription": "Some things cannot be explained away.",
-      "coverImage": "img/products/starfall.jpg",
+      "coverImage": "img/products/roddy-cfdc4d6e-7628-4bfe-8bde-b146799549e0.jpg",
       "compareAtPrice": 0,
       "releaseNote": " I KNOW WHAT I SAW — FREE DEMO\n\nSomething is out there… and you know what you saw. 👽🛸\n\nDownload the **free playable demo of I KNOW WHAT I SAW** and get your first taste of a strange, atmospheric adventure where unexplained sightings, mysterious encounters, and the unknown are waiting to be uncovered.\n\nThis demo offers an early look at the game and its distinctive retro-inspired presentation, giving you a chance to experience the world, gameplay, and atmosphere before the full release.\n\n**Demo Platforms:** PC and ESP32\n\n**Price:** FREE\n\nThe truth is out there. The problem is convincing everyone else.\n",
       "downloadUrl": "https://github.com/lionsarmor/I-KNOW-WHAT-I-SAW---C-VERSION-/releases/latest",
