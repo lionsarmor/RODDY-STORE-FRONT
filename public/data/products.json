@@ -87,6 +87,11 @@
       "id": "new-tag-3",
       "label": "PC",
       "color": "#000000"
+    },
+    {
+      "id": "new-tag-4",
+      "label": "Atari 2600",
+      "color": "#ba3b3b"
     }
   ],
   "products": [
