@@ -96,6 +96,32 @@
   ],
   "products": [
     {
+      "id": "shadow-over-space",
+      "sku": "R-A001",
+      "name": "Shadow Over Space",
+      "category": "games",
+      "price": 0,
+      "stock": 0,
+      "active": false,
+      "featured": false,
+      "description": "Shoot. Dodge. Save The City. ",
+      "specs": {},
+      "images": [],
+      "status": "available",
+      "type": "digital",
+      "coverImage": "",
+      "tags": [
+        "new-tag-4"
+      ],
+      "trackStock": true,
+      "compareAtPrice": 0,
+      "shortDescription": "An experimental BatariBasic Game. ",
+      "releaseNote": "Digital Download. Atari 2600 compatible. ",
+      "downloadUrl": "",
+      "githubUrl": "",
+      "pricePending": true
+    },
+    {
       "id": "desk-commander-cartridge",
       "sku": "R-APP-101",
       "name": "DESK COMMANDER CARTRIDGE",
