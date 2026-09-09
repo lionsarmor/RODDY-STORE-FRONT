@@ -49,7 +49,7 @@
     {
       "id": "merch",
       "name": "Merch",
-      "code": "Merchandise and odd things"
+      "code": "MERCHANDISE & THINGS"
     }
   ],
   "tags": [
@@ -72,6 +72,16 @@
       "id": "free",
       "label": "FREE",
       "color": "#f8da79"
+    },
+    {
+      "id": "new-tag",
+      "label": "COMMODORE 64",
+      "color": "#a88b71"
+    },
+    {
+      "id": "new-tag-2",
+      "label": "COMMANDER X6",
+      "color": "#6826e3"
     }
   ],
   "products": [
@@ -87,14 +97,19 @@
       "status": "available",
       "featured": true,
       "active": true,
-      "tags": [],
+      "tags": [
+        "free"
+      ],
       "pricePending": true,
       "shortDescription": "Your desktop. Your command center.",
       "description": "Meet DESK COMMANDER, from RODDY Apps. A new addition to your personal computing universe. Release details and pricing will be announced here.",
       "releaseNote": "Release details to be announced",
       "specs": {},
       "images": [],
-      "coverImage": ""
+      "coverImage": "",
+      "compareAtPrice": 0,
+      "downloadUrl": "",
+      "githubUrl": ""
     },
     {
       "id": "starfall",
@@ -120,7 +135,11 @@
       "trackStock": true,
       "tags": [],
       "shortDescription": "Some things cannot be explained away.",
-      "coverImage": "img/products/starfall.jpg"
+      "coverImage": "img/products/starfall.jpg",
+      "compareAtPrice": 0,
+      "releaseNote": "",
+      "downloadUrl": "",
+      "githubUrl": ""
     },
     {
       "id": "keychain-kreatures",
@@ -158,7 +177,10 @@
       "pricePending": true,
       "shortDescription": "A whole little world. On your keychain.",
       "releaseNote": "In development. Coming soon. Product imagery is a concept preview.",
-      "coverImage": "img/products/keychain-kreatures.jpg"
+      "coverImage": "img/products/keychain-kreatures.jpg",
+      "compareAtPrice": 0,
+      "downloadUrl": "",
+      "githubUrl": ""
     },
     {
       "id": "kestrel-computer",
@@ -179,7 +201,10 @@
       "releaseNote": "Coming soon. Specifications, pricing and release date to be announced.",
       "specs": {},
       "images": [],
-      "coverImage": ""
+      "coverImage": "",
+      "compareAtPrice": 0,
+      "downloadUrl": "",
+      "githubUrl": ""
     },
     {
       "id": "desk-mat",
@@ -200,7 +225,10 @@
       "releaseNote": "Coming soon. Pricing and availability to be announced.",
       "specs": {},
       "images": [],
-      "coverImage": ""
+      "coverImage": "",
+      "compareAtPrice": 0,
+      "downloadUrl": "",
+      "githubUrl": ""
     },
     {
       "id": "hoodie",
@@ -221,7 +249,10 @@
       "releaseNote": "Coming soon. Pricing and availability to be announced.",
       "specs": {},
       "images": [],
-      "coverImage": ""
+      "coverImage": "",
+      "compareAtPrice": 0,
+      "downloadUrl": "",
+      "githubUrl": ""
     }
   ]
 }
