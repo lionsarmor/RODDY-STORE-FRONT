@@ -205,15 +205,15 @@
       "githubUrl": "https://github.com/lionsarmor/DESK-COMMANDER"
     },
     {
-      "id": "starfall",
-      "sku": "R-002",
-      "name": "I KNOW WHAT I SAW",
+      "id": "iknowwhatisaw",
+      "sku": "R-902",
+      "name": "I KNOW WHAT I SAW (DEMO)",
       "category": "games",
-      "price": 29,
+      "price": 0,
       "stock": 18,
       "featured": true,
-      "active": true,
-      "description": "Boxed physical release. Manual, cartridge and catalog card included.An RPG Alien Abduction adventure.",
+      "active": false,
+      "description": "RPG Alien Abduction adventure. An action mystery, what is going on?",
       "specs": {
         "Format": "RODDY cartridge",
         "Players": "1",
@@ -223,16 +223,20 @@
       "images": [
         "img/products/starfall.jpg"
       ],
-      "type": "physical",
-      "status": "available",
+      "type": "digital",
+      "status": "coming-soon",
       "trackStock": true,
-      "tags": [],
+      "tags": [
+        "esp32",
+        "ai-assisted",
+        "free"
+      ],
       "shortDescription": "Some things cannot be explained away.",
       "coverImage": "img/products/starfall.jpg",
       "compareAtPrice": 0,
-      "releaseNote": "",
-      "downloadUrl": "",
-      "githubUrl": ""
+      "releaseNote": " I KNOW WHAT I SAW — FREE DEMO\n\nSomething is out there… and you know what you saw. 👽🛸\n\nDownload the **free playable demo of I KNOW WHAT I SAW** and get your first taste of a strange, atmospheric adventure where unexplained sightings, mysterious encounters, and the unknown are waiting to be uncovered.\n\nThis demo offers an early look at the game and its distinctive retro-inspired presentation, giving you a chance to experience the world, gameplay, and atmosphere before the full release.\n\n**Demo Platforms:** PC and ESP32\n\n**Price:** FREE\n\nThe truth is out there. The problem is convincing everyone else.\n",
+      "downloadUrl": "https://github.com/lionsarmor/I-KNOW-WHAT-I-SAW---C-VERSION-/releases/latest",
+      "githubUrl": "https://github.com/lionsarmor/I-KNOW-WHAT-I-SAW---C-VERSION-"
     },
     {
       "id": "keychain-kreatures",
