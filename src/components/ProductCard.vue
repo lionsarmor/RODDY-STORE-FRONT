@@ -4,13 +4,33 @@ import {
   stockLabel,
   formatPrice,
   productImageUrl,
+  useCatalogStore,
 } from "../stores/catalog";
 import ProductTags from "./ProductTags.vue";
 import ProductArtwork from "./ProductArtwork.vue";
 defineProps({ product: { type: Object, required: true } });
+const catalog = useCatalogStore();
 </script>
 <template>
-  <RouterLink :to="`/product/${product.id}`" class="product-card">
+  <RouterLink
+    :to="`/product/${product.id}`"
+    class="product-card"
+    :class="{ 'is-development': stockState(product) === 'soon' }"
+    :data-department="product.category"
+  >
+    <div class="product-plate-head">
+      <span class="catalog-number">{{ product.sku }}</span
+      ><span
+        >{{
+          stockState(product) === "soon"
+            ? "LAB PREVIEW"
+            : product.type === "digital"
+              ? "SOFTWARE LIBRARY"
+              : "RODDY ORIGINAL"
+        }}
+        <span aria-hidden="true">↗</span></span
+      >
+    </div>
     <div class="product-card-image">
       <img
         v-if="product.coverImage || product.images?.[0]"
@@ -19,13 +39,26 @@ defineProps({ product: { type: Object, required: true } });
         loading="lazy"
       />
       <ProductArtwork v-else :product="product" />
-      <span class="catalog-number">{{ product.sku }}</span>
-      <span v-if="stockState(product) === 'soon'" class="availability-pill"
-        >↗ COMING SOON</span
-      >
+    </div>
+    <div class="product-plate-caption">
+      <span
+        >{{
+          catalog.categoryMeta(product.category)?.name || product.category
+        }}
+        DIVISION</span
+      ><span :class="{ 'development-label': stockState(product) === 'soon' }">{{
+        stockState(product) === "soon"
+          ? "● COMING SOON"
+          : stockState(product) === "out"
+            ? "SOLD OUT"
+            : product.pricePending
+              ? "DETAILS TO COME"
+              : product.type === "digital"
+                ? "DIGITAL RELEASE"
+                : stockLabel(product)
+      }}</span>
     </div>
     <div class="product-card-body">
-      <span class="eyebrow">{{ product.category }} / RODDY</span>
       <h3>{{ product.name }}</h3>
       <p>{{ product.shortDescription || product.description }}</p>
       <ProductTags :ids="product.tags" />
@@ -47,7 +80,7 @@ defineProps({ product: { type: Object, required: true } });
         ><span
           >{{
             stockState(product) === "soon"
-              ? "Discover"
+              ? "Explore project"
               : stockState(product) === "out"
                 ? stockLabel(product)
                 : "Take a look"

@@ -84,6 +84,15 @@ function toggleTag(id) {
             rows="7"
           /></label
         ><label class="full"
+          >Why we made it (optional)<textarea
+            v-model="product.story"
+            rows="5"
+            placeholder="The idea, the constraints, and the reason this product exists."
+          /><small
+            >Shown as a maker's note on the full product page. Leave blank to
+            omit.</small
+          ></label
+        ><label class="full"
           >Release / availability note<textarea
             v-model="product.releaseNote"
             rows="2"
@@ -196,6 +205,16 @@ function toggleTag(id) {
       </p>
     </div>
     <div v-if="tab === 'links'" class="editor-content">
+      <label
+        >Documentation / schematics URL<input
+          v-model="product.documentationUrl"
+          type="url"
+          placeholder="https://example.com/project/docs"
+        /><small
+          >Links to manuals, schematics or repair information from the product's
+          documentation section. Leave blank until available.</small
+        ></label
+      >
       <label
         >GitHub repository<input
           v-model="product.githubUrl"

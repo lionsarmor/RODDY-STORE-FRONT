@@ -13,6 +13,9 @@ import { useUiStore } from "../stores/ui";
 import { useCheckoutStore } from "../stores/checkout";
 import ProductTags from "../components/ProductTags.vue";
 import ProductArtwork from "../components/ProductArtwork.vue";
+import ProductCard from "../components/ProductCard.vue";
+import RoddyLogo from "../components/RoddyLogo.vue";
+import { departmentDirection } from "../department-data";
 const props = defineProps({ id: { type: String, required: true } });
 const catalog = useCatalogStore();
 const cart = useCartStore();
@@ -24,6 +27,7 @@ const state = computed(() =>
 );
 const qty = ref(1);
 const activeIndex = ref(0);
+const expandedSpecs = ref(false);
 const lightbox = ref(null);
 const images = computed(() => [
   ...new Set([
@@ -46,6 +50,36 @@ const freeDownload = computed(
     safeLink(product.value.downloadUrl),
 );
 const githubLink = computed(() => safeLink(product.value?.githubUrl));
+const documentationLink = computed(() =>
+  safeLink(product.value?.documentationUrl),
+);
+const department = computed(() =>
+  catalog.categoryMeta(product.value?.category),
+);
+const direction = computed(() => departmentDirection(product.value?.category));
+const specifications = computed(() =>
+  Object.entries(product.value?.specs || {}),
+);
+const visibleSpecifications = computed(() =>
+  expandedSpecs.value ? specifications.value : specifications.value.slice(0, 6),
+);
+const isHardware = computed(
+  () =>
+    product.value?.type === "physical" &&
+    ["computers", "pocket", "labs", "apps"].includes(product.value?.category),
+);
+const related = computed(() =>
+  catalog
+    .byCategory("all")
+    .filter((p) => p.id !== props.id)
+    .sort(
+      (a, b) =>
+        Number(b.category === product.value?.category) -
+          Number(a.category === product.value?.category) ||
+        Number(b.featured) - Number(a.featured),
+    )
+    .slice(0, 3),
+);
 const maxQty = computed(() =>
   product.value?.trackStock ? Math.min(99, product.value.stock) : 99,
 );
@@ -53,6 +87,7 @@ watch(
   () => props.id,
   () => {
     activeIndex.value = 0;
+    expandedSpecs.value = false;
     qty.value = 1;
   },
 );
@@ -88,7 +123,12 @@ async function buyNow() {
     Product not found.
     <RouterLink to="/shop" class="text-button">Back to catalog ↗</RouterLink>
   </div>
-  <div v-else class="product-page">
+  <div
+    v-else
+    class="product-page product-launch"
+    :data-motif="direction.motif"
+    :class="{ 'is-development': state === 'soon' }"
+  >
     <nav class="product-breadcrumb" aria-label="Breadcrumb">
       <RouterLink to="/shop">Catalog</RouterLink><span>/</span
       ><RouterLink :to="{ path: '/shop', query: { cat: product.category } }">{{
@@ -96,8 +136,21 @@ async function buyNow() {
       }}</RouterLink
       ><span>/</span><span>{{ product.name }}</span>
     </nav>
+    <div class="launch-masthead">
+      <span>{{ department?.name || product.category }} / RODDY DIVISION</span
+      ><span>{{
+        department?.code || "PERSONAL TECHNOLOGY. UNREASONABLE POSSIBILITIES."
+      }}</span
+      ><RoddyLogo kind="badge" />
+    </div>
     <div class="product-detail-grid">
-      <div>
+      <div class="product-gallery">
+        <div class="plate-annotation">
+          <span>{{ product.sku }} / THE EXHIBIT</span
+          ><span>{{
+            state === "soon" ? "IN DEVELOPMENT" : "TAKE A CLOSER LOOK"
+          }}</span>
+        </div>
         <div class="detail-image">
           <button
             v-if="images.length"
@@ -111,9 +164,16 @@ async function buyNow() {
             /><span>⤢ Enlarge</span>
           </button>
           <ProductArtwork v-else :product="product" />
-          <span v-if="state === 'soon'" class="availability-pill"
-            >↗ COMING SOON</span
-          >
+        </div>
+        <div class="plate-annotation">
+          <span>{{
+            state === "soon"
+              ? "COMING SOON / NOT YET FOR SALE"
+              : product.type === "digital"
+                ? "FROM THE RODDY SOFTWARE LIBRARY"
+                : "FROM THE RODDY COLLECTION"
+          }}</span
+          ><span aria-hidden="true">+ + +</span>
         </div>
         <div v-if="images.length > 1" class="gallery-controls">
           <button class="button" aria-label="Previous image" @click="move(-1)">
@@ -161,16 +221,15 @@ async function buyNow() {
               !product.pricePending && product.compareAtPrice > product.price
             "
             >{{ formatPrice(product.compareAtPrice) }}</del
-          ><small v-if="!product.pricePending">USD</small>
+          ><small v-if="!product.pricePending && product.price > 0">USD</small>
         </div>
-        <p class="product-description">{{ product.description }}</p>
         <div v-if="state === 'soon'" class="coming-soon-panel">
           <span>↗</span>
           <div>
-            <strong>GOOD THINGS ARE COMING.</strong>
+            <strong>ON THE WORKBENCH. NOT ON THE SHELF. YET.</strong>
             <p>
-              This product is in development. Check back here for release
-              details.
+              Coming soon. This project is still in development and is not
+              available to order. Follow its progress right here.
             </p>
           </div>
         </div>
@@ -231,20 +290,141 @@ async function buyNow() {
             >⌘ Explore on GitHub ↗</a
           ><small>Source, documentation & project updates</small>
         </div>
-        <section
-          v-if="Object.keys(product.specs || {}).length"
-          class="specifications"
-        >
-          <h2>AT A GLANCE</h2>
-          <dl>
-            <template v-for="(value, key) in product.specs" :key="key"
-              ><dt>{{ key }}</dt>
-              <dd>{{ value }}</dd></template
-            >
-          </dl>
-        </section>
+        <p class="launch-signoff">INDEPENDENT IDEAS. A VERY PERSONAL FUTURE.</p>
       </div>
     </div>
+    <section
+      v-if="specifications.length"
+      class="product-highlights"
+      aria-label="Product highlights"
+    >
+      <div v-for="([key, value], i) in specifications.slice(0, 3)" :key="key">
+        <span class="eyebrow">0{{ i + 1 }} / {{ key }}</span>
+        <p>{{ value }}</p>
+      </div>
+    </section>
+    <div class="product-editorial">
+      <section class="product-story" aria-labelledby="product-story-heading">
+        <p class="eyebrow">01 / THE IDEA</p>
+        <h2 id="product-story-heading">
+          A LITTLE MORE<br />TO THE STORY<span>.</span>
+        </h2>
+        <p class="product-description">
+          {{ product.description || product.shortDescription }}
+        </p>
+        <template v-if="product.story"
+          ><h3>WHY WE MADE IT</h3>
+          <p class="product-description">{{ product.story }}</p></template
+        >
+        <div class="makers-signature">
+          <RoddyLogo kind="full_logo" /><span
+            >FROM OUR CORNER<br />OF THE FUTURE.</span
+          >
+        </div>
+      </section>
+      <section
+        v-if="specifications.length"
+        class="specifications launch-specifications"
+        aria-labelledby="specifications-heading"
+      >
+        <p class="eyebrow">02 / THE DETAILS</p>
+        <h2 id="specifications-heading">AT A GLANCE<span>↘</span></h2>
+        <dl id="product-specification-list">
+          <template v-for="[key, value] in visibleSpecifications" :key="key"
+            ><dt>{{ key }}</dt>
+            <dd>{{ value }}</dd></template
+          >
+        </dl>
+        <button
+          v-if="specifications.length > 6"
+          class="text-button specifications-toggle"
+          :aria-expanded="expandedSpecs"
+          aria-controls="product-specification-list"
+          @click="expandedSpecs = !expandedSpecs"
+        >
+          {{
+            expandedSpecs
+              ? "Show fewer specifications −"
+              : `Show all ${specifications.length} specifications +`
+          }}
+        </button>
+        <p v-if="state === 'soon'" class="release-note">
+          In development. Specifications may change before release.
+        </p>
+      </section>
+    </div>
+    <section
+      v-if="isHardware || documentationLink || githubLink"
+      class="product-documentation"
+      aria-labelledby="documentation-heading"
+    >
+      <div>
+        <p class="eyebrow">THE OPEN-DOOR POLICY</p>
+        <h2 id="documentation-heading">
+          {{
+            isHardware
+              ? "OPEN IT. UNDERSTAND IT. REPAIR IT."
+              : "GO BEYOND THE BOX."
+          }}
+        </h2>
+      </div>
+      <div>
+        <p>
+          {{
+            isHardware
+              ? "Made for human beings. Repairable by human beings. Our hardware promise: schematics, technical documentation, and repair information included. You should be able to understand the machine you own."
+              : "Curiosity should not stop at the product page. Find the project resources and get to know what makes this one tick."
+          }}
+        </p>
+        <div class="documentation-actions">
+          <a
+            v-if="documentationLink"
+            :href="documentationLink"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="button primary"
+            >{{
+              isHardware
+                ? "Documentation & schematics"
+                : "Read the documentation"
+            }}
+            ↗</a
+          ><a
+            v-if="githubLink"
+            :href="githubLink"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="button"
+            >Explore on GitHub ↗</a
+          ><RouterLink v-if="isHardware" to="/about" class="text-button"
+            >Read our promise ↗</RouterLink
+          >
+        </div>
+        <p v-if="isHardware && !documentationLink" class="release-note">
+          {{
+            state === "soon"
+              ? "Project documentation will be linked here when it is published."
+              : "Documentation is not linked here yet. Check back for the published resources."
+          }}
+        </p>
+      </div>
+    </section>
+    <section
+      v-if="related.length"
+      class="product-related"
+      aria-labelledby="related-heading"
+    >
+      <div class="directory-list-heading">
+        <div>
+          <p class="eyebrow">KEEP EXPLORING</p>
+          <h2 id="related-heading">There is more on the shelf.</h2>
+        </div>
+        <RouterLink to="/shop" class="text-button">Full catalog ↗</RouterLink>
+      </div>
+      <div class="catalog-grid">
+        <ProductCard v-for="p in related" :key="p.id" :product="p" />
+      </div>
+    </section>
     <dialog
       ref="lightbox"
       class="image-lightbox"

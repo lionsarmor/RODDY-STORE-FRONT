@@ -21,14 +21,19 @@ You can create, duplicate, hide, feature, delete, and edit products. The
 Departments panel controls navigation names, IDs and ordering.
 
 - **Details:** name, stable URL ID, SKU, category, physical/digital type,
-  short card description, full description, release note, tags and specifications.
+  short card description, full description, optional **Why we made it** maker's
+  note, release note, tags and specifications. The first three specifications
+  become product-page highlights; the complete spec sheet can be expanded below.
 - **Images:** a single **At-a-glance / cover image** for cards, plus a separate
   ordered gallery for the full product page. Upload/drop images, add existing
   repo images or HTTPS image URLs, move images, and remove them from the draft.
   Images are converted to JPG up to 1600px; GIFs become stills.
 - **Pricing:** USD selling price, original price for sale displays, stock,
   unlimited stock, availability, visibility and homepage featuring.
-- **Links & downloads:** GitHub repository and public free-download URL.
+- **Links & downloads:** GitHub repository, public free-download URL, and an
+  optional **Documentation / schematics URL** for manuals or repair resources.
+  Documentation buttons only appear once a valid link is supplied; the hardware
+  promise is not presented as an already-published download.
   Use a $0 price, turn off “Pricing to be announced”, and select Available to
   display the direct download button. Turn off stock tracking for unlimited
   downloads. Downloads bypass Stripe. Paid download URLs must not be stored here.
@@ -44,6 +49,9 @@ The server enforces these restrictions too.
 Edit the announcement, hero headline/introduction, CTA, featured heading,
 manifesto, support email, and spotlight product. The spotlight uses the
 product's cover, or an independently uploaded homepage override.
+The shop's featured exhibit follows this same spotlight product selection and
+uses its at-a-glance cover. Department pages and filtered results omit the
+exhibit so shoppers can focus on the matching products.
 Feature products from their Pricing tab to include them in the homepage lineup.
 The 14-theme selector applies across the store and admin.
 

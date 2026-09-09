@@ -24,6 +24,7 @@
 
 @import "./themes.css";
 @import "./store.css";
+@import "./catalog.css";
 
 @layer base {
   html {

@@ -1053,6 +1053,8 @@ function loadOrders(more = false) {
                 <p class="help-copy">
                   Uses this product's cover by default. Set a separate image
                   below to override it for the landing page.
+                  This product also appears in the shop's featured exhibit,
+                  using its cover image. Choose “No spotlight product” to hide both.
                 </p>
                 <MediaEditor
                   v-model="heroImages"

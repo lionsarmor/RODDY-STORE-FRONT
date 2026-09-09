@@ -39,6 +39,8 @@ export function normalizeProduct(p) {
     trackStock: p.trackStock !== false,
     compareAtPrice: p.compareAtPrice || 0,
     shortDescription: p.shortDescription || "",
+    story: p.story || "",
+    documentationUrl: p.documentationUrl || "",
     releaseNote: p.releaseNote || "",
     downloadUrl: p.downloadUrl || "",
     githubUrl: p.githubUrl || "",
@@ -112,6 +114,8 @@ export function validateCatalog(data) {
       errors.push(`${p.name}: FREE requires a zero price.`);
     if (p.downloadUrl && !safeLink(p.downloadUrl))
       errors.push(`${p.name}: download must be an HTTP(S) URL.`);
+    if (p.documentationUrl && !safeLink(p.documentationUrl))
+      errors.push(`${p.name}: documentation must be an HTTP(S) URL.`);
     if (p.githubUrl && !/^https:\/\/github\.com\//i.test(p.githubUrl))
       errors.push(`${p.name}: use a https://github.com/ repository URL.`);
   }
