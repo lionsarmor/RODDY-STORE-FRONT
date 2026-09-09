@@ -83,7 +83,7 @@ const principles = [
           still leaves room for <strong>you.</strong>
         </p>
         <p class="about-hero-note">
-          A FEW WORDS FROM RODDY. ABOUT THREE MINUTES OF YOUR UNDIVIDED
+          A FEW WORDS FROM RODDY. ABOUT FOUR MINUTES OF YOUR UNDIVIDED
           ATTENTION.
         </p>
       </div>
@@ -232,9 +232,54 @@ const principles = [
       </div>
     </section>
 
+    <section
+      class="about-chapter about-transparency"
+      aria-labelledby="about-transparency-title"
+    >
+      <div class="about-margin-note">
+        <span>04 / NOTHING TO HIDE</span>
+        <span>HONEST LABELS.<br />YOUR CHOICE.</span>
+      </div>
+      <div class="about-reading">
+        <h2 id="about-transparency-title">
+          How it’s made<br />shouldn’t be a mystery.
+        </h2>
+        <p>
+          Some people are curious about AI. Others would rather have nothing to
+          do with it, including in the products they buy. We respect that. You
+          shouldn’t have to share our choice of tools to feel welcome here.
+        </p>
+        <p>
+          <strong
+            >If AI helped us make a product, we’ll clearly label it AI
+            Assisted.</strong
+          >
+          That includes help with code, artwork, writing, or design. We won’t
+          bury that information in the fine print, and we won’t use a
+          <strong>NO AI</strong> label unless we can stand behind it. AI
+          assistance during creation doesn’t necessarily mean a product runs AI;
+          if AI is part of what the product does, we’ll explain that too.
+        </p>
+        <p>
+          We hope to offer a mix of AI-assisted projects and things made without
+          AI assistance. Not every project needs the same tools, and not every
+          person wants the same thing. Either way,
+          <strong>the responsibility for what we release is ours.</strong> A
+          tool doesn’t get the credit for caring, or take the blame when
+          something needs fixing.
+        </p>
+        <p>
+          We want to be a company you can trust, not one you have to
+          second-guess. That means being honest about how we work and giving you
+          enough information to choose what feels right for you. No judgment. No
+          sales pitch about why you should feel differently.
+        </p>
+      </div>
+    </section>
+
     <section class="about-repair-promise" aria-labelledby="about-repair-title">
       <div class="about-promise-heading">
-        <p class="eyebrow">04 / THE RODDY REPAIR PROMISE</p>
+        <p class="eyebrow">05 / THE RODDY REPAIR PROMISE</p>
         <RoddyLogo kind="badge" />
       </div>
       <h2 id="about-repair-title">
@@ -292,7 +337,7 @@ const principles = [
 
     <section class="about-invitation" aria-labelledby="about-invitation-title">
       <div>
-        <p class="eyebrow">05 / WELCOME TO OUR CORNER OF THE FUTURE</p>
+        <p class="eyebrow">06 / WELCOME TO OUR CORNER OF THE FUTURE</p>
         <h2 id="about-invitation-title">
           FOR THE TINKERERS.<br />THE DAYDREAMERS.<br />THE
           <em>“WHAT IF?”</em> PEOPLE.
@@ -582,7 +627,8 @@ const principles = [
   letter-spacing: 0.06em;
   margin-top: auto;
 }
-.about-human {
+.about-human,
+.about-transparency {
   border-top: 1px solid var(--about-rule);
   padding-top: 70px;
 }
