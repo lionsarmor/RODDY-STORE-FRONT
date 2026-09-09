@@ -106,10 +106,13 @@
       "featured": false,
       "description": "Shoot. Dodge. Save The City. ",
       "specs": {},
-      "images": [],
+      "images": [
+        "img/products/roddy-fc455e72-d7ea-41a4-8d1d-3262b5d1142e.jpg",
+        "img/products/roddy-cd3b6c60-5f91-4f38-9c29-f3b8461ffeb1.jpg"
+      ],
       "status": "available",
       "type": "digital",
-      "coverImage": "",
+      "coverImage": "img/products/roddy-c122d1a9-edee-454f-84c6-598405f14621.jpg",
       "tags": [
         "new-tag-4"
       ],
