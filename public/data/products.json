@@ -134,7 +134,7 @@
       "trackStock": true,
       "type": "physical",
       "status": "sold-out",
-      "featured": true,
+      "featured": false,
       "active": true,
       "tags": [
         "new-tag-2",
