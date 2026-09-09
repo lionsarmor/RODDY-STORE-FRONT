@@ -1,70 +1,169 @@
 <script setup>
 import { computed } from "vue";
-import { useCatalogStore } from "../stores/catalog";
+import { useCatalogStore, productImageUrl } from "../stores/catalog";
+import { useThemeStore } from "../stores/theme";
+import { useUiStore } from "../stores/ui";
 import ProductCard from "../components/ProductCard.vue";
-import RotatingTagline from "../components/RotatingTagline.vue";
-
+import ProductArtwork from "../components/ProductArtwork.vue";
+import RoddyLogo from "../components/RoddyLogo.vue";
 const catalog = useCatalogStore();
-const featured = computed(() => catalog.products.filter((p) => p.featured && p.active));
+const theme = useThemeStore();
+const ui = useUiStore();
+const settings = computed(() => catalog.settings);
+const featured = computed(() =>
+  catalog.products.filter((p) => p.featured && p.active),
+);
+const spotlight = computed(() => catalog.byId(settings.value.heroProductId));
+const heroImage = computed(
+  () => settings.value.heroImage || spotlight.value?.coverImage,
+);
+const divisions = computed(() =>
+  catalog.categories.filter((c) => catalog.byCategory(c.id).length),
+);
 </script>
-
 <template>
-  <section class="border-b border-border py-16 sm:py-20">
-    <div class="mx-auto max-w-6xl px-6">
-      <p class="mb-4 font-mono text-xs uppercase tracking-widest text-brand">
-        RODDY <span class="text-[0.7em]">●</span> <RotatingTagline tag="span" />
+  <div class="world-announcement">
+    <span class="status-dot" />{{ settings.announcement
+    }}<span class="hidden sm:inline">EST. IN ANOTHER TIMELINE ↗</span>
+  </div>
+  <section class="world-hero">
+    <div class="hero-copy">
+      <p class="eyebrow">
+        <span class="status-dot" /> {{ settings.heroEyebrow }}
       </p>
-      <h1 class="mb-4 font-mono text-4xl leading-tight sm:text-6xl">
-        Play it.<br>Open it.<br>Program it.<br>Keep it.
-      </h1>
-      <p class="mb-7 max-w-[46ch] text-lg text-text-dim">
-        Physical games, computers, electronic toys and programmable machines — built for an alternate technological future where you actually own what you buy.
-      </p>
-      <div class="flex flex-wrap gap-3">
-        <RouterLink
-          to="/shop"
-          class="border border-brand bg-brand px-5 py-3 font-mono text-xs uppercase tracking-wide text-white transition-opacity hover:opacity-90"
-        >
-          Browse the catalog
-        </RouterLink>
-        <RouterLink
-          to="/about"
-          class="border border-border px-5 py-3 font-mono text-xs uppercase tracking-wide transition-colors hover:bg-bg-alt"
-        >
-          Read the brand map
-        </RouterLink>
+      <h1>{{ settings.heroTitle }}</h1>
+      <p class="hero-description">{{ settings.heroDescription }}</p>
+      <div class="hero-actions">
+        <RouterLink to="/shop" class="button primary"
+          >{{ settings.heroButton }} <span>↗</span></RouterLink
+        ><button class="text-button" @click="ui.openThemeOverlay()">
+          ◧ Find your color
+        </button>
       </div>
-      <p class="mt-9 font-mono text-xs tracking-[0.2em] text-text-dim">PLAY · BUILD · PROGRAM · KEEP</p>
-    </div>
-  </section>
-
-  <section class="border-b border-border py-10">
-    <div class="mx-auto max-w-6xl px-6">
-      <div class="grid grid-cols-2 gap-px border border-border bg-border sm:grid-cols-5">
-        <RouterLink
-          v-for="c in catalog.categories"
-          :key="c.id"
-          :to="{ path: '/shop', query: { cat: c.id } }"
-          class="flex flex-col gap-1 bg-bg p-5 transition-colors hover:bg-accent hover:text-accent-text"
-        >
-          <span class="font-mono text-[0.68rem] text-brand">{{ c.code }}</span>
-          <span class="font-mono text-sm uppercase tracking-wide">{{ c.name }}</span>
-        </RouterLink>
+      <div class="hero-footnote">
+        <span>PLAY. BUILD. PROGRAM. KEEP.</span><span>● RODDY WORLD / 01</span>
       </div>
     </div>
+    <RouterLink
+      v-if="spotlight"
+      :to="`/product/${spotlight.id}`"
+      class="hero-exhibit"
+      :aria-label="`Discover ${spotlight.name}`"
+    >
+      <div class="exhibit-top">
+        <span>THE NEXT LITTLE BIG THING</span
+        ><span
+          >{{
+            spotlight.status === "coming-soon"
+              ? "IN DEVELOPMENT"
+              : "IN THE SPOTLIGHT"
+          }}
+          ●</span
+        >
+      </div>
+      <div class="orbital-ring ring-one" />
+      <div class="orbital-ring ring-two" />
+      <img
+        v-if="heroImage"
+        :src="productImageUrl(heroImage)"
+        :alt="spotlight.name"
+        class="hero-product-image"
+        fetchpriority="high"
+      />
+      <ProductArtwork v-else :product="spotlight" />
+      <span class="exhibit-sticker"
+        >{{
+          spotlight.status === "coming-soon"
+            ? "COMING\nSOON"
+            : "MEET YOUR\nNEXT IDEA"
+        }}
+        <span>↗</span></span
+      >
+      <div class="exhibit-bottom">
+        <div>
+          <small>{{ spotlight.category }} DIVISION / {{ spotlight.sku }}</small>
+          <h2>{{ spotlight.name }}</h2>
+        </div>
+        <span class="exhibit-arrow">↗</span>
+      </div>
+    </RouterLink>
+    <div v-else class="hero-exhibit hero-empty">
+      <RoddyLogo kind="full_logo" class="hero-fallback-logo" />
+      <p>PERSONAL TECHNOLOGY. UNIVERSAL POSSIBILITIES.</p>
+    </div>
   </section>
-
-  <section class="py-12">
-    <div class="mx-auto max-w-6xl px-6">
-      <div class="mb-6 flex items-baseline justify-between gap-4 border-b border-border pb-3">
-        <h2 class="font-mono text-lg uppercase tracking-wide">New releases</h2>
-        <RouterLink to="/shop" class="font-mono text-xs uppercase tracking-wide text-text-dim hover:text-brand">
-          View full catalog →
-        </RouterLink>
+  <div class="spectrum-band" aria-hidden="true">
+    <i v-for="n in 6" :key="n" />
+  </div>
+  <section class="division-strip">
+    <RouterLink
+      v-for="(c, i) in divisions"
+      :key="c.id"
+      :to="{ path: '/shop', query: { cat: c.id } }"
+      ><small>0{{ i + 1 }} / {{ c.code }}</small
+      ><span>{{ c.name }} <b>↗</b></span></RouterLink
+    >
+  </section>
+  <section class="world-catalog">
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">THE RODDY LINEUP</p>
+        <h2>{{ settings.featuredTitle }}</h2>
       </div>
-      <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        <ProductCard v-for="p in featured" :key="p.id" :product="p" />
+      <RouterLink to="/shop" class="text-button">All departments ↗</RouterLink>
+    </div>
+    <div class="catalog-grid">
+      <ProductCard v-for="p in featured" :key="p.id" :product="p" />
+    </div>
+  </section>
+  <section class="world-manifesto">
+    <div>
+      <p class="eyebrow">A NOTE FROM THE DEPARTMENT OF POSSIBILITY</p>
+      <h2>{{ settings.manifestoTitle }}</h2>
+      <p>{{ settings.manifestoText }}</p>
+      <RouterLink to="/about" class="button">Meet RODDY ↗</RouterLink>
+    </div>
+    <div class="possibility-art" aria-hidden="true">
+      <span class="orbit orbit-a" /><span class="orbit orbit-b" /><span
+        class="orbit orbit-c"
+      />
+      <RoddyLogo kind="badge" on-accent class="possibility-logo" />
+      <small>HUMAN CURIOSITY / ALWAYS COMPATIBLE</small>
+    </div>
+  </section>
+  <section class="world-themes">
+    <div>
+      <p class="eyebrow">SAME WORLD. DIFFERENT FREQUENCY.</p>
+      <h2>MAKE YOURSELF AT HOME.</h2>
+      <p>
+        Every corner of RODDY changes with your colorway. Find the one that
+        feels like you.
+      </p>
+    </div>
+    <div>
+      <div class="theme-swatches">
+        <button
+          v-for="t in theme.themes"
+          :key="t.id"
+          :title="t.label || t.id"
+          :aria-label="`Use ${t.label || t.id} theme`"
+          :aria-pressed="theme.currentId === t.id"
+          :style="{
+            background:
+              'linear-gradient(135deg, ' +
+              t.swatch[0] +
+              ' 50%, ' +
+              t.swatch[1] +
+              ' 50%)',
+          }"
+          @click="theme.apply(t.id)"
+        >
+          <span v-if="theme.currentId === t.id">●</span>
+        </button>
       </div>
+      <button class="text-button" @click="ui.openThemeOverlay()">
+        ◧ Explore all {{ theme.themes.length }} colorways ↗
+      </button>
     </div>
   </section>
 </template>

@@ -23,6 +23,7 @@
 }
 
 @import "./themes.css";
+@import "./store.css";
 
 @layer base {
   html {

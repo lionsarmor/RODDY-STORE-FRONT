@@ -1,59 +1,100 @@
 {
+  "schemaVersion": 2,
+  "settings": {
+    "announcement": "INDEPENDENT TECHNOLOGY. UNREASONABLE POSSIBILITIES.",
+    "heroEyebrow": "WELCOME TO THE RODDY WORLD",
+    "heroTitle": "THE FUTURE\nIS PERSONAL.",
+    "heroDescription": "Pocket-sized worlds. Strange new games. Computers with character. Welcome to a different kind of technology company.",
+    "heroProductId": "keychain-kreatures",
+    "heroImage": "",
+    "heroButton": "Explore the catalog",
+    "featuredTitle": "SMALL CATALOG. BIG IDEAS.",
+    "manifestoTitle": "LESS DISPOSABLE.\nMORE DISCOVERABLE.",
+    "manifestoText": "We believe technology should invite you in. Push a button. Meet a creature. Make something strange. There is still room for a little wonder.",
+    "supportEmail": "",
+    "checkoutEnabled": false,
+    "checkoutEndpoint": "",
+    "allowPromotionCodes": true,
+    "automaticTax": false,
+    "shippingCountries": "US,CA",
+    "shippingRate": 0,
+    "shippingLabel": "Standard shipping"
+  },
   "categories": [
+    {
+      "id": "apps",
+      "name": "Apps",
+      "code": "TOOLS WITH PERSONALITY"
+    },
     {
       "id": "games",
       "name": "Games",
-      "code": "Indie Games"
-    },
-    {
-      "id": "computers",
-      "name": "Computers",
-      "code": "Retro Style Computers"
+      "code": "ENTER ANOTHER WORLD"
     },
     {
       "id": "pocket",
       "name": "Pocket",
-      "code": "Our line of Pocket devices"
+      "code": "LITTLE MACHINES. BIG LIVES."
+    },
+    {
+      "id": "computers",
+      "name": "Computers",
+      "code": "YOUR NEXT GREAT IDEA"
     },
     {
       "id": "labs",
-      "name": "Kits",
-      "code": "PCB kits & more"
+      "name": "Labs",
+      "code": "EXPERIMENTS & KITS"
     },
     {
-      "id": "objects",
+      "id": "merch",
       "name": "Merch",
       "code": "Merchandise and odd things"
     }
   ],
+  "tags": [
+    {
+      "id": "esp32",
+      "label": "ESP32",
+      "color": "#b9e6f5"
+    },
+    {
+      "id": "ai-assisted",
+      "label": "AI Assisted",
+      "color": "#dac6ff"
+    },
+    {
+      "id": "no-ai",
+      "label": "NO AI",
+      "color": "#c5e5bd"
+    },
+    {
+      "id": "free",
+      "label": "FREE",
+      "color": "#f8da79"
+    }
+  ],
   "products": [
     {
-      "id": "keychain-kreatures",
-      "sku": "R-001",
-      "name": "Keychain Kreatures",
-      "category": "pocket",
-      "price": 39,
-      "stock": 42,
+      "id": "desk-commander",
+      "sku": "R-APP-001",
+      "name": "DESK COMMANDER",
+      "category": "apps",
+      "price": 0,
+      "stock": 0,
+      "trackStock": false,
+      "type": "digital",
+      "status": "available",
       "featured": true,
       "active": true,
-      "description": "A tiny programmable creature computer. Display, six buttons, RGB, vibration and IR trading built into a keychain.",
-      "specs": {
-        "Processor": "ESP32-C3 32-bit RISC-V",
-        "Display": "1.69\" 240×280 color TFT",
-        "Input": "6 buttons — D-pad + A/B",
-        "Audio": "I²S digital audio + speaker",
-        "Haptics": "Vibration motor",
-        "Comms": "IR TX/RX — device-to-device",
-        "Wireless": "Wi-Fi + Bluetooth LE",
-        "Storage": "4 MB flash",
-        "Power": "Rechargeable Li-ion battery",
-        "Charging": "USB-C",
-        "Programmable": "Yes — Basic, C",
-        "Form Factor": "Pocket / keychain handheld"
-      },
-      "images": [
-        "img/products/keychain-kreatures.jpg"
-      ]
+      "tags": [],
+      "pricePending": true,
+      "shortDescription": "Your desktop. Your command center.",
+      "description": "Meet DESK COMMANDER, from RODDY Apps. A new addition to your personal computing universe. Release details and pricing will be announced here.",
+      "releaseNote": "Release details to be announced",
+      "specs": {},
+      "images": [],
+      "coverImage": ""
     },
     {
       "id": "starfall",
@@ -73,251 +114,114 @@
       },
       "images": [
         "img/products/starfall.jpg"
-      ]
+      ],
+      "type": "physical",
+      "status": "available",
+      "trackStock": true,
+      "tags": [],
+      "shortDescription": "Some things cannot be explained away.",
+      "coverImage": "img/products/starfall.jpg"
     },
     {
-      "id": "night-shift",
-      "sku": "R-003",
-      "name": "Night Shift",
-      "category": "games",
-      "price": 34,
-      "stock": 12,
-      "featured": false,
+      "id": "keychain-kreatures",
+      "sku": "R-001",
+      "name": "KEYCHAIN KREATURES",
+      "category": "pocket",
+      "price": 39,
+      "stock": 0,
+      "featured": true,
       "active": true,
-      "description": "You run the graveyard shift at a station that isn't supposed to receive visitors. A slow-burn terminal thriller.",
+      "description": "A tiny programmable creature computer. Display, six buttons, RGB, vibration and IR trading built into a keychain.",
       "specs": {
-        "Format": "RODDY cartridge",
-        "Players": "1",
-        "Box contents": "Cartridge, manual, sticker, catalog card",
-        "Catalog no.": "R-003"
+        "Processor": "ESP32-C3 32-bit RISC-V",
+        "Display": "1.69\" 240×280 color TFT",
+        "Input": "6 buttons — D-pad + A/B",
+        "Audio": "I²S digital audio + speaker",
+        "Haptics": "Vibration motor",
+        "Comms": "IR TX/RX — device-to-device",
+        "Wireless": "Wi-Fi + Bluetooth LE",
+        "Storage": "4 MB flash",
+        "Power": "Rechargeable Li-ion battery",
+        "Charging": "USB-C",
+        "Programmable": "Yes — Basic, C",
+        "Form Factor": "Pocket / keychain handheld"
       },
       "images": [
-        "img/concepts/ed3c183d-552a-4431-8978-823d3ef89324.png"
-      ]
+        "img/products/keychain-kreatures.jpg"
+      ],
+      "type": "physical",
+      "status": "coming-soon",
+      "trackStock": true,
+      "tags": [
+        "esp32"
+      ],
+      "pricePending": true,
+      "shortDescription": "A whole little world. On your keychain.",
+      "releaseNote": "In development. Coming soon. Product imagery is a concept preview.",
+      "coverImage": "img/products/keychain-kreatures.jpg"
     },
     {
-      "id": "signal-lost",
-      "sku": "R-004",
-      "name": "Signal Lost",
-      "category": "games",
-      "price": 36,
-      "stock": 7,
-      "featured": false,
-      "active": true,
-      "description": "Triangulate a dying transmission across a procedurally-scrambled band map before the signal goes quiet for good.",
-      "specs": {
-        "Format": "RODDY cartridge",
-        "Players": "1-2",
-        "Box contents": "Cartridge, manual, sticker, catalog card",
-        "Catalog no.": "R-004"
-      },
-      "images": []
-    },
-    {
-      "id": "gridrunner",
-      "sku": "R-005",
-      "name": "Gridrunner",
-      "category": "games",
-      "price": 32,
-      "stock": 25,
-      "featured": false,
-      "active": true,
-      "description": "Fast, mean, and built for high scores. A grid-combat cartridge designed to be beaten in one sitting and replayed forever.",
-      "specs": {
-        "Format": "RODDY cartridge",
-        "Players": "1-2",
-        "Box contents": "Cartridge, manual, sticker, catalog card",
-        "Catalog no.": "R-005"
-      },
-      "images": []
-    },
-    {
-      "id": "dungeon-terminal",
-      "sku": "R-006",
-      "name": "Dungeon Terminal",
-      "category": "games",
-      "price": 38,
+      "id": "kestrel-computer",
+      "sku": "R-PC-001",
+      "name": "KESTREL COMPUTER",
+      "category": "computers",
+      "price": 0,
       "stock": 0,
-      "featured": false,
-      "active": true,
-      "description": "A text-and-tile dungeon crawler that runs like it's talking to you over a modem. First pressing — currently sold out.",
-      "specs": {
-        "Format": "RODDY cartridge",
-        "Players": "1",
-        "Box contents": "Cartridge, manual, sticker, catalog card",
-        "Catalog no.": "R-006"
-      },
-      "images": []
-    },
-    {
-      "id": "computer-system-r100",
-      "sku": "R-007",
-      "name": "RODDY Computer System — R-100",
-      "category": "computers",
-      "price": 329,
-      "stock": 6,
+      "trackStock": true,
+      "type": "physical",
+      "status": "coming-soon",
       "featured": true,
       "active": true,
-      "description": "Boots straight to READY. No desktop, no accounts, no update screens — a computer that starts by asking what you want to build.",
-      "specs": {
-        "Boots to": "RODDY BASIC prompt",
-        "Storage": "SD-card program storage",
-        "Video": "Composite + HDMI out",
-        "In the box": "Computer, PSU, manual, quick-start card, reference booklet"
-      },
-      "images": []
-    },
-    {
-      "id": "portable-terminal-r150",
-      "sku": "R-008",
-      "name": "RODDY Portable Terminal — R-150",
-      "category": "computers",
-      "price": 249,
-      "stock": 4,
-      "featured": false,
-      "active": true,
-      "description": "The R-100's programming environment, folded into a battery-powered terminal small enough for a coat pocket.",
-      "specs": {
-        "Display": "7\" transflective LCD",
-        "Battery": "8hr typical",
-        "Storage": "SD-card program storage",
-        "In the box": "Terminal, USB-C cable, manual, quick-start card"
-      },
-      "images": []
-    },
-    {
-      "id": "kreature-trade-cable",
-      "sku": "R-009",
-      "name": "Kreature Trade Cable",
-      "category": "pocket",
-      "price": 12,
-      "stock": 60,
-      "featured": false,
-      "active": true,
-      "description": "Wired link for Keychain Kreatures trading and battling when you don't want to rely on IR.",
-      "specs": {
-        "Length": "1m",
-        "Connector": "USB-C to USB-C",
-        "Compatible with": "Keychain Kreatures"
-      },
-      "images": []
-    },
-    {
-      "id": "cartridge-programmer",
-      "sku": "R-010",
-      "name": "Cartridge Programmer",
-      "category": "labs",
-      "price": 89,
-      "stock": 15,
-      "featured": true,
-      "active": true,
-      "description": "Read, write and back up RODDY rewritable cartridges from your own computer. The tool that makes homebrew possible.",
-      "specs": {
-        "Interface": "USB-C",
-        "Supports": "RODDY rewritable cartridges",
-        "OS": "Windows, macOS, Linux",
-        "Software": "Open-source flashing utility"
-      },
-      "images": []
-    },
-    {
-      "id": "dev-board",
-      "sku": "R-011",
-      "name": "RODDY Dev Board",
-      "category": "labs",
-      "price": 59,
-      "stock": 30,
-      "featured": false,
-      "active": true,
-      "description": "A bare-metal breakout board for prototyping your own MADE FOR RODDY hardware and peripherals.",
-      "specs": {
-        "MCU": "32-bit, RODDY reference core",
-        "GPIO": "24 pins broken out",
-        "Power": "USB-C or 5V header"
-      },
-      "images": []
-    },
-    {
-      "id": "ir-debug-cable",
-      "sku": "R-012",
-      "name": "IR Debug Cable",
-      "category": "labs",
-      "price": 15,
-      "stock": 50,
-      "featured": false,
-      "active": true,
-      "description": "Sniff and inject IR traffic between RODDY devices for debugging community software and hardware.",
-      "specs": {
-        "Connector": "USB-C",
-        "Range": "~30cm direct line",
-        "Compatible with": "Keychain Kreatures, RODDY Labs boards"
-      },
-      "images": []
-    },
-    {
-      "id": "seal-pin-set",
-      "sku": "R-013",
-      "name": "Enamel Seal Pin Set",
-      "category": "objects",
-      "price": 18,
-      "stock": 75,
-      "featured": false,
-      "active": true,
-      "description": "Three hard-enamel pins carrying the RODDY seal across three product-family palettes.",
-      "specs": {
-        "Set size": "3 pins",
-        "Finish": "Hard enamel, gold plating"
-      },
-      "images": []
-    },
-    {
-      "id": "sticker-pack",
-      "sku": "R-014",
-      "name": "RODDY Sticker Pack",
-      "category": "objects",
-      "price": 8,
-      "stock": 120,
-      "featured": false,
-      "active": true,
-      "description": "Vinyl sticker sheet — badge marks across the industrial, arcade, field and pocket palettes.",
-      "specs": {
-        "Count": "8 stickers",
-        "Material": "Weatherproof vinyl"
-      },
-      "images": []
-    },
-    {
-      "id": "logo-tee",
-      "sku": "R-015",
-      "name": "RODDY Logo Tee",
-      "category": "objects",
-      "price": 28,
-      "stock": 40,
-      "featured": false,
-      "active": true,
-      "description": "Heavyweight cotton tee, full capsule wordmark on the chest, R ● on the sleeve.",
-      "specs": {
-        "Material": "100% cotton, 6.5oz",
-        "Print": "Screen print",
-        "Sizes": "S–XXL"
-      },
-      "images": []
+      "tags": [],
+      "pricePending": true,
+      "shortDescription": "A new flight for personal computing.",
+      "description": "Something new is taking shape at RODDY. KESTREL COMPUTER is coming to the Computers division. Follow this space for the first look.",
+      "releaseNote": "Coming soon. Specifications, pricing and release date to be announced.",
+      "specs": {},
+      "images": [],
+      "coverImage": ""
     },
     {
       "id": "desk-mat",
-      "sku": "R-016",
-      "name": "RODDY Desk Mat",
-      "category": "objects",
-      "price": 34,
-      "stock": 22,
+      "sku": "R-MERCH-001",
+      "name": "DESK MAT",
+      "category": "merch",
+      "price": 0,
+      "stock": 0,
+      "trackStock": true,
+      "type": "physical",
+      "status": "coming-soon",
       "featured": false,
       "active": true,
-      "description": "Stitched-edge desk mat printed with the R-100 wiring schematic.",
-      "specs": {
-        "Size": "900 x 400mm",
-        "Material": "Woven top, rubber base"
-      },
-      "images": []
+      "tags": [],
+      "pricePending": true,
+      "shortDescription": "Make room for your RODDY world.",
+      "description": "The RODDY DESK MAT. Product images, dimensions and pricing will be announced here.",
+      "releaseNote": "Coming soon. Pricing and availability to be announced.",
+      "specs": {},
+      "images": [],
+      "coverImage": ""
+    },
+    {
+      "id": "hoodie",
+      "sku": "R-MERCH-002",
+      "name": "HOODIE",
+      "category": "merch",
+      "price": 0,
+      "stock": 0,
+      "trackStock": true,
+      "type": "physical",
+      "status": "coming-soon",
+      "featured": false,
+      "active": true,
+      "tags": [],
+      "pricePending": true,
+      "shortDescription": "Wear your world.",
+      "description": "The RODDY HOODIE. Product images, sizing and pricing will be announced here.",
+      "releaseNote": "Coming soon. Pricing and availability to be announced.",
+      "specs": {},
+      "images": [],
+      "coverImage": ""
     }
   ]
 }

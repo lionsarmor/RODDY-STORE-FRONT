@@ -31,7 +31,7 @@ src/views/                             route components (Home, Shop, Product, Ca
 src/components/                        RoddyLogo, AppHeader, AppFooter, ThemeOverlay, Toast, ProductCard
 src/stores/                            Pinia stores: theme.js, catalog.js, cart.js, checkout.js, ui.js
 src/theme-data.js                      the 14 palettes' metadata (id, logo asset, picker swatch)
-src/config.js                          the deployed checkout Worker's URL
+src/config.js                          live catalog and asset URLs
 src/styles/main.css                    Tailwind entry + design tokens (@theme block)
 src/styles/themes.css                  per-theme CSS custom-property overrides
 src/admin/                             admin mini-app: AdminApp.vue, api.js (GitHub Contents API), utils.js
@@ -129,7 +129,12 @@ Edit the file by hand and commit it, or use the admin page below.
 
 ## The admin page
 
-`admin.html` (`src/admin/`) is a lightweight inventory editor. Since GitHub
+The admin is now the **RODDY Control Desk v2**. See [ADMIN-GUIDE.md](ADMIN-GUIDE.md)
+for the current product, gallery, tag, homepage, free-download and Stripe workflows.
+It includes local drafts, recovery, JSON backups, storefront previews, department
+management, promotions, and an authenticated Stripe order list.
+
+`admin.html` (`src/admin/`) is the store control desk. Since GitHub
 Pages can't run a database or a server, it works by talking **directly to
 the GitHub API from your browser** and committing the updated
 `data/products.json` straight to this repo. The storefront and the checkout
@@ -164,14 +169,24 @@ on the GitHub Actions rebuild that redeploys the rest of the app.
    itself still rebuilds via Actions in the background, but you don't need
    to wait on that for inventory/price/stock changes to show up.
 
-**About the token:** it's only ever used client-side to call
-`api.github.com` directly — it never touches any third-party server. Check
+**About the token:** catalog reads and publication call `api.github.com`
+directly. When you use Orders or Promotions, the token is also sent over
+HTTPS to your configured checkout Worker, which verifies your identity with
+GitHub against `ADMIN_GITHUB_LOGIN`. Only configure your own trusted Worker
+URL. The Worker does not persist or log the token. Check
 "remember on this device" and it's kept in that browser's `localStorage`;
 leave it unchecked and you'll paste it fresh each session. Anyone with the
 token can write to this one repo, so treat it like a password, and revoke it
 from GitHub any time.
 
 ## Checkout: how buying actually works
+
+**Current setup:** configure the server URL in **Admin → Checkout & Stripe**,
+then publish. The old hardcoded `CHECKOUT_ENDPOINT` is no longer used.
+Checkout defaults to disabled until you connect your Stripe server. The Worker
+supports physical/digital orders, optional Stripe Tax, flat shipping, Stripe
+promotion codes, and payment verification on the return page. Stock and
+fulfillment remain manual; no reservation or automatic stock decrement is implemented.
 
 The cart works like a normal online store: add whatever you want, hit
 **Checkout**, pay once for the whole order. The one thing a fully static
@@ -209,9 +224,10 @@ URL and repo (pre-filled from this repo's git remote):
 
 ```toml
 [vars]
-SITE_URL = "https://lionsarmor.github.io/RODDY-STORE-FRONT"
+SITE_URL = "https://roddy.world"
 PRODUCTS_URL = "https://raw.githubusercontent.com/lionsarmor/RODDY-STORE-FRONT/main/public/data/products.json"
-ALLOWED_ORIGINS = "https://lionsarmor.github.io,http://localhost:5173,http://localhost:5175"
+ALLOWED_ORIGINS = "https://roddy.world,https://www.roddy.world,https://lionsarmor.github.io,http://localhost:5173,http://localhost:5175"
+ADMIN_GITHUB_LOGIN = "lionsarmor"
 SHIP_TO_COUNTRIES = "US,CA"
 ```
 
@@ -224,8 +240,9 @@ SHIP_TO_COUNTRIES = "US,CA"
   change.
 - `ALLOWED_ORIGINS` — only these origins may call the Worker. Add any other
   local dev ports you use.
-- `SHIP_TO_COUNTRIES` — countries Stripe will collect a shipping address
-  for. Add more comma-separated ISO codes to ship internationally.
+- `ADMIN_GITHUB_LOGIN` — only this GitHub user can access orders and promotions.
+- `SHIP_TO_COUNTRIES` — fallback countries. The admin's published Shipping
+  settings take precedence. Digital-only orders do not collect shipping addresses.
 
 **4. Add your Stripe secret key**
 
@@ -253,18 +270,14 @@ https://roddy-checkout.<your-subdomain>.workers.dev
 
 **6. Wire the frontend to it**
 
-Open `src/config.js` (repo root, not `worker/`) and paste that URL in:
-
-```js
-export const CHECKOUT_ENDPOINT = "https://roddy-checkout.<your-subdomain>.workers.dev";
-```
-
-Commit and push — the next GitHub Pages build picks it up.
+Open **Admin → Checkout & Stripe** and paste the Worker base URL into
+**Checkout server URL**. Use **Check connection**, publish your settings, then
+enable checkout and publish again when ready for a test order.
 
 ### Where orders show up
 
-Stripe collects the shipping address at checkout (so you have something to
-mail to) and emails the buyer a receipt automatically. On your end, every
+Stripe collects the shipping address for physical orders. Configure customer
+receipt emails in Stripe. On your end, every
 completed order shows up in
 [Stripe Dashboard → Payments](https://dashboard.stripe.com/payments) —
 that's your packing list. If you'd rather get pinged than check the

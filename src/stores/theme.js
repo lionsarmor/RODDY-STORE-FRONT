@@ -54,11 +54,8 @@ export const useThemeStore = defineStore("theme", {
     },
 
     logoSrc(kind = "full_logo") {
-      // CORPORATE (industrial, blueprint) keeps the black-ring outline mark;
-      // ARCADE glows; everything else uses the solid filled mark.
-      const group = this.current.group;
-      const style = group === "CORPORATE" ? "outline" : group === "ARCADE" ? "neon_glow" : "filled";
-      return roddyLogoPath(this.current.logo, kind, style);
+      // Both brand lockups retain the original outlined capsule in every era.
+      return roddyLogoPath(this.current.logo, kind, "outline");
     },
   },
 });

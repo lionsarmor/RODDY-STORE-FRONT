@@ -1,5 +1,7 @@
 <script setup>
 import { useRoute } from "vue-router";
+import { computed } from 'vue';
+import { useCatalogStore } from '../stores/catalog';
 import { useThemeStore } from "../stores/theme";
 import { useCartStore } from "../stores/cart";
 import { useUiStore } from "../stores/ui";
@@ -10,15 +12,13 @@ const theme = useThemeStore();
 const cart = useCartStore();
 const ui = useUiStore();
 
-const navLinks = [
+const catalog = useCatalogStore();
+const navLinks = computed(() => [
+  { label: "Home", to: "/", query: {} },
   { label: "Shop", to: "/shop", query: {} },
-  { label: "Games", to: "/shop", query: { cat: "games" } },
-  { label: "Computers", to: "/shop", query: { cat: "computers" } },
-  { label: "Pocket", to: "/shop", query: { cat: "pocket" } },
-  { label: "Labs", to: "/shop", query: { cat: "labs" } },
-  { label: "Objects", to: "/shop", query: { cat: "objects" } },
+  ...catalog.categories.map(c => ({ label: c.name, to: '/shop', query: { cat: c.id } })),
   { label: "About", to: "/about", query: {} },
-];
+]);
 
 // RouterLink's exact-active-class only checks the matched route record, so
 // every /shop?cat=* link lights up together — compare the query too.
@@ -29,7 +29,7 @@ function isNavLinkActive(link) {
 
 <template>
   <header class="sticky top-0 z-40 border-b border-border bg-bg transition-colors duration-200">
-    <div class="mx-auto flex max-w-6xl items-center gap-5 px-6 py-3">
+    <div class="store-header-inner mx-auto flex max-w-7xl flex-wrap items-center gap-5 px-6 py-4">
       <button
         type="button"
         class="flex flex-shrink-0 items-center gap-2 p-1 glow-hover"
@@ -43,7 +43,7 @@ function isNavLinkActive(link) {
         </span>
       </button>
 
-      <nav class="flex flex-1 gap-4 overflow-x-auto" style="scrollbar-width: none">
+      <nav aria-label="Main navigation" class="store-nav flex flex-1 gap-4 overflow-x-auto" style="scrollbar-width: none">
         <RouterLink
           v-for="link in navLinks"
           :key="link.label"

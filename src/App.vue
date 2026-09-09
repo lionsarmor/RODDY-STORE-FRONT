@@ -37,6 +37,8 @@ watch(() => tagline.current, syncDocumentMeta);
 
 <template>
   <AppHeader />
+  <div v-if="catalog.preview" class="notice preview-notice">DRAFT PREVIEW — these changes are not published. Checkout is disabled.</div>
+  <div v-if="catalog.error" class="notice" role="alert">{{ catalog.error }} <button class="text-button" @click="catalog.load()">Retry</button></div>
   <main class="flex-1">
     <RouterView />
   </main>

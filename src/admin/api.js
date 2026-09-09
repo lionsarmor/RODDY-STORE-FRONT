@@ -7,11 +7,12 @@
 const FILE_PATH = "public/data/products.json";
 
 export const DEFAULT_CATEGORIES = [
+  { id: "apps", name: "Apps", code: "RODDY APPS" },
   { id: "games", name: "Games", code: "RODDY GAMES" },
   { id: "computers", name: "Computers", code: "RODDY COMPUTERS" },
   { id: "pocket", name: "Pocket", code: "RODDY POCKET" },
   { id: "labs", name: "Labs", code: "RODDY KITS" },
-  { id: "objects", name: "Objects", code: "RODDY OBJECTS" },
+  { id: "merch", name: "Merch", code: "RODDY MERCH" },
 ];
 
 function utf8ToBase64(str) {

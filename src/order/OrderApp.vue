@@ -1,46 +1,88 @@
 <script setup>
-import { computed } from "vue";
+import { ref, onMounted } from "vue";
 import RoddyLogo from "../components/RoddyLogo.vue";
 import { useThemeStore } from "../stores/theme";
-
-useThemeStore(); // ensures the store (and its CSS-var side effects) is active
-
-const params = new URLSearchParams(location.search);
-const ref = params.get("session_id") || params.get("ref");
-const refText = computed(() => (ref ? `REF ${ref.slice(-12).toUpperCase()}` : "REF — see email receipt"));
+import { useCatalogStore } from "../stores/catalog";
+import { useCartStore } from "../stores/cart";
+useThemeStore();
+const catalog = useCatalogStore();
+const cart = useCartStore();
+const sessionId = new URLSearchParams(location.search).get("session_id") || "";
+const state = ref("loading");
+const message = ref("");
+async function verify() {
+  state.value = "loading";
+  try {
+    if (!sessionId)
+      throw new Error(
+        "No order reference was provided. Check your Stripe receipt for confirmation.",
+      );
+    await catalog.load();
+    if (!catalog.settings.checkoutEndpoint)
+      throw new Error(
+        "We cannot check this order right now. Please check your Stripe receipt or contact RODDY.",
+      );
+    const res = await fetch(
+      catalog.settings.checkoutEndpoint.replace(/\/$/, "") +
+        "/order?session_id=" +
+        encodeURIComponent(sessionId),
+    );
+    const data = await res.json();
+    if (!res.ok)
+      throw new Error(data.error || "Could not verify your payment.");
+    if (data.paid) {
+      state.value = "paid";
+      cart.clear();
+    } else {
+      state.value = "pending";
+      message.value =
+        "Your payment has not been confirmed yet. Check again shortly, or refer to your Stripe receipt.";
+    }
+  } catch (e) {
+    state.value = "unverified";
+    message.value = e.message;
+  }
+}
+onMounted(verify);
 </script>
-
 <template>
-  <header class="border-b border-border bg-bg transition-colors duration-200">
-    <div class="mx-auto flex max-w-6xl items-center gap-5 px-6 py-3">
-      <a href="./index.html" class="flex items-center gap-2">
-        <RoddyLogo kind="full_logo" class="h-8 w-auto" />
-      </a>
-      <nav class="flex gap-4">
-        <a href="./index.html#/shop" class="font-mono text-xs uppercase tracking-wide text-text-dim hover:text-text">Shop</a>
-        <a href="./index.html#/about" class="font-mono text-xs uppercase tracking-wide text-text-dim hover:text-text">About</a>
-      </nav>
-    </div>
+  <header class="border-b border-border p-6">
+    <a href="./index.html"
+      ><RoddyLogo kind="full_logo" class="mx-auto h-8 w-auto"
+    /></a>
   </header>
-
-  <main class="mx-auto max-w-lg px-6 py-20 text-center">
-    <div class="border border-border p-10">
-      <p class="mb-3 text-3xl text-brand">●</p>
-      <h1 class="mb-3 font-mono text-2xl uppercase tracking-wide">Order confirmed</h1>
-      <p class="mb-5 text-text-dim">
-        Your order went through Stripe's secure checkout. A receipt is on its way to your inbox — that email is
-        your official confirmation.
+  <main class="mx-auto max-w-xl px-6 py-20 text-center">
+    <div class="border border-border bg-panel p-8">
+      <p class="mb-5 text-4xl text-brand">{{ state === "paid" ? "✓" : "●" }}</p>
+      <p class="eyebrow">RODDY / ORDER DESK</p>
+      <h1 class="my-5 text-3xl font-extrabold tracking-tight">
+        {{
+          state === "paid"
+            ? "YOU’RE IN. THANK YOU."
+            : state === "loading"
+              ? "CHECKING YOUR ORDER…"
+              : "LET’S CHECK YOUR ORDER."
+        }}
+      </h1>
+      <p class="text-sm leading-relaxed text-text-dim">
+        {{
+          state === "paid"
+            ? "Stripe has confirmed your order. Thanks for bringing a little more RODDY into your world."
+            : message
+        }}
       </p>
-      <code class="mb-6 inline-block border border-dashed border-border px-4 py-2 font-mono">{{ refText }}</code>
-      <p>
-        <a
-          href="./index.html#/shop"
-          class="inline-block border border-border px-5 py-3 font-mono text-xs uppercase tracking-wide hover:bg-bg-alt"
-        >
-          Back to the catalog →
-        </a>
+      <p v-if="sessionId" class="my-6 break-all font-mono text-xs">
+        REF {{ sessionId.slice(-12).toUpperCase() }}
       </p>
+      <button
+        v-if="state === 'pending' || state === 'unverified'"
+        class="button mb-4"
+        @click="verify"
+      >
+        Check payment status ↻</button
+      ><a href="./index.html#/shop" class="button primary"
+        >Back to the catalog ↗</a
+      >
     </div>
   </main>
-  <div class="crt-scanlines" />
 </template>

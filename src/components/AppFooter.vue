@@ -2,8 +2,10 @@
 import { useThemeStore } from "../stores/theme";
 import RoddyLogo from "./RoddyLogo.vue";
 import RotatingTagline from "./RotatingTagline.vue";
+import { useCatalogStore } from '../stores/catalog';
 
 const theme = useThemeStore();
+const catalog = useCatalogStore();
 </script>
 
 <template>
@@ -20,18 +22,19 @@ const theme = useThemeStore();
         <div>
           <h4 class="mb-3 font-mono text-[0.7rem] uppercase tracking-wide text-text-dim">Shop</h4>
           <RouterLink
-            v-for="cat in ['games', 'computers', 'pocket', 'labs', 'objects']"
-            :key="cat"
-            :to="{ path: '/shop', query: { cat } }"
+            v-for="cat in catalog.categories"
+            :key="cat.id"
+            :to="{ path: '/shop', query: { cat: cat.id } }"
             class="mb-2 block font-mono text-sm capitalize hover:text-brand"
           >
-            {{ cat }}
+            {{ cat.name }}
           </RouterLink>
         </div>
         <div>
           <h4 class="mb-3 font-mono text-[0.7rem] uppercase tracking-wide text-text-dim">Company</h4>
           <RouterLink to="/about" class="mb-2 block font-mono text-sm hover:text-brand">Brand map</RouterLink>
           <RouterLink to="/cart" class="mb-2 block font-mono text-sm hover:text-brand">Cart</RouterLink>
+          <a v-if="catalog.settings.supportEmail" :href="'mailto:' + catalog.settings.supportEmail" class="mb-2 block font-mono text-sm hover:text-brand">Contact RODDY ↗</a>
           <span class="block font-mono text-sm">PLAY · BUILD · PROGRAM · KEEP</span>
         </div>
       </div>

@@ -6,7 +6,8 @@ function readCart() {
   try {
     const raw = localStorage.getItem(CART_KEY);
     const parsed = raw ? JSON.parse(raw) : [];
-    return Array.isArray(parsed) ? parsed : [];
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter(i => i && typeof i.id === 'string' && Number.isInteger(i.qty) && i.qty > 0 && i.qty <= 99);
   } catch (e) {
     return [];
   }
@@ -32,7 +33,8 @@ export const useCartStore = defineStore("cart", {
 
     add(productId, qty = 1) {
       const existing = this.items.find((i) => i.id === productId);
-      if (existing) existing.qty += qty;
+      qty = Math.min(99, Math.max(1, Math.trunc(Number(qty)) || 1));
+      if (existing) existing.qty = Math.min(99, existing.qty + qty);
       else this.items.push({ id: productId, qty });
       this.persist();
     },

@@ -4,9 +4,10 @@ compatibility_date = "2024-11-01"
 
 # Plain config, not secrets — safe to commit.
 [vars]
-SITE_URL = "https://lionsarmor.github.io/RODDY-STORE-FRONT"
+SITE_URL = "https://roddy.world"
 PRODUCTS_URL = "https://raw.githubusercontent.com/lionsarmor/RODDY-STORE-FRONT/main/public/data/products.json"
-ALLOWED_ORIGINS = "https://lionsarmor.github.io,http://localhost:5173,http://localhost:5175"
+ALLOWED_ORIGINS = "https://roddy.world,https://www.roddy.world,https://lionsarmor.github.io,http://localhost:5173,http://localhost:5175"
+ADMIN_GITHUB_LOGIN = "lionsarmor"
 SHIP_TO_COUNTRIES = "US,CA"
 
 # Secret — never put this here. After `wrangler login`, set it with:
