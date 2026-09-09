@@ -87,9 +87,43 @@
       "id": "new-tag-3",
       "label": "PC",
       "color": "#000000"
+    },
+    {
+      "id": "new-tag-4",
+      "label": "Atari 2600",
+      "color": "#ba3b3b"
     }
   ],
   "products": [
+    {
+      "id": "shadow-over-space",
+      "sku": "R-A001",
+      "name": "Shadow Over Space",
+      "category": "games",
+      "price": 0,
+      "stock": 0,
+      "active": false,
+      "featured": false,
+      "description": "Shoot. Dodge. Save The City. ",
+      "specs": {},
+      "images": [
+        "img/products/roddy-fc455e72-d7ea-41a4-8d1d-3262b5d1142e.jpg",
+        "img/products/roddy-cd3b6c60-5f91-4f38-9c29-f3b8461ffeb1.jpg"
+      ],
+      "status": "available",
+      "type": "digital",
+      "coverImage": "img/products/roddy-c122d1a9-edee-454f-84c6-598405f14621.jpg",
+      "tags": [
+        "new-tag-4"
+      ],
+      "trackStock": true,
+      "compareAtPrice": 0,
+      "shortDescription": "An experimental BatariBasic Game. ",
+      "releaseNote": "Digital Download. Atari 2600 compatible. ",
+      "downloadUrl": "",
+      "githubUrl": "",
+      "pricePending": true
+    },
     {
       "id": "desk-commander-cartridge",
       "sku": "R-APP-101",
@@ -100,7 +134,7 @@
       "trackStock": true,
       "type": "physical",
       "status": "sold-out",
-      "featured": true,
+      "featured": false,
       "active": true,
       "tags": [
         "new-tag-2",
@@ -286,7 +320,7 @@
       "pricePending": true,
       "shortDescription": "A whole little world. On your keychain.",
       "releaseNote": "In development. Coming soon. Product imagery is a concept preview.",
-      "coverImage": "",
+      "coverImage": "img/products/roddy-6f19c18f-fd8a-47ea-88f8-7362526fb360.jpg",
       "compareAtPrice": 0,
       "downloadUrl": "",
       "githubUrl": ""
@@ -294,7 +328,7 @@
     {
       "id": "kestrel-computer",
       "sku": "R-PC-001",
-      "name": "KESTREL COMPUTER",
+      "name": "CODENAME: KESTREL COMPUTER",
       "category": "computers",
       "price": 0,
       "stock": 0,
@@ -305,12 +339,12 @@
       "active": true,
       "tags": [],
       "pricePending": true,
-      "shortDescription": "A new flight for personal computing.",
-      "description": "Something new is taking shape at RODDY. KESTREL COMPUTER is coming to the Computers division. Follow this space for the first look.",
+      "shortDescription": "A new flight for personal distraction-less retro computing.",
+      "description": "Something new is taking shape at RODDY. CODENAME: KESTREL COMPUTER is coming to the Computers division. Follow this space for the first look.",
       "releaseNote": "Coming soon. Specifications, pricing and release date to be announced.",
       "specs": {},
       "images": [],
-      "coverImage": "",
+      "coverImage": "img/products/roddy-82fc7990-3879-4337-aabd-c1bb6cddaf63.jpg",
       "compareAtPrice": 0,
       "downloadUrl": "",
       "githubUrl": ""
@@ -334,7 +368,7 @@
       "releaseNote": "Coming soon. Pricing and availability to be announced.",
       "specs": {},
       "images": [],
-      "coverImage": "",
+      "coverImage": "img/products/roddy-8c017dc8-5866-4484-bfde-a0c61fa5c531.jpg",
       "compareAtPrice": 0,
       "downloadUrl": "",
       "githubUrl": ""
@@ -358,7 +392,7 @@
       "releaseNote": "Coming soon. Pricing and availability to be announced.",
       "specs": {},
       "images": [],
-      "coverImage": "",
+      "coverImage": "img/products/roddy-3f5c7833-6f91-451e-9f3a-824933d1936b.jpg",
       "compareAtPrice": 0,
       "downloadUrl": "",
       "githubUrl": ""
