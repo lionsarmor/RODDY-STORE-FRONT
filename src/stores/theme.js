@@ -11,7 +11,7 @@ import {
 export const useThemeStore = defineStore("theme", {
   state: () => ({
     // The boot script in <head> already set data-theme on <html> before Vue
-    // mounted (from localStorage, or left as the default) — read it back so
+    // mounted (saved choice, or a random first-visit palette) — read it back so
     // the store's reactive state matches what's already painted, with no flash.
     currentId: document.documentElement.getAttribute("data-theme") || RODDY_DEFAULT_THEME,
   }),

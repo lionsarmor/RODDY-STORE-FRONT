@@ -90,7 +90,9 @@ Peach), and **Collector** (Gold). Every hex value matches the actual SVGs in
 header/footer logo swaps to the real matching asset — never recolored in
 CSS.
 
-**Industrial is the default**, and its colors (`#ded1bf` capsule / `#000000`
+**First-time visitors get a random palette**, saved for later visits. A
+visitor's theme-selector choice always takes priority. Industrial remains
+the no-JavaScript fallback, and its colors (`#ded1bf` capsule / `#000000`
 lettering / `#c32d28` dot) are pixel-matched to the literal master artwork in
 `RODDY_SVG_BRAND_PACK/00_ORIGINAL_MASTERS`.
 
@@ -106,9 +108,11 @@ How it's wired:
   at build time.
 - `src/stores/theme.js` (Pinia) just toggles the `data-theme` attribute on
   `<html>` and persists the choice to `localStorage`.
-- A small render-blocking inline script at the top of each HTML entry's
-  `<head>` restores the saved theme from `localStorage` before Vue mounts,
-  so there's no flash of the wrong palette.
+- Vite inlines `src/theme-bootstrap.js` at the top of every HTML entry's
+  `<head>`, using the IDs from the shared theme registry. Before first paint,
+  it restores a valid saved theme or randomly selects and saves one of the
+  14 palettes. Missing/obsolete choices and unavailable storage are handled;
+  normal navigation and reloads preserve the saved choice.
 
 Click the logo → cycles to the next theme. Click **Theme** → opens a swatch
 grid (grouped like the list above) to jump straight to any of the 14.

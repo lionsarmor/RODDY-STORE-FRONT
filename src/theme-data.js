@@ -4,7 +4,7 @@
    file just carries what JS/Vue needs: which logo asset to show, and a
    3-color preview swatch for the theme picker.
 
-   "industrial" is the default and is pixel-matched to the literal master
+   "industrial" is the CSS fallback and is pixel-matched to the literal master
    artwork in public/img/logos/RODDY_SVG_BRAND_PACK/00_ORIGINAL_MASTERS:
    capsule #ded1bf, lettering #000000, dot #c32d28. */
 
