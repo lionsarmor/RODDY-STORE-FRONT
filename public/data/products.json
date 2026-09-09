@@ -217,7 +217,7 @@
       "price": 0,
       "stock": 18,
       "featured": true,
-      "active": false,
+      "active": true,
       "description": "RPG Alien Abduction adventure. An action mystery, what is going on?",
       "specs": {
         "Format": "RODDY cartridge",
