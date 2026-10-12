@@ -30,8 +30,26 @@ def main():
     try:
         with urlopen(request, timeout=20) as response:
             locations = json.load(response).get("locations", [])
-    except (HTTPError, URLError, TimeoutError, ValueError):
-        parser.error("Could not verify this token with Square. Check its mode and try again; nothing saved.")
+    except HTTPError as exc:
+        # Never print response bodies or exception details: they may contain credentials.
+        if exc.code == 401:
+            environment = "Production" if args.mode == "live" else "Sandbox"
+            detail = (f"Square rejected the token (HTTP 401). Open your application in the Square "
+                      f"Developer Console, select {environment}, and copy its access token "
+                      "from Credentials. An application ID or application secret cannot be used here.")
+        elif exc.code == 403:
+            detail = "Square denied location access (HTTP 403). Check the token's permissions and seller account access."
+        elif exc.code == 429:
+            detail = "Square rate limit reached (HTTP 429). Wait briefly and try again."
+        elif 500 <= exc.code < 600:
+            detail = f"Square is temporarily unavailable (HTTP {exc.code}). Try again later."
+        else:
+            detail = f"Square returned HTTP {exc.code} while checking locations."
+        parser.error(detail + " Nothing saved.")
+    except (URLError, TimeoutError):
+        parser.error("Could not connect to Square. Check the droplet's network/DNS and try again. Nothing saved.")
+    except ValueError:
+        parser.error("Square returned an unreadable response. Try again later. Nothing saved.")
     locations = [location for location in locations if location.get("status") == "ACTIVE"
                  and location.get("currency") == "USD"
                  and "CREDIT_CARD_PROCESSING" in location.get("capabilities", [])]
