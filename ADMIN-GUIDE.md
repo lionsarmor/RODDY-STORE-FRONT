@@ -88,6 +88,15 @@ connect first, then click **Restore draft**; its original revision is retrieved
 from GitHub. Drafts with neither an original catalog nor a revision cannot be
 automatically merged safely. Keep an exported backup for those drafts.
 
+## Printify merchandise setup
+
+Open **Printify merchandise** to connect a Printify API store and inspect its
+hoodie sizes/colors and desk-mat variants. The token is entered only in the
+droplet console; the panel uses your GitHub administrator login to read the
+private connection. The panel also offers the white/red RODDY hoodie print PNG.
+Follow [backend/PRINTIFY.md](backend/PRINTIFY.md). This is account/product setup;
+customer merchandise checkout and automatic fulfillment are not implemented yet.
+
 ## Square checkout and delivery
 
 Use **Checkout & Square** to configure the HTTPS backend URL and check the

@@ -19,6 +19,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 
 from .square import Square, PaymentUnavailable
+from .printify import load_connection, PrintifyUnavailable
 
 
 def checkout_url(value):
@@ -28,7 +29,7 @@ def checkout_url(value):
 
 
 def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
-               catalog_loader=None, enabled=None, site=None, public_url=None):
+               catalog_loader=None, enabled=None, site=None, public_url=None, printify_config=None):
     database = Path(database or os.getenv("STORE_DATABASE", "/var/lib/roddy-store/orders.sqlite3"))
     private_dir = Path(private_dir or os.getenv("STORE_PRIVATE_DIR", "/var/lib/roddy-store/files")).resolve()
     manifest = manifest or os.getenv("STORE_MANIFEST", "/etc/roddy-store/digital-products.json")
@@ -39,6 +40,7 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
                                   os.getenv("SQUARE_LOCATION_ID", ""),
                                   os.getenv("SQUARE_MODE", "sandbox"))
     admin_login = os.getenv("ADMIN_GITHUB_LOGIN", "lionsarmor")
+    printify_config = printify_config or os.getenv("PRINTIFY_CONFIG", "/etc/roddy-store/printify.json")
     origins = os.getenv("ALLOWED_ORIGINS", "https://roddy.world,https://www.roddy.world").split(",")
 
     def load_catalog():
@@ -111,6 +113,10 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
 
     @app.exception_handler(PaymentUnavailable)
     async def provider_error(_, exc):
+        return JSONResponse({"error": str(exc)}, status_code=503)
+
+    @app.exception_handler(PrintifyUnavailable)
+    async def printify_error(_, exc):
         return JSONResponse({"error": str(exc)}, status_code=503)
 
     def rate_limit(request, kind, maximum):
@@ -289,8 +295,7 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
         item = next(i for i in json.loads(order["items"]) if i["id"] == row["product"])
         return FileResponse(private_file(item), media_type="application/zip", filename=item["file"])
 
-    @app.get("/admin/orders")
-    def admin_orders(request: Request):
+    def require_admin(request):
         rate_limit(request, "admin", 10)
         token = request.headers.get("authorization", "")
         if not token.startswith("Bearer "):
@@ -299,9 +304,26 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
             response = httpx.get("https://api.github.com/user", headers={"Authorization": token}, timeout=15)
             response.raise_for_status()
             if response.json().get("login", "").lower() != admin_login.lower():
-                raise HTTPException(403, "This GitHub account cannot view orders.")
+                raise HTTPException(403, "This GitHub account cannot access store administration.")
         except (httpx.HTTPError, ValueError) as exc:
             raise HTTPException(401, "Could not verify GitHub sign-in.") from exc
+
+    @app.get("/admin/printify")
+    def printify_inventory(request: Request, page: int = 1):
+        require_admin(request)
+        if not 1 <= page <= 10000:
+            raise HTTPException(400, "Invalid product page.")
+        client = load_connection(printify_config)
+        if client is None:
+            return {"configured": False, "fulfillmentEnabled": False, "products": [], "hasMore": False}
+        shop = next((s for s in client.shops() if s["id"] == client.shop_id), None)
+        if not shop:
+            raise PrintifyUnavailable("The configured Printify store is no longer accessible. Run setup again.")
+        return {"configured": True, "fulfillmentEnabled": False, "shop": shop, **client.products(page)}
+
+    @app.get("/admin/orders")
+    def admin_orders(request: Request):
+        require_admin(request)
         with connect() as db:
             rows = db.execute("SELECT provider_id,created,amount,paid FROM orders ORDER BY created DESC LIMIT 100").fetchall()
         return {"data": [{"id": row["provider_id"] or "not-created", "created": row["created"],

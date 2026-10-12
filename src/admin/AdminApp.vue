@@ -38,6 +38,7 @@ const tabs = [
   { id: "tags", label: "Tags & colors", icon: "◉" },
   { id: "homepage", label: "Homepage", icon: "↗" },
   { id: "checkout", label: "Checkout & Square", icon: "▣" },
+  { id: "printify", label: "Printify merchandise", icon: "◇" },
   { id: "orders", label: "Orders", icon: "▤" },
 ];
 const form = reactive({
@@ -66,6 +67,7 @@ const draftAvailable = ref(false);
 const draftMessage = ref("");
 const commerceBusy = ref(false);
 const connectionStatus = ref(null);
+const printifyStatus = ref(null);
 const orders = ref([]);
 const ordersCursor = ref("");
 const ordersHasMore = ref(false);
@@ -216,6 +218,7 @@ function disconnect() {
   localStorage.removeItem(CONFIG_KEY);
   status.value = "Disconnected. Your catalog draft is still open.";
   connectionStatus.value = null;
+  printifyStatus.value = null;
   orders.value = [];
 }
 function reconcileCatalog(result, base = JSON.parse(baseline.value), local = catalog.value) {
@@ -531,6 +534,13 @@ function loadOrders(more = false) {
     orders.value = more ? [...orders.value, ...data.data] : data.data;
     ordersHasMore.value = data.has_more;
     ordersCursor.value = data.next_cursor || "";
+  });
+}
+function loadPrintify(page = 1) {
+  commerce(async () => {
+    printifyStatus.value = await commerceRequest(
+      catalog.value.settings.checkoutEndpoint, `/admin/printify?page=${page}`, form.token,
+    );
   });
 }
 </script>
@@ -1246,6 +1256,47 @@ function loadOrders(more = false) {
                 >
               </section>
             </div>
+          </template>
+          <template v-if="tab === 'printify'">
+            <section class="admin-section">
+              <h2>Set up made-to-order merchandise</h2>
+              <p class="help-copy">Connect Printify to prepare the RODDY hoodie and desk mat. This panel reads products and size options; merchandise checkout and automatic production are not enabled yet.</p>
+              <ol class="setup-list">
+                <li>Create a Printify account and an API store named RODDY.</li>
+                <li>In Printify Connections, generate a token with <code>shops.read</code> and <code>products.read</code>.</li>
+                <li>Run the command below in your droplet console and enter the token at the hidden prompt.</li>
+                <li>Create your hoodie and desk mat in that Printify store, upload the print artwork, and select the sizes and colors you want to sell.</li>
+              </ol>
+              <pre class="setup-command">python3 /opt/roddy-store/backend/deploy/configure-printify.py</pre>
+              <p class="help-copy">Hoodie artwork: the full RODDY logo in white with a red dot, on a transparent 3531 × 2352 px canvas. Select a black hoodie and upload this file to the front print area.</p>
+              <p><a class="button small" href="./downloads/merch/roddy-hoodie-white-red-front.png" download="RODDY-hoodie-white-red-front.png">Download hoodie print PNG ↓</a></p>
+              <div class="admin-actions">
+                <a class="button small" href="https://printify.com/" target="_blank" rel="noopener noreferrer">Open Printify ↗</a>
+                <a class="button small" href="https://help.printify.com/hc/en-us/articles/4483626447249-How-can-I-generate-an-API-token" target="_blank" rel="noopener noreferrer">Token setup guide ↗</a>
+                <button class="button primary" :disabled="!connected || commerceBusy" @click="loadPrintify()">{{ commerceBusy ? "Loading…" : "Check connection & load products" }}</button>
+              </div>
+              <p v-if="!connected" class="help-copy">Connect to GitHub to access the private product list. Enter the Printify token only in the droplet console.</p>
+              <p v-if="printifyStatus && !printifyStatus.configured" class="notice">Printify is not connected yet. Complete the droplet setup command above.</p>
+              <template v-if="printifyStatus?.configured">
+                <p class="notice">Connected to {{ printifyStatus.shop.title }} · {{ printifyStatus.shop.channel }}</p>
+                <p v-if="!printifyStatus.products.length">No products found. Save your hoodie and desk-mat designs in this Printify store, then load products again.</p>
+                <section v-for="product in printifyStatus.products" :key="product.id" class="admin-section">
+                  <h3>{{ product.title }}</h3>
+                  <p class="help-copy">Printify product: {{ product.id }}</p>
+                  <ul class="printify-variants">
+                    <li v-for="variant in product.variants" :key="variant.id">
+                      <strong>{{ variant.title }}</strong>
+                      <span>{{ variant.enabled ? "Selected in Printify" : "Not selected" }} · {{ variant.available === true ? "In stock" : variant.available === false ? "Out of stock" : "Stock not reported" }}</span>
+                    </li>
+                  </ul>
+                </section>
+                <div class="admin-actions">
+                  <button v-if="printifyStatus.page > 1" class="button small" :disabled="commerceBusy" @click="loadPrintify(printifyStatus.page - 1)">Previous products</button>
+                  <button v-if="printifyStatus.hasMore" class="button small" :disabled="commerceBusy" @click="loadPrintify(printifyStatus.page + 1)">More products</button>
+                </div>
+              </template>
+              <p class="help-copy">Before sales can open, the products need retail prices, customer shipping options, and a tested payment-to-production connection. Printify charges production and shipping to your Printify account separately from customer payments.</p>
+            </section>
           </template>
           <template v-if="tab === 'orders'"
             ><div class="section-heading">
