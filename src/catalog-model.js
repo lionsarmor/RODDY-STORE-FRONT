@@ -114,6 +114,10 @@ export function validateCatalog(data) {
       errors.push(`${p.name}: FREE requires a zero price.`);
     if (p.downloadUrl && !safeLink(p.downloadUrl))
       errors.push(`${p.name}: download must be an HTTP(S) URL.`);
+    if (p.downloadUrl && p.price > 0)
+      errors.push(
+        `${p.name}: paid products must not have a public free-download URL.`,
+      );
     if (p.documentationUrl && !safeLink(p.documentationUrl))
       errors.push(`${p.name}: documentation must be an HTTP(S) URL.`);
     if (p.githubUrl && !/^https:\/\/github\.com\//i.test(p.githubUrl))

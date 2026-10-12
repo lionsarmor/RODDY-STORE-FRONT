@@ -40,7 +40,7 @@ const catalog = useCatalogStore();
       </div>
       <div class="mt-8 flex flex-wrap justify-between gap-2 border-t border-border pt-5 font-mono text-[0.68rem] tracking-wide text-text-dim">
         <span>RODDY ● — established alternate 1983</span>
-        <span>Every purchase is processed securely via Stripe.</span>
+        <span>Secure checkout. Independent software and hardware.</span>
       </div>
     </div>
   </footer>

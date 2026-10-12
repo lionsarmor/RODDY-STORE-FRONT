@@ -1,0 +1,9 @@
+# ADD this site to the existing Caddyfile. Preserve Desk Commander's sites.
+# Use api.roddy.world instead once that DNS name points to the droplet.
+store-api.143-244-168-180.sslip.io {
+    request_body {
+        max_size 8KB
+    }
+    # Do not add access logging: download paths contain short-lived bearer tickets.
+    reverse_proxy 127.0.0.1:8091
+}

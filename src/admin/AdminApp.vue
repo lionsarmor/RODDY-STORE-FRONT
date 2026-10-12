@@ -36,8 +36,7 @@ const tabs = [
   { id: "categories", label: "Departments", icon: "⌘" },
   { id: "tags", label: "Tags & colors", icon: "◉" },
   { id: "homepage", label: "Homepage", icon: "↗" },
-  { id: "checkout", label: "Checkout & Stripe", icon: "▣" },
-  { id: "promotions", label: "Promo codes", icon: "◇" },
+  { id: "checkout", label: "Checkout & Square", icon: "▣" },
   { id: "orders", label: "Orders", icon: "▤" },
 ];
 const form = reactive({
@@ -65,16 +64,9 @@ const draftAvailable = ref(false);
 const draftMessage = ref("");
 const commerceBusy = ref(false);
 const connectionStatus = ref(null);
-const promos = ref([]);
 const orders = ref([]);
 const ordersCursor = ref("");
 const ordersHasMore = ref(false);
-const promo = reactive({
-  code: "",
-  percent: 10,
-  maxRedemptions: "",
-  expiresAt: "",
-});
 const draftKey = computed(
   () => `roddy:admin:draft:${form.owner}/${form.repo}@${form.branch}`,
 );
@@ -225,7 +217,6 @@ function disconnect() {
   status.value = "Disconnected. Your catalog draft is still open.";
   connectionStatus.value = null;
   orders.value = [];
-  promos.value = [];
 }
 async function refreshCatalog() {
   if (
@@ -478,47 +469,6 @@ function checkConnection() {
     );
   });
 }
-async function loadPromos() {
-  const data = await commerceRequest(
-    catalog.value.settings.checkoutEndpoint,
-    "/admin/promotions",
-    form.token,
-  );
-  promos.value = data.data || [];
-}
-function createPromo() {
-  commerce(async () => {
-    await commerceRequest(
-      catalog.value.settings.checkoutEndpoint,
-      "/admin/promotions",
-      form.token,
-      {
-        code: promo.code,
-        percent: promo.percent,
-        maxRedemptions: promo.maxRedemptions
-          ? Number(promo.maxRedemptions)
-          : null,
-        expiresAt: promo.expiresAt
-          ? new Date(promo.expiresAt).toISOString()
-          : null,
-      },
-    );
-    promo.code = "";
-    status.value = "Promotion created in Stripe.";
-    await loadPromos();
-  });
-}
-function togglePromo(p) {
-  commerce(async () => {
-    await commerceRequest(
-      catalog.value.settings.checkoutEndpoint,
-      "/admin/promotions/" + p.id,
-      form.token,
-      { active: !p.active },
-    );
-    await loadPromos();
-  });
-}
 function loadOrders(more = false) {
   commerce(async () => {
     const data = await commerceRequest(
@@ -699,7 +649,11 @@ function loadOrders(more = false) {
                   Add a product +
                 </button>
               </div>
-              <RoddyLogo kind="badge" class="admin-welcome-logo" aria-hidden="true" />
+              <RoddyLogo
+                kind="badge"
+                class="admin-welcome-logo"
+                aria-hidden="true"
+              />
             </div>
             <div class="stat-grid">
               <button
@@ -727,7 +681,7 @@ function loadOrders(more = false) {
                   ><b>{{ connected ? "Connected" : "Connect GitHub" }}</b>
                 </div>
                 <div class="readiness-row">
-                  <span>Stripe checkout</span
+                  <span>Square checkout</span
                   ><b>{{
                     catalog.settings.checkoutEnabled
                       ? "Enabled in settings"
@@ -833,7 +787,8 @@ function loadOrders(more = false) {
                             v-if="p.coverImage"
                             :src="productImageUrl(p.coverImage)"
                             :alt="p.name"
-                          /><span v-else class="table-art"><RoddyLogo kind="badge" /></span
+                          /><span v-else class="table-art"
+                            ><RoddyLogo kind="badge" /></span
                           ><span
                             ><strong>{{ p.name }}</strong
                             ><small
@@ -1052,9 +1007,9 @@ function loadOrders(more = false) {
                 >
                 <p class="help-copy">
                   Uses this product's cover by default. Set a separate image
-                  below to override it for the landing page.
-                  This product also appears in the shop's featured exhibit,
-                  using its cover image. Choose “No spotlight product” to hide both.
+                  below to override it for the landing page. This product also
+                  appears in the shop's featured exhibit, using its cover image.
+                  Choose “No spotlight product” to hide both.
                 </p>
                 <MediaEditor
                   v-model="heroImages"
@@ -1096,26 +1051,20 @@ function loadOrders(more = false) {
               </section>
             </div></template
           >
-          <template v-if="tab === 'checkout'"
-            ><div class="admin-two-col">
+          <template v-if="tab === 'checkout'">
+            <div class="admin-two-col">
               <section class="admin-section">
-                <p class="eyebrow">STRIPE / SECURE CHECKOUT</p>
-                <h2>Get ready to take orders</h2>
+                <p class="eyebrow">SQUARE / SECURE CHECKOUT</p>
+                <h2>Connect the store backend</h2>
                 <p class="help-copy">
-                  Customers pay through Stripe-hosted checkout. Your bank
-                  account and payout details belong in your Stripe account.
+                  Square takes payment on its hosted checkout page. The droplet
+                  verifies payment and delivers private software ZIPs.
                 </p>
-                <a
-                  href="https://dashboard.stripe.com/account/onboarding"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="button"
-                  >Set up your Stripe account ↗</a
-                ><label
+                <label
                   >Checkout server URL<input
                     v-model.trim="catalog.settings.checkoutEndpoint"
                     type="url"
-                    placeholder="https://roddy-checkout.yourname.workers.dev"
+                    placeholder="https://api.roddy.world"
                 /></label>
                 <div class="admin-actions">
                   <button
@@ -1123,14 +1072,26 @@ function loadOrders(more = false) {
                     :disabled="commerceBusy"
                     @click="checkConnection"
                   >
-                    Check connection</button
-                  ><span v-if="connectionStatus" class="help-copy"
+                    Check connection
+                  </button>
+                  <span v-if="connectionStatus" class="help-copy"
                     >{{
-                      connectionStatus.stripeConfigured
-                        ? "Stripe key configured"
-                        : "Stripe key missing"
+                      connectionStatus.configured
+                        ? "Key configured"
+                        : "Key missing"
                     }}
-                    · {{ connectionStatus.mode }} mode</span
+                    ·
+                    {{
+                      connectionStatus.accountReady
+                        ? "USD card processing ready"
+                        : "Account setup needed"
+                    }}
+                    · {{ connectionStatus.mode }} mode ·
+                    {{
+                      connectionStatus.checkoutEnabled
+                        ? "Server checkout enabled"
+                        : "Server checkout disabled"
+                    }}</span
                   >
                 </div>
                 <label class="check"
@@ -1139,191 +1100,89 @@ function loadOrders(more = false) {
                     type="checkbox"
                   />Enable customer checkout after a successful test
                   purchase</label
-                ><label class="check"
-                  ><input
-                    v-model="catalog.settings.allowPromotionCodes"
-                    type="checkbox"
-                  />Allow promo codes at Stripe checkout</label
-                ><label class="check"
-                  ><input
-                    v-model="catalog.settings.automaticTax"
-                    type="checkbox"
-                  />Enable Stripe Tax (configure tax registrations in Stripe
-                  first)</label
                 >
+                <p class="notice">
+                  The frontend switch and the server switch must both be
+                  enabled. Keep public checkout disabled while testing.
+                </p>
               </section>
               <section class="admin-section setup-guide">
                 <p class="eyebrow">ONE-TIME SERVER SETUP</p>
-                <h2>Connect your account securely</h2>
+                <h2>Square and your droplet</h2>
                 <ol>
                   <li>
-                    Open Stripe Developers → API keys and start with a test
-                    secret key.
+                    Create a US Square seller account and link your payout bank
+                    account.
                   </li>
                   <li>
-                    In this project's <code>worker</code> directory, run
-                    <code>npm install</code>, then
-                    <code>npx wrangler login</code>.
+                    Create a developer application. Configure the sandbox access
+                    token and location ID in the droplet's private environment
+                    file.
                   </li>
                   <li>
-                    Run
-                    <code>npx wrangler secret put STRIPE_SECRET_KEY</code> and
-                    paste your key at the terminal prompt.
+                    Deploy the backend as a separate systemd service behind
+                    HTTPS. Install the release ZIP in its private files
+                    directory.
                   </li>
                   <li>
-                    Run <code>npm run deploy</code>. Copy the resulting server
-                    URL into the field on the left.
+                    Test payment, cancellation, retries, and paid download
+                    delivery with the unpublished local preview.
                   </li>
                   <li>
-                    Publish the catalog, check the connection, enable checkout,
-                    and place a test order. Replace the server secret with your
-                    live key only when ready.
+                    Configure live credentials, verify the live account
+                    connection, then enable checkout on the server and publish
+                    the frontend settings.
                   </li>
                 </ol>
                 <p class="notice">
-                  The secret key is stored on Cloudflare, never in this public
-                  catalog. Admin orders and promotions use your GitHub sign-in.
+                  API credentials stay on the droplet. Never put them in the
+                  public catalog or GitHub token field.
                 </p>
                 <a
-                  href="https://dashboard.stripe.com/test/apikeys"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="text-button"
-                  >Open Stripe test keys ↗</a
-                >
-              </section>
-              <section class="admin-section">
-                <h2>Shipping</h2>
-                <label
-                  >Countries served<input
-                    v-model="catalog.settings.shippingCountries"
-                    placeholder="US,CA"
-                  /><small
-                    >Comma-separated two-letter country codes.</small
-                  ></label
-                >
-                <div class="form-grid">
-                  <label
-                    >Flat shipping price (USD)<input
-                      v-model.number="catalog.settings.shippingRate"
-                      type="number"
-                      min="0"
-                      step=".01" /></label
-                  ><label
-                    >Shipping name<input
-                      v-model="catalog.settings.shippingLabel"
-                  /></label>
-                </div>
-                <p class="help-copy">
-                  Shipping is added once per order containing physical items.
-                  Digital-only orders skip shipping and delivery address
-                  collection.
-                </p>
-              </section>
-              <section class="admin-section">
-                <h2>Fulfillment</h2>
-                <p class="help-copy">
-                  Review paid orders in the Orders panel. This storefront uses
-                  manual stock counts and fulfillment. It does not reserve
-                  inventory, decrement stock automatically, or deliver paid
-                  files. Review stock before going live and after each order.
-                </p>
-                <a
-                  href="https://dashboard.stripe.com/payments"
+                  href="https://developer.squareup.com/apps"
                   target="_blank"
                   rel="noopener noreferrer"
                   class="button small"
-                  >Payments & refunds in Stripe ↗</a
+                  >Square developer dashboard ↗</a
                 >
               </section>
-            </div></template
-          >
-          <template v-if="tab === 'promotions'"
-            ><p class="notice">
-              Promotions are saved directly in Stripe, independent of Publish.
-              Connect GitHub and your checkout server first. Codes are entered
-              by customers on the Stripe payment page.
-            </p>
-            <div class="admin-two-col">
-              <form class="admin-section" @submit.prevent="createPromo">
-                <h2>Create a promotion</h2>
-                <label
-                  >Code<input
-                    v-model="promo.code"
-                    required
-                    pattern="[a-zA-Z0-9]{1,40}"
-                    placeholder="RODDY10"
-                /></label>
-                <div class="form-grid">
-                  <label
-                    >Discount (%)<input
-                      v-model.number="promo.percent"
-                      type="number"
-                      min="1"
-                      max="100"
-                      required /></label
-                  ><label
-                    >Maximum uses<input
-                      v-model="promo.maxRedemptions"
-                      type="number"
-                      min="1"
-                      placeholder="Unlimited" /></label
-                  ><label class="full"
-                    >Expires (your local time)<input
-                      v-model="promo.expiresAt"
-                      type="datetime-local"
-                  /></label>
-                </div>
-                <button
-                  class="button primary"
-                  :disabled="!connected || commerceBusy"
-                >
-                  Create in Stripe +
-                </button>
-              </form>
               <section class="admin-section">
-                <div class="field-heading">
-                  <h2>Your promo codes</h2>
-                  <button
-                    class="text-button"
-                    :disabled="!connected || commerceBusy"
-                    @click="commerce(loadPromos)"
-                  >
-                    Refresh ↻
-                  </button>
-                </div>
-                <p v-if="!promos.length" class="help-copy">
-                  Refresh to load your Stripe promotions. Connect Stripe to
-                  create your first code.
+                <h2>Digital delivery</h2>
+                <p class="help-copy">
+                  Checkout currently supports paid digital downloads, one copy
+                  per product. Files are released only after server verification
+                  of the correct USD payment. Download links last 15 minutes and
+                  can be refreshed from the private order page for 30 days.
                 </p>
-                <div v-for="p in promos" :key="p.id" class="promo-row">
-                  <div>
-                    <strong>{{ p.code }}</strong
-                    ><small
-                      >{{ p.percent_off ?? "—" }}% off ·
-                      {{ p.times_redeemed }} uses{{
-                        p.max_redemptions ? " / " + p.max_redemptions : ""
-                      }}
-                      · {{ p.active ? "Active" : "Inactive" }}</small
-                    >
-                  </div>
-                  <button
-                    class="button small"
-                    :disabled="commerceBusy"
-                    @click="togglePromo(p)"
-                  >
-                    {{ p.active ? "Disable" : "Enable" }}
-                  </button>
-                </div>
+                <p class="help-copy">
+                  Physical orders, promotions, and automatic tax are not
+                  configured. Arrange applicable tax treatment before accepting
+                  live payments.
+                </p>
               </section>
-            </div></template
-          >
+              <section class="admin-section">
+                <h2>Payments and support</h2>
+                <p class="help-copy">
+                  Use Square for receipts, customer details, and refunds. Orders
+                  here show the latest payment status checked by this backend. A
+                  refunded order cannot generate a new download.
+                </p>
+                <a
+                  href="https://squareup.com/dashboard/sales/transactions"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="button small"
+                  >Payments & refunds in Square ↗</a
+                >
+              </section>
+            </div>
+          </template>
           <template v-if="tab === 'orders'"
             ><div class="section-heading">
               <p class="help-copy">
-                Stripe checkout sessions, newest first. Only “paid” or “no
-                payment required” sessions are ready for manual fulfillment. Use
-                Stripe for customer details, receipts and refunds.
+                Latest 100 checkout attempts, newest first. Payment status
+                reflects the last server verification. Use Square for current
+                transaction details, receipts and refunds.
               </p>
               <div class="admin-actions">
                 <button
@@ -1333,11 +1192,11 @@ function loadOrders(more = false) {
                 >
                   {{ commerceBusy ? "Loading…" : "Load orders ↻" }}</button
                 ><a
-                  href="https://dashboard.stripe.com/payments"
+                  href="https://squareup.com/dashboard/sales/transactions"
                   target="_blank"
                   rel="noopener noreferrer"
                   class="button small"
-                  >Open Stripe ↗</a
+                  >Open Square ↗</a
                 >
               </div>
             </div>
@@ -1347,7 +1206,6 @@ function loadOrders(more = false) {
                   <tr>
                     <th>Date</th>
                     <th>Reference</th>
-                    <th>Customer</th>
                     <th>Total</th>
                     <th>Payment</th>
                   </tr>
@@ -1358,7 +1216,6 @@ function loadOrders(more = false) {
                       {{ new Date(order.created * 1000).toLocaleDateString() }}
                     </td>
                     <td>{{ order.id.slice(-12) }}</td>
-                    <td>{{ order.customer_details?.email || "—" }}</td>
                     <td>
                       {{
                         new Intl.NumberFormat("en-US", {

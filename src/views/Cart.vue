@@ -27,6 +27,9 @@ const shipping = computed(() =>
   physical.value ? Number(catalog.settings.shippingRate || 0) : 0,
 );
 function itemError(item) {
+  if (item.product.type !== "digital" || item.product.price <= 0)
+    return "Checkout currently supports paid software downloads. Get free products from their product pages.";
+  if (item.qty !== 1) return "Choose one copy of this digital download.";
   if (
     ["soon", "out"].includes(stockState(item.product)) ||
     item.product.pricePending
@@ -50,7 +53,10 @@ async function checkoutAll() {
 function updateQty(item, value) {
   cart.setQty(
     item.product.id,
-    Math.min(99, Math.max(1, Math.trunc(Number(value)) || 1)),
+    Math.min(
+      item.product.type === "digital" ? 1 : 99,
+      Math.max(1, Math.trunc(Number(value)) || 1),
+    ),
   );
 }
 </script>
@@ -113,7 +119,11 @@ function updateQty(item, value) {
               type="number"
               min="1"
               :max="
-                item.product.trackStock ? Math.min(99, item.product.stock) : 99
+                item.product.type === 'digital'
+                  ? 1
+                  : item.product.trackStock
+                    ? Math.min(99, item.product.stock)
+                    : 99
               "
               @change="updateQty(item, $event.target.value)"
           /></label>
@@ -147,17 +157,7 @@ function updateQty(item, value) {
           ><span>{{ formatPrice(total + shipping) }}</span>
         </div>
         <p class="mb-5 text-xs leading-relaxed text-text-dim">
-          USD.
-          {{
-            catalog.settings.automaticTax
-              ? "Tax is calculated at checkout."
-              : ""
-          }}
-          {{
-            catalog.settings.allowPromotionCodes
-              ? "Have a promo code? Enter it on the secure Stripe payment page."
-              : ""
-          }}
+          USD. Your software download appears after payment is confirmed.
         </p>
         <button
           class="button primary w-full"
@@ -169,7 +169,7 @@ function updateQty(item, value) {
           "
           @click="checkoutAll"
         >
-          {{ checkout.loading ? "Opening Stripe…" : "Secure checkout ↗" }}
+          {{ checkout.loading ? "Opening checkout…" : "Secure checkout ↗" }}
         </button>
         <p v-if="!catalog.settings.checkoutEnabled" class="release-note">
           Checkout is getting ready. Your cart is saved on this device.
@@ -178,7 +178,7 @@ function updateQty(item, value) {
           Update the unavailable items above to continue.
         </p>
         <p class="mt-4 text-center font-mono text-[9px] text-text-dim">
-          PAYMENTS PROCESSED BY STRIPE
+          SECURE PAYMENTS BY SQUARE
         </p>
       </section>
     </div>

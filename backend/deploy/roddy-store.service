@@ -1,0 +1,23 @@
+[Unit]
+Description=RODDY Store checkout and private digital delivery
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=roddystore
+Group=roddystore
+UMask=0077
+WorkingDirectory=/opt/roddy-store
+EnvironmentFile=/etc/roddy-store/store.env
+ExecStart=/opt/roddy-store/venv/bin/uvicorn backend.app:create_app --factory --host 127.0.0.1 --port 8091 --proxy-headers --forwarded-allow-ips 127.0.0.1 --no-access-log
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/roddy-store
+
+[Install]
+WantedBy=multi-user.target

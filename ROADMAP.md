@@ -2,20 +2,20 @@
 
 Control Desk v2 implements searchable product editing, separate cover/gallery
 images, colored tags, free/GitHub links, product and department ordering,
-draft recovery, backups, previews, homepage controls, Stripe checkout settings,
-promotions and an authenticated order list. See [ADMIN-GUIDE.md](ADMIN-GUIDE.md).
+draft recovery, backups, previews, homepage controls, Square checkout settings
+and an authenticated order list. See [ADMIN-GUIDE.md](ADMIN-GUIDE.md).
 
 The storefront has a new theme-aware landing page and a curated four-product
-lineup, plus DESK MAT and HOODIE under Merch. Stripe is prepared for owner
-setup; checkout is disabled by default.
+lineup, plus DESK MAT and HOODIE under Merch. Square checkout and private digital delivery run in a separate droplet backend;
+checkout is disabled until account setup and end-to-end testing are complete.
 
 ## Next: production operations
 
-- Complete Stripe test-mode setup, verify real test purchases, then configure
-  live keys and accurate prices/stock before accepting real orders.
-- Add a durable inventory store, reservations and signed Stripe webhooks for
+- Complete Square sandbox setup, verify payment and ZIP delivery, then configure
+  live credentials and applicable tax treatment before accepting real orders.
+- Add a durable inventory store, reservations and signed payment webhooks for
   automatic stock updates and protection against simultaneous overselling.
-- Add paid digital fulfillment and shipping/tracking workflows.
+- Add paid-download email recovery and physical shipping/tracking workflows.
 - Add order detail views, fulfillment status and operational reports.
 - Add shipping zones/rates if a single flat rate is no longer sufficient.
 

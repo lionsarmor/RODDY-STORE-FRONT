@@ -47,6 +47,13 @@ test("link protocol allowlist excludes script URLs", () => {
   );
 });
 
+test("paid products cannot publish a free-download URL", () => {
+  const c = normalizeCatalog(structuredClone(data));
+  c.products[0].price = 3.99;
+  c.products[0].downloadUrl = "https://example.com/private.zip";
+  assert.ok(validateCatalog(c).some((e) => e.includes("public free-download")));
+});
+
 test("product editorial fields are optional and survive catalog round trips", () => {
   const legacy = normalizeProduct({ id: "legacy" });
   assert.equal(legacy.story, "");

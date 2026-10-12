@@ -81,7 +81,11 @@ const related = computed(() =>
     .slice(0, 3),
 );
 const maxQty = computed(() =>
-  product.value?.trackStock ? Math.min(99, product.value.stock) : 99,
+  product.value?.type === "digital"
+    ? 1
+    : product.value?.trackStock
+      ? Math.min(99, product.value.stock)
+      : 99,
 );
 watch(
   () => props.id,
@@ -104,7 +108,7 @@ function quantity() {
 }
 function addToCart() {
   if (!purchasable.value) return;
-  cart.add(product.value.id, quantity());
+  cart.add(product.value.id, quantity(), maxQty.value);
   ui.toast(`Added ${product.value.name} to cart`);
 }
 async function buyNow() {

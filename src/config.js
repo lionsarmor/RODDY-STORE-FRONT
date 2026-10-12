@@ -1,5 +1,5 @@
-// Deploy the checkout Worker from /worker, then configure its base URL in
-// Admin → Checkout & Stripe (catalog.settings.checkoutEndpoint).
+// Deploy /backend to the droplet, then configure its HTTPS base URL in
+// Admin → Checkout & Square (catalog.settings.checkoutEndpoint).
 
 // Where the live product catalog actually lives. The admin page commits
 // straight to public/data/products.json in this repo, but GitHub Pages only

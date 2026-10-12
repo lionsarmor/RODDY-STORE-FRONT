@@ -4,11 +4,11 @@ RODDY ● Modern technology from a future we were promised.
 
 A storefront for the RODDY brand — 14 palettes pulled straight from the
 brand pack, a click-the-logo theme switcher, a product catalog, a real cart
-that checks out once for everything through Stripe, and an admin page that
+with Square-hosted payment and private software downloads, and an admin page that
 edits inventory by committing straight to this repo. Built with **Vue 3 +
 Vite + Tailwind CSS v4 + Pinia**, deployed to GitHub Pages via GitHub
-Actions, with one small Cloudflare Worker doing the one thing a static site
-can't: creating the Stripe Checkout Session.
+Actions, with a small Python backend on the existing DigitalOcean droplet for
+checkout, payment verification, and paid ZIP delivery.
 
 ## Stack
 
@@ -38,8 +38,8 @@ src/admin/                             admin mini-app: AdminApp.vue, api.js (Git
 src/order/                             order-confirmation mini-app
 public/data/products.json              the product catalog — served as-is, this is what admin edits
 public/img/logos/RODDY_SVG_BRAND_PACK/  source-of-truth logo assets, every palette
-worker/                                Cloudflare Worker — the only server-side piece, creates
-                                        one multi-item Stripe Checkout Session per cart
+backend/                               FastAPI + SQLite service for Square checkout and
+                                        private digital delivery, deployed on the droplet
 .github/workflows/deploy.yml           builds with Vite and deploys dist/ to GitHub Pages
 ```
 
@@ -126,7 +126,7 @@ first is the cover photo shown on the catalog card, and the product page
 shows the full array as a carousel). `images` can be empty; product art then
 falls back to the brand badge mark (so it always matches whatever theme is
 active) instead of requiring photography. `price` and `name` are what the
-checkout Worker re-prices the cart against, so they're the source of truth
+checkout backend re-prices the cart against, so they're the source of truth
 for what a customer is actually charged.
 
 Edit the file by hand and commit it, or use the admin page below.
@@ -134,17 +134,17 @@ Edit the file by hand and commit it, or use the admin page below.
 ## The admin page
 
 The admin is now the **RODDY Control Desk v2**. See [ADMIN-GUIDE.md](ADMIN-GUIDE.md)
-for the current product, gallery, tag, homepage, free-download and Stripe workflows.
+for the current product, gallery, tag, homepage, free-download and Square workflows.
 It includes local drafts, recovery, JSON backups, storefront previews, department
-management, promotions, and an authenticated Stripe order list.
+management and an authenticated order list.
 
 `admin.html` (`src/admin/`) is the store control desk. Since GitHub
 Pages can't run a database or a server, it works by talking **directly to
 the GitHub API from your browser** and committing the updated
 `data/products.json` straight to this repo. The storefront and the checkout
-Worker both read that file straight from `raw.githubusercontent.com`
+backend both read that file straight from `raw.githubusercontent.com`
 (see `CATALOG_URL` in `src/config.js` and `PRODUCTS_URL` in
-`worker/wrangler.toml`) rather than from the built `dist/` copy, so a
+`backend/deploy/store.env.example`) rather than from the built `dist/` copy, so a
 published change shows up on the live site within moments — it doesn't wait
 on the GitHub Actions rebuild that redeploys the rest of the app.
 
@@ -166,7 +166,7 @@ on the GitHub Actions rebuild that redeploys the rest of the app.
    correctly on a standard `*.github.io` project page), paste the token, hit
    **Connect**.
 3. Add, edit, or delete products. Stock counts and prices live here — the
-   checkout Worker reads this same file to price every cart.
+   checkout backend reads this same file to price every cart.
 4. Hit **Publish changes to GitHub** — commits the updated
    `data/products.json` straight to your branch. The storefront picks it up
    within moments (it reads the file directly from GitHub); the built site
@@ -174,132 +174,34 @@ on the GitHub Actions rebuild that redeploys the rest of the app.
    to wait on that for inventory/price/stock changes to show up.
 
 **About the token:** catalog reads and publication call `api.github.com`
-directly. When you use Orders or Promotions, the token is also sent over
-HTTPS to your configured checkout Worker, which verifies your identity with
-GitHub against `ADMIN_GITHUB_LOGIN`. Only configure your own trusted Worker
-URL. The Worker does not persist or log the token. Check
+directly. When you use Orders, the token is also sent over
+HTTPS to your configured checkout backend, which verifies your identity with
+GitHub against `ADMIN_GITHUB_LOGIN`. Only configure your own trusted backend
+URL. The backend does not persist or log the token. Check
 "remember on this device" and it's kept in that browser's `localStorage`;
 leave it unchecked and you'll paste it fresh each session. Anyone with the
 token can write to this one repo, so treat it like a password, and revoke it
 from GitHub any time.
 
-## Checkout: how buying actually works
+## Checkout and digital delivery
 
-**Current setup:** configure the server URL in **Admin → Checkout & Stripe**,
-then publish. The old hardcoded `CHECKOUT_ENDPOINT` is no longer used.
-Checkout defaults to disabled until you connect your Stripe server. The Worker
-supports physical/digital orders, optional Stripe Tax, flat shipping, Stripe
-promotion codes, and payment verification on the return page. Stock and
-fulfillment remain manual; no reservation or automatic stock decrement is implemented.
+DESK COMMANDER is **$3.99 USD**. Weather Commander and Shadow Over Space remain
+free downloads with direct release links and project GitHub buttons.
 
-The cart works like a normal online store: add whatever you want, hit
-**Checkout**, pay once for the whole order. The one thing a fully static
-site genuinely can't do on its own is combine an arbitrary cart into a
-single Stripe charge — that requires a Stripe secret key, which can never
-live in browser JS. So there's exactly one small server-side piece:
-**`worker/`**, a Cloudflare Worker that takes `{ items: [{ id, qty }] }` and
-creates a real multi-item Stripe Checkout Session.
+The storefront uses the droplet's separate `backend/` service and Square-hosted
+checkout. The server reads trusted catalog prices, creates idempotent checkout
+links, verifies completed USD payments, and serves private ZIPs through expiring
+download links. No paid ZIP belongs in `public/`.
 
-It re-prices every cart against the live `data/products.json` itself before
-calling Stripe — the browser only ever sends product IDs and quantities,
-never prices, so there's nothing for a tampered request to gain.
+See [backend/README.md](backend/README.md) for deployment, Square account setup,
+sandbox validation, private release installation, operational limits, and rollback.
+Checkout stays disabled until credentials and payment/download tests are complete.
+Physical orders, promotions, and automatic tax are not configured.
 
-### Deploying the checkout Worker (one-time)
-
-**1. Install dependencies**
-
-```
-cd worker
-npm install
-```
-
-**2. Log in to Cloudflare**
-
-```
-npx wrangler login
-```
-
-Opens a browser window to authorize. The free tier is plenty for this.
-
-**3. Point the config at your actual site**
-
-Open `worker/wrangler.toml` and check these against your real GitHub Pages
-URL and repo (pre-filled from this repo's git remote):
-
-```toml
-[vars]
-SITE_URL = "https://roddy.world"
-PRODUCTS_URL = "https://raw.githubusercontent.com/lionsarmor/RODDY-STORE-FRONT/main/public/data/products.json"
-ALLOWED_ORIGINS = "https://roddy.world,https://www.roddy.world,https://lionsarmor.github.io,http://localhost:5173,http://localhost:5175"
-ADMIN_GITHUB_LOGIN = "lionsarmor"
-SHIP_TO_COUNTRIES = "US,CA"
-```
-
-- `SITE_URL` — the deployed site, used for Stripe's success/cancel redirect
-  URLs.
-- `PRODUCTS_URL` — reads straight from GitHub (not the deployed site) so the
-  Worker re-prices against whatever the admin last published, not a
-  possibly-stale pre-rebuild copy. Matches `CATALOG_URL` in
-  `src/config.js` — keep both in sync if the username or repo name ever
-  change.
-- `ALLOWED_ORIGINS` — only these origins may call the Worker. Add any other
-  local dev ports you use.
-- `ADMIN_GITHUB_LOGIN` — only this GitHub user can access orders and promotions.
-- `SHIP_TO_COUNTRIES` — fallback countries. The admin's published Shipping
-  settings take precedence. Digital-only orders do not collect shipping addresses.
-
-**4. Add your Stripe secret key**
-
-```
-npm run secret:stripe
-```
-
-Pastes it in as an **encrypted Worker secret** — never written to this
-repo, never sent to the browser. Get the key from
-[Stripe Dashboard → Developers → API keys](https://dashboard.stripe.com/apikeys)
-(the **secret** key, not the publishable one — use a test-mode key first if
-you want to try the flow before going live).
-
-**5. Deploy**
-
-```
-npm run deploy
-```
-
-Prints your Worker's URL:
-
-```
-https://roddy-checkout.<your-subdomain>.workers.dev
-```
-
-**6. Wire the frontend to it**
-
-Open **Admin → Checkout & Stripe** and paste the Worker base URL into
-**Checkout server URL**. Use **Check connection**, publish your settings, then
-enable checkout and publish again when ready for a test order.
-
-### Where orders show up
-
-Stripe collects the shipping address for physical orders. Configure customer
-receipt emails in Stripe. On your end, every
-completed order shows up in
-[Stripe Dashboard → Payments](https://dashboard.stripe.com/payments) —
-that's your packing list. If you'd rather get pinged than check the
-dashboard, turn on **Dashboard → Settings → Notifications → "email me about
-new payments."**
-
-**About stock counts:** because there's no database, stock numbers in
-`products.json` are a soft ceiling the Worker checks at checkout time
-(it'll reject a cart that asks for more than you have listed), not something
-automatically decremented by sales. Update the count yourself after a sale
-comes in.
-
-### Changing something later
-
-- **Update the Stripe key:** re-run `npm run secret:stripe` inside `worker/`.
-- **Change allowed origins/countries:** edit `wrangler.toml`, then
-  `npm run deploy` again.
-- **Adjust checkout logic itself:** `worker/src/index.js`.
+Run `npm test`, the Python backend tests documented above, and `npm run build`.
+GitHub Actions runs these checks before deploying the frontend to Pages.
+The backend is deployed separately to the droplet; a Pages deployment does not
+update the running Python service.
 
 ## Brand reference
 

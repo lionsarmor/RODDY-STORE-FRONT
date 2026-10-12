@@ -1,5 +1,8 @@
 node_modules/
 dist/
+.tools/
+__pycache__/
+*.sqlite3*
 .DS_Store
 .wrangler/
 .dev.vars*
