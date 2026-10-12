@@ -335,16 +335,17 @@
       "stock": 18,
       "featured": true,
       "active": true,
-      "description": "RPG Alien Abduction adventure. An action mystery, what is going on?",
+      "description": "# I KNOW WHAT I SAW\n**Something is out there. You know what you saw.**\n\n*An original retro-inspired game for PC and ESP32.*\n\nThere's something special about games that leave a little to the imagination. The strange things you catch out of the corner of your eye. The mysteries you can't quite explain. That feeling that something is out there, even when nobody else believes you.\n\n**I KNOW WHAT I SAW** is an original indie game from RODDY that embraces the charm, simplicity, and imagination of classic gaming while bringing the experience to both modern PCs and tiny ESP32-powered devices.\n\nBuilt with a passion for retro computing, independent game development, and unconventional hardware, I KNOW WHAT I SAW celebrates the idea that a memorable gaming experience doesn't require cutting-edge graphics, enormous downloads, or expensive equipment.\n\n### A Little Mystery. A Lot of Imagination.\n\nSometimes the most memorable games aren't the ones that show you everything. They're the ones that make you curious, encourage you to explore, and leave you wondering what might happen next.\n\nI KNOW WHAT I SAW draws on that spirit of discovery, combining a distinctive retro aesthetic with the personality of a truly independent project.\n\nIt's a game built to be enjoyed for what it is: something original, unusual, and made by someone who genuinely loves games.\n\n### From Your Desktop to the Palm of Your Hand\n\nWhy should an original game be limited to one type of hardware?\n\nI KNOW WHAT I SAW is developed in C with versions for PC and ESP32, demonstrating how a single creative idea can find a home on very different computing platforms.\n\nOn PC, it brings a retro-inspired gaming experience to familiar desktop hardware. On ESP32, it explores the possibilities of compact microcontrollers as genuine gaming platforms.\n\nThat cross-platform philosophy is at the heart of RODDY: build interesting things, experiment with hardware, and make software that goes beyond conventional expectations.\n\n### Built for the Love of Games\n\nI KNOW WHAT I SAW isn't the product of a massive studio or a corporate franchise. It's an independent creation driven by curiosity, experimentation, and a lifelong appreciation for the games and computers that inspired generations of developers.\n\nEvery RODDY project begins with a simple question: *What would be fun to build?*\n\nSometimes the answer is a new piece of hardware. Sometimes it's a useful application. And sometimes it's a strange little game that simply needs to exist.\n\nI KNOW WHAT I SAW is one of those games.\n\n### Why We Made It\n\nWe believe gaming should still be a place for experimentation, imagination, and unexpected ideas.\n\nWe created I KNOW WHAT I SAW to celebrate independent game development and prove that compelling software can be built for everything from full-sized computers to inexpensive microcontrollers.\n\nIt's about keeping the creative spirit of early game development alive—when hardware limitations were invitations to invent something clever, and a great idea mattered more than a massive production budget.\n\n**You saw something. You know you did.**\n\n*I KNOW WHAT I SAW.*\n\n---\n\n",
       "specs": {
-        "Format": "RODDY cartridge",
-        "Players": "1",
-        "Box contents": "Cartridge, manual, sticker, catalog card",
-        "Catalog no.": "R-002"
+        "Platforms": "PC / ESP32",
+        "Developer": "RODDY",
+        "Genre": "Retro-Inspired Indie Game",
+        "Technology": "C / Native Cross-Platform Development",
+        "Category": "Games & Entertainment"
       },
       "images": [
-        "img/products/starfall.jpg",
         "img/products/roddy-7e077071-9625-489f-8e38-c04d0226ddec.jpg",
+        "img/products/starfall.jpg",
         "img/products/roddy-4f405eb6-d07e-4cae-b82f-473f00846028.jpg",
         "img/products/roddy-b7d72ae2-da50-45db-af03-f125d6790307.jpg",
         "img/products/roddy-259d6835-cdba-4a1e-824d-c53c033fea77.jpg",
@@ -355,22 +356,23 @@
         "img/products/roddy-67c39b93-2826-4ac0-b9c0-bc1e42bd79dd.jpg"
       ],
       "type": "digital",
-      "status": "coming-soon",
-      "trackStock": true,
+      "status": "available",
+      "trackStock": false,
       "tags": [
         "esp32",
         "ai-assisted",
         "free",
         "new-tag-3"
       ],
-      "shortDescription": "Some things cannot be explained away.",
+      "shortDescription": "**I KNOW WHAT I SAW** is an original retro-inspired indie game for PC and ESP32, blending mystery, imagination, and classic gaming charm. Built in C with a pass",
       "coverImage": "img/products/roddy-cfdc4d6e-7628-4bfe-8bde-b146799549e0.jpg",
       "compareAtPrice": 0,
-      "releaseNote": " I KNOW WHAT I SAW — FREE\n\nSomething is out there… and you know what you saw. 👽🛸\n\nDownload the **free playable demo of I KNOW WHAT I SAW** and get your first taste of a strange, atmospheric adventure where unexplained sightings, mysterious encounters, and the unknown are waiting to be uncovered.\n\nThis demo offers an early look at the game and its distinctive retro-inspired presentation, giving you a chance to experience the world, gameplay, and atmosphere before the full release.\n\n**Demo Platforms:** PC and ESP32\n\n**Price:** FREE\n\nThe truth is out there. The problem is convincing everyone else.\n",
+      "releaseNote": "**Coming Soon — In Development**\n\nI KNOW WHAT I SAW is currently in development for PC and ESP32. But you can play the first two Alpha chapters for FREE,  We're continuing to refine the experience and prepare both versions for release. An official launch date has not yet been announced. Follow RODDY for development updates, previews, and availability information.",
       "downloadUrl": "https://github.com/lionsarmor/I-KNOW-WHAT-I-SAW---C-VERSION-/releases/latest",
-      "githubUrl": "https://github.com/lionsarmor/I-KNOW-WHAT-I-SAW---C-VERSION-",
-      "story": "",
-      "documentationUrl": ""
+      "githubUrl": "",
+      "story": "We created **I KNOW WHAT I SAW** because we love the creativity and simplicity of classic video games. We wanted to build something original that captures the mystery, imagination, and excitement of old-school gaming while proving that even tiny, affordable hardware like the ESP32 can deliver a fun experience. It's a celebration of independent development, creative experimentation, and the belief that great games are defined by their ideas, not their hardware requirements.",
+      "documentationUrl": "",
+      "pricePending": true
     },
     {
       "id": "keychain-kreatures",
