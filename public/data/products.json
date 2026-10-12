@@ -12,7 +12,7 @@
     "manifestoTitle": "LESS DISPOSABLE.\nMORE DISCOVERABLE.",
     "manifestoText": "We believe technology should invite you in. Push a button. Meet a creature. Make something strange. There is still room for a little wonder.",
     "supportEmail": "",
-    "checkoutEnabled": false,
+    "checkoutEnabled": true,
     "checkoutEndpoint": "https://store-api.143-244-168-180.sslip.io",
     "allowPromotionCodes": false,
     "automaticTax": false,
