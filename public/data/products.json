@@ -372,7 +372,7 @@
       "githubUrl": "",
       "story": "We created **I KNOW WHAT I SAW** because we love the creativity and simplicity of classic video games. We wanted to build something original that captures the mystery, imagination, and excitement of old-school gaming while proving that even tiny, affordable hardware like the ESP32 can deliver a fun experience. It's a celebration of independent development, creative experimentation, and the belief that great games are defined by their ideas, not their hardware requirements.",
       "documentationUrl": "",
-      "pricePending": true
+      "pricePending": false
     },
     {
       "id": "keychain-kreatures",
