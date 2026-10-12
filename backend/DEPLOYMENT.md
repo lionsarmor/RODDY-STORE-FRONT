@@ -6,8 +6,9 @@
 - HTTPS API: https://store-api.143-244-168-180.sslip.io
 - Caddy: existing sites preserved; store site added after successful configuration validation.
   Previous configuration backed up at `/etc/caddy/Caddyfile.roddy-store-before-20261012`.
-- Payment provider: Square, US seller, USD. Public checkout remains disabled pending
-  credentials, sandbox end-to-end validation, live account readiness, and tax setup.
+- Payment provider: Square, US seller, USD. Sandbox credentials and location have
+  been verified. Public checkout remains disabled pending production credentials,
+  release approval, live account readiness, and applicable tax setup.
 - Desk Commander: $3.99, project GitHub button enabled. Weather Commander and Shadow
   Over Space remain free with unchanged release links.
 - Private release candidate: UI review build from DESK-COMMANDER commit
@@ -28,15 +29,25 @@ Results: 9 frontend tests and 19 backend tests passed; all three Vite entry poin
 built. Playwright browser checks covered $3.99 product UI, one-copy digital cart,
 free release/GitHub links, unpaid versus paid order UI, destination validation,
 retry idempotency, and a mocked Square redirect. These browser checks used mocked
-payment responses, not a real Square charge.
+payment responses. A separate end-to-end test subsequently used real Square
+sandbox API responses and Square's hosted sandbox payment panel:
+
+- The live storefront opened a $3.99 sandbox checkout; checkout was enabled only
+  in the test browser's catalog response, leaving the public catalog disabled.
+- A simulated payment unlocked the receipt page's test ZIP download. Its SHA-256
+  matched the private sandbox manifest; it contained only `SANDBOX-READ-ME.txt`.
+- A sandbox refund request returned `PENDING`. Subsequent download access was
+  immediately denied with HTTP 403, and the receipt returned `paid: false` with
+  no download links. No real money was charged or refunded.
 
 On the droplet, Caddy validation passed and the store, Caddy, and existing Desk
 Commander services remained active. HTTPS certificate issuance succeeded and
-HTTPS health returned the disabled/unconfigured state before account setup.
+HTTPS health now reports configured, account ready, and sandbox mode. The backend
+is enabled for sandbox testing; public storefront checkout remains disabled.
 
-Outstanding launch work: connect Square using the protected console helper,
-verify a sandbox purchase/refund and test ZIP delivery, approve the Desk Commander
-release candidate, configure applicable tax treatment and live credentials, then
+Outstanding launch work: replace the sandbox token shared during setup using the
+protected console helper, approve the Desk Commander release candidate, configure
+applicable tax treatment and live credentials using the helper's `--mode live`, then
 enable public checkout and verify a real purchase with the owner. Receipt email
 and refunds use Square; automatic download-recovery emails are not implemented.
 

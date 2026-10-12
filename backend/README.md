@@ -63,9 +63,10 @@ Use **sandbox** credentials first. In the droplet console run:
 python3 /opt/roddy-store/backend/deploy/configure-square.py
 ```
 
-The helper prompts for the token without echoing it, asks for the location ID,
-saves them in `/etc/roddy-store/store.env`, and restarts only this service. The
-file stays mode `640`, owner `root:roddystore`. It uses a separate sandbox database
+The helper prompts for the token without echoing it, verifies it with Square,
+automatically selects an eligible USD location (or asks you to choose if there
+are several), saves the connection in `/etc/roddy-store/store.env`, and restarts
+only this service. The file stays mode `640`, owner `root:roddystore`. It uses a separate sandbox database
 and generates a test ZIP containing no paid software. Sandbox checkout refuses
 files that are not explicitly marked as test assets. Never paste secrets into
 chat, the public catalog, GitHub, browser code, or shell command arguments.
