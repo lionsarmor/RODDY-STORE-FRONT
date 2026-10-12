@@ -221,7 +221,7 @@
       "type": "physical",
       "status": "sold-out",
       "featured": false,
-      "active": true,
+      "active": false,
       "tags": [
         "new-tag-2",
         "ai-assisted"
