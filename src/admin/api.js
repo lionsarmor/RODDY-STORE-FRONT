@@ -45,6 +45,7 @@ function contentsUrl(owner, repo, path = FILE_PATH) {
 export async function fetchCatalog({ owner, repo, branch, token }) {
   const res = await fetch(`${contentsUrl(owner, repo)}?ref=${encodeURIComponent(branch)}`, {
     headers: ghHeaders(token),
+    cache: "no-store",
   });
 
   if (res.status === 404) {
@@ -57,6 +58,17 @@ export async function fetchCatalog({ owner, repo, branch, token }) {
 
   const json = await res.json();
   return { sha: json.sha, catalog: JSON.parse(base64ToUtf8(json.content)) };
+}
+
+// Older saved drafts contain the original blob SHA, but no baseline catalog.
+export async function fetchCatalogRevision({ owner, repo, token }, sha) {
+  if (!/^[a-f0-9]{40}$/.test(sha || "")) throw new Error("This draft has no saved GitHub revision. Export a backup before reloading.");
+  const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/git/blobs/${sha}`, {
+    headers: ghHeaders(token), cache: "no-store",
+  });
+  if (!res.ok) throw new Error("Could not recover the draft's original catalog from GitHub. Your saved draft is intact.");
+  const json = await res.json();
+  return JSON.parse(base64ToUtf8(json.content));
 }
 
 export async function saveCatalog({ owner, repo, branch, token, sha }, catalog) {
@@ -76,9 +88,9 @@ export async function saveCatalog({ owner, repo, branch, token, sha }, catalog) 
   const json = await res.json().catch(() => ({}));
   if (!res.ok) {
     if (res.status === 409) {
-      throw new Error(
-        "Someone else changed this file since you loaded it. Reload from GitHub and re-apply your edits."
-      );
+      const error = new Error("GitHub changed again during publication. Your draft is intact. Publish again to merge the latest changes.");
+      error.code = "CATALOG_CONFLICT";
+      throw error;
     }
     throw new Error(json.message || `GitHub PUT failed (${res.status})`);
   }

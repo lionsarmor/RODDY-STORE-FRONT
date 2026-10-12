@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "test": "node --test src/catalog-model.test.js src/checkout-links.test.js",
+    "test": "node --test src/catalog-model.test.js src/checkout-links.test.js src/admin/catalog-merge.test.js",
     "test:backend": "python3 -m unittest discover -s backend -p 'test_*.py'",
     "dev": "vite",
     "build": "vite build",

@@ -68,17 +68,25 @@ drafts may fill browser storage; use Export JSON as a backup when warned.
 Exports contain catalog data, never connection credentials.
 
 Preview opens the actual storefront with your draft, including staged images.
-Preview checkout is disabled. Publish validates the catalog, uploads new
-images, then commits the catalog using GitHub's file SHA to detect conflicts.
+Preview checkout is disabled. Publish fetches the latest GitHub catalog and
+reapplies only the fields changed since your draft began. Edits to different
+fields combine automatically, including product edits alongside checkout settings.
+If the same field changed in both versions, choose **Keep my edit** or
+**Keep GitHub version**, apply the choices, review, then publish again.
+Publish validates the merged catalog, uploads new images, then commits using
+GitHub's file SHA. A further concurrent change stops publication safely; retry
+Publish to fetch and merge again.
 Images already uploaded during a failed publication may remain in the repo;
 the catalog draft remains intact. Removing an image reference does not delete
 the original repository file.
 
 GitHub connection requires a fine-grained token with Contents: Read and write
-for this repository. Connecting keeps an edited local draft and makes clear
-that publishing it replaces the current remote catalog. If a recovered draft
-was based on a different remote version, export it and merge with the latest
-catalog rather than overwriting newer work.
+for this repository. **Update from GitHub · keep edits** and connecting also
+merge the latest catalog without discarding current edits. Drafts store their
+original catalog for recovery. To recover a draft from an older editor version,
+connect first, then click **Restore draft**; its original revision is retrieved
+from GitHub. Drafts with neither an original catalog nor a revision cannot be
+automatically merged safely. Keep an exported backup for those drafts.
 
 ## Square checkout and delivery
 

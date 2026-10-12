@@ -20,7 +20,8 @@ import {
   validateCatalog,
 } from "../catalog-model.js";
 import { productImageUrl, formatPrice } from "../stores/catalog";
-import { fetchCatalog, saveCatalog, uploadFile, listRepoImages } from "./api";
+import { fetchCatalog, fetchCatalogRevision, saveCatalog, uploadFile, listRepoImages } from "./api";
+import { mergeCatalog } from "./catalog-merge.js";
 import { commerceRequest } from "./commerce-api";
 import { blankProduct, slugify } from "./utils";
 import { dataUrlToBase64 } from "./image";
@@ -51,6 +52,7 @@ const showConnection = ref(false);
 const catalog = ref(null);
 const sha = ref(null);
 const baseline = ref("");
+const mergeReview = ref(null);
 const saving = ref(false);
 const pendingMedia = ref(0);
 const status = ref("");
@@ -123,6 +125,7 @@ const stats = computed(() => [
 ]);
 let draftTimer;
 function installCatalog(data, nextSha = null) {
+  mergeReview.value = null;
   catalog.value = normalizeCatalog(data);
   sha.value = nextSha;
   baseline.value = JSON.stringify(catalog.value);
@@ -152,6 +155,7 @@ watch(
           JSON.stringify({
             catalog: catalog.value,
             sha: sha.value,
+            baseline: baseline.value ? JSON.parse(baseline.value) : null,
             savedAt: new Date().toISOString(),
           }),
         );
@@ -186,15 +190,11 @@ async function connect() {
   status.value = "Connecting to GitHub…";
   try {
     const result = await fetchCatalog(form);
-    if (keepDraft) {
-      sha.value = result.sha;
-      baseline.value = JSON.stringify(normalizeCatalog(result.catalog));
-    } else installCatalog(result.catalog, result.sha);
+    if (keepDraft) reconcileCatalog(result);
+    else installCatalog(result.catalog, result.sha);
     connected.value = true;
     showConnection.value = false;
-    status.value = keepDraft
-      ? "Connected. Your local draft was kept; publishing will replace the current GitHub catalog with this draft."
-      : "Connected. You can publish changes to GitHub.";
+    if (!keepDraft) status.value = "Connected. You can publish changes to GitHub.";
     if (form.remember) localStorage.setItem(CONFIG_KEY, JSON.stringify(form));
     else localStorage.removeItem(CONFIG_KEY);
     draftAvailable.value = !!localStorage.getItem(draftKey.value);
@@ -218,49 +218,90 @@ function disconnect() {
   connectionStatus.value = null;
   orders.value = [];
 }
+function reconcileCatalog(result, base = JSON.parse(baseline.value), local = catalog.value) {
+  const remote = normalizeCatalog(result.catalog);
+  const merged = mergeCatalog(base, local, remote);
+  if (merged.conflicts.length) {
+    mergeReview.value = {
+      base, local: JSON.parse(JSON.stringify(local)), remote,
+      sha: result.sha, conflicts: merged.conflicts, choices: {},
+    };
+    status.value = "Some fields changed in both versions. Choose which values to keep below. Your draft is intact.";
+    return false;
+  }
+  applyMergedCatalog(merged.catalog, remote, result.sha);
+  status.value = "Latest GitHub changes combined with your edits. Review, then publish.";
+  return true;
+}
+function applyMergedCatalog(merged, remote, nextSha) {
+  const selectedId = selected.value?.id;
+  catalog.value = merged;
+  baseline.value = JSON.stringify(remote);
+  sha.value = nextSha;
+  selected.value = catalog.value.products.find((p) => p.id === selectedId) || null;
+  mergeReview.value = null;
+}
+function resolveMerge() {
+  const review = mergeReview.value;
+  const merged = mergeCatalog(review.base, review.local, review.remote, review.choices);
+  if (merged.conflicts.length) return;
+  applyMergedCatalog(merged.catalog, review.remote, review.sha);
+  draftAvailable.value = false;
+  error.value = "";
+  status.value = "Choices applied to your draft. Review, then publish.";
+}
+function conflictValue(value) {
+  if (value === undefined) return "Deleted";
+  const text = typeof value === "string" ? value : JSON.stringify(value);
+  return text.length > 180 ? text.slice(0, 180) + "…" : text;
+}
 async function refreshCatalog() {
-  if (
-    dirty.value &&
-    !confirm(
-      "Reload the published catalog and discard your current draft? Export a backup first to keep it.",
-    )
-  )
-    return;
   saving.value = true;
   error.value = "";
   try {
     const result = await fetchCatalog(form);
-    installCatalog(result.catalog, result.sha);
-    clearTimeout(draftTimer);
-    localStorage.removeItem(draftKey.value);
-    draftAvailable.value = false;
-    status.value = "Reloaded the latest published catalog.";
+    if (dirty.value) reconcileCatalog(result);
+    else {
+      installCatalog(result.catalog, result.sha);
+      status.value = "Reloaded the latest published catalog.";
+    }
   } catch (e) {
     error.value = e.message;
   } finally {
     saving.value = false;
   }
 }
-function restoreDraft() {
+async function restoreDraft() {
+  saving.value = true;
+  error.value = "";
   try {
     const draft = JSON.parse(localStorage.getItem(draftKey.value));
     if (!draft?.catalog) throw new Error("No saved draft found.");
-    if (connected.value && draft.sha !== sha.value)
-      throw new Error(
-        "The published catalog has changed since this draft. Export the draft and merge it with the latest catalog before publishing.",
-      );
-    catalog.value = normalizeCatalog(draft.catalog);
-    selected.value = null;
-    draftAvailable.value = false;
-    status.value = "Draft restored. Review it before publishing.";
+    if (dirty.value && !confirm("Replace the currently open edits with your saved draft? Export JSON first to keep both.")) return;
+    if (!draft.baseline && !connected.value) throw new Error("Connect to GitHub first to recover this older draft safely. Your saved draft is intact.");
+    const base = normalizeCatalog(draft.baseline || await fetchCatalogRevision(form, draft.sha));
+    if (connected.value) {
+      const result = await fetchCatalog(form);
+      if (reconcileCatalog(result, base, normalizeCatalog(draft.catalog))) draftAvailable.value = false;
+    } else {
+      catalog.value = normalizeCatalog(draft.catalog);
+      baseline.value = JSON.stringify(base);
+      sha.value = draft.sha;
+      selected.value = null;
+      draftAvailable.value = false;
+      status.value = "Draft restored. Connect to GitHub to combine it with the latest catalog.";
+    }
   } catch (e) {
     error.value = e.message;
+  } finally {
+    saving.value = false;
   }
 }
 function discard() {
   if (!confirm("Discard all edits since this catalog was loaded or published?"))
     return;
   clearTimeout(draftTimer);
+  mergeReview.value = null;
   catalog.value = JSON.parse(baseline.value);
   selected.value = null;
   localStorage.removeItem(draftKey.value);
@@ -269,6 +310,10 @@ function discard() {
   status.value = "Draft discarded.";
 }
 async function publish() {
+  if (mergeReview.value) {
+    error.value = "Choose which conflicting values to keep before publishing.";
+    return;
+  }
   if (pendingMedia.value) {
     error.value = "Wait for the images to finish preparing before publishing.";
     return;
@@ -284,8 +329,12 @@ async function publish() {
   }
   saving.value = true;
   status.value = "Preparing publication…";
-  const snapshot = JSON.parse(JSON.stringify(catalog.value));
   try {
+    // Compare with the latest catalog before uploading any media or writing.
+    const latest = await fetchCatalog(form);
+    if (!reconcileCatalog(latest)) return;
+    if (issues.value.length) throw new Error(issues.value.join(" "));
+    const snapshot = JSON.parse(JSON.stringify(catalog.value));
     if (
       /(?:sk_(?:live|test)_|github_pat_|ghp_)[a-zA-Z0-9_]{10,}/.test(
         JSON.stringify(snapshot),
@@ -411,7 +460,7 @@ function removeTag(t) {
 }
 function exportCatalog() {
   const url = URL.createObjectURL(
-    new Blob([JSON.stringify(catalog.value, null, 2)], {
+    new Blob([JSON.stringify(mergeReview.value?.local || catalog.value, null, 2)], {
       type: "application/json",
     }),
   );
@@ -620,6 +669,7 @@ function loadOrders(more = false) {
         <div v-if="draftAvailable" class="notice draft-recovery">
           There is a saved draft on this device.<button
             class="button small"
+            :disabled="saving || !!mergeReview"
             @click="restoreDraft"
           >
             Restore draft</button
@@ -627,6 +677,26 @@ function loadOrders(more = false) {
             Dismiss
           </button>
         </div>
+        <section v-if="mergeReview" class="notice merge-review" aria-label="Review conflicting edits">
+          <h2>Choose which edits to keep</h2>
+          <p>Other changes will be combined automatically. Nothing is published until you click Publish.</p>
+          <div v-for="conflict in mergeReview.conflicts" :key="conflict.path" class="merge-field">
+            <label>
+              <strong>{{ conflict.path }}</strong>
+              <select v-model="mergeReview.choices[conflict.path]" :aria-label="conflict.path">
+                <option :value="undefined" disabled>Choose a version</option>
+                <option value="local">Keep my edit</option>
+                <option value="remote">Keep GitHub version</option>
+              </select>
+            </label>
+            <p><b>My edit:</b> {{ conflictValue(conflict.local) }}</p>
+            <p><b>GitHub:</b> {{ conflictValue(conflict.remote) }}</p>
+          </div>
+          <div class="admin-actions">
+            <button class="button primary" :disabled="saving || mergeReview.conflicts.some(c => !mergeReview.choices[c.path])" @click="resolveMerge">Apply choices to draft</button>
+            <button class="button" @click="exportCatalog">Export my draft ↓</button>
+          </div>
+        </section>
         <details v-if="issues.length" class="notice validation-list">
           <summary>
             {{ issues.length }} item(s) need attention before publishing
@@ -635,7 +705,7 @@ function loadOrders(more = false) {
             <li v-for="issue in issues" :key="issue">{{ issue }}</li>
           </ul>
         </details>
-        <fieldset v-if="catalog" :disabled="saving" class="admin-workspace">
+        <fieldset v-if="catalog" :disabled="saving || !!mergeReview" class="admin-workspace">
           <template v-if="tab === 'overview'">
             <div class="admin-welcome">
               <div>
@@ -725,7 +795,7 @@ function loadOrders(more = false) {
                     class="text-button"
                     @click="refreshCatalog"
                   >
-                    Reload from GitHub ↻
+                    Update from GitHub · keep edits ↻
                   </button>
                 </div>
                 <p class="help-copy">
