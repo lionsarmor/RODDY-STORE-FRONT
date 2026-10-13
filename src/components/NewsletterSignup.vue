@@ -31,7 +31,7 @@ async function subscribe() {
     <label>Email address<input v-model="email" type="email" autocomplete="email" maxlength="254" required placeholder="you@example.com" /></label>
     <label class="newsletter-consent"><input v-model="consent" type="checkbox" required /> <span>I want occasional RODDY email updates, new releases and offers. I can unsubscribe by replying to any newsletter.</span></label>
     <label class="newsletter-trap" aria-hidden="true">Company<input v-model="company" tabindex="-1" autocomplete="off" /></label>
-    <button type="submit" :disabled="busy || !catalog.loaded">{{ busy ? 'Saving…' : 'Send me a little RODDY' }}</button>
+    <button type="submit" :disabled="busy || !catalog.loaded">{{ busy ? 'Saving…' : 'Tune me in' }}</button>
     <p v-if="error" role="alert">{{ error }}</p>
   </form>
   <p v-else role="status">{{ message }}</p>

@@ -4,7 +4,7 @@ import NewsletterSignup from '../components/NewsletterSignup.vue';
 <template>
   <section class="mx-auto max-w-xl px-6 py-16">
     <p class="font-mono text-sm text-text-dim">POSTCARDS FROM RODDY</p>
-    <h1 class="my-5 text-4xl font-bold">A little signal in your inbox.</h1>
+    <h1 class="my-5 text-4xl font-bold">Fresh signals from the workbench.</h1>
     <p class="mb-6">New builds, releases, occasional ads and offers. Only when we have something to share.</p>
     <div class="newsletter-card"><NewsletterSignup /></div>
     <h2 class="mb-3 mt-10 text-xl font-bold">Want to leave the list?</h2>

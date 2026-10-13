@@ -33,7 +33,7 @@ onBeforeUnmount(() => {
     <button class="invite-close" aria-label="Close newsletter invitation" @click="close">×</button>
     <p class="invite-eyebrow">A LITTLE SIGNAL. VERY OCCASIONALLY.</p>
     <h2>A tiny interruption. Sorry! 🙃</h2>
-    <p>We got excited about new builds, odd ideas and occasional sales. Want a little RODDY in your inbox?</p>
+    <p>Tune in for fresh signals from the workbench: retro hardware, new builds and the occasional shop special. Low frequency. High curiosity.</p>
     <button v-if="!expanded" class="invite-more" @click="expanded = true">I’m curious — sign me up</button>
     <NewsletterSignup v-else />
   </aside>
