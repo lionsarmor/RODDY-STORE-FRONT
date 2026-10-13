@@ -106,6 +106,33 @@ class SupplierTests(unittest.TestCase):
         with patch('backend.supplier_clients.httpx.post') as post:
             self.assertEqual(self.search().status_code, 429); post.assert_not_called()
 
+    def test_mouser_invalid_key_explains_account_action_without_echoing_provider_details(self):
+        self.connect()
+        failure = {'Errors': [{'Code': 'Invalid', 'PropertyName': 'API Key', 'Message': 'Invalid unique identifier: private-search-key'}]}
+        with patch('backend.supplier_clients.httpx.post', return_value=httpx.Response(200, json=failure)):
+            response = self.search()
+        self.assertEqual(response.status_code, 503)
+        self.assertIn('invalid unique identifier', response.json()['error'])
+        self.assertIn('Search and Order API keys are separate', response.json()['error'])
+        self.assertNotIn('private-search-key', response.text)
+        status = self.admin('GET').json()['connections'][1]
+        self.assertFalse(status['searchVerifiedAt'])
+
+    def test_separate_mouser_order_key_is_private_and_does_not_enable_search(self):
+        from backend.suppliers import write_connections
+        write_connections(self.root / 'suppliers.json', {'mouser': {'orderKey': 'private-order-key', 'orderApprovalPending': True}})
+        overview = self.admin('GET')
+        status = overview.json()['connections'][1]
+        self.assertTrue(status['orderKeyStored']); self.assertTrue(status['orderApprovalPending'])
+        self.assertFalse(status['searchConfigured']); self.assertNotIn('private-order-key', overview.text)
+        with patch('backend.supplier_clients.httpx.post') as post:
+            self.assertEqual(self.search().status_code, 409); post.assert_not_called()
+        self.connect()
+        self.assertIn('private-order-key', (self.root / 'suppliers.json').read_text())
+        self.admin('POST', '/connections', {'provider': 'mouser', 'disconnect': True})
+        saved = json.loads((self.root / 'suppliers.json').read_text())['mouser']
+        self.assertNotIn('searchKey', saved); self.assertEqual(saved['orderKey'], 'private-order-key')
+
     def test_preferred_supplier_official_url_identity_and_revision_conflict(self):
         favorite = {'id': 'retro', 'name': 'Chosen Store', 'provider': 'aliexpress', 'url': 'https://www.aliexpress.com/store/1234567', 'query': 'MiSTer FPGA'}
         result = self.admin('POST', '/preferences', {'revision': 1, 'favorites': [favorite]})

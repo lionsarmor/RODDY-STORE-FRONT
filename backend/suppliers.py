@@ -98,6 +98,8 @@ def register_suppliers(app, connect, require_admin, config_path, public_url, sit
                  'callbackUrl': callback_url if provider == 'aliexpress' else '',
                  'searchVerifiedAt': config.get(provider, {}).get('verifiedAt'),
                  'approvalPending': config.get(provider, {}).get('approvalPending', False),
+                 'orderKeyStored': bool(config.get(provider, {}).get('orderKey')) if provider == 'mouser' else False,
+                 'orderApprovalPending': config.get(provider, {}).get('orderApprovalPending', False) if provider == 'mouser' else False,
                  'capabilities': {'keywordSearch': True, 'productLookup': True, 'completeSellerCatalog': False, 'orderSubmission': False, 'automaticPayment': False}}
                 for provider in sorted(PROVIDERS)]
 
@@ -146,7 +148,12 @@ def register_suppliers(app, connect, require_admin, config_path, public_url, sit
             config = read_connections(config_path)
             entry = dict(config.get(provider, {}))
             if body.get('disconnect') is True:
-                config.pop(provider, None)
+                if provider == 'mouser' and entry.get('orderKey'):
+                    for key in ['searchKey', 'verifiedAt', 'approvalPending']:
+                        entry.pop(key, None)
+                    config[provider] = entry
+                else:
+                    config.pop(provider, None)
             else:
                 changed_app = provider == 'aliexpress' and any(body.get(k) and body[k] != entry.get(k) for k in ['appKey', 'appSecret'])
                 if changed_app or (provider == 'aliexpress' and body.get('accessToken')):

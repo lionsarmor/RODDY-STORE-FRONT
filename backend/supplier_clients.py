@@ -84,6 +84,10 @@ class Mouser:
         self.reserve('mouser')
         data = request('https://api.mouser.com/api/v1/search/' + kind, params={'apiKey': self.key}, json=payload)
         if data.get('Errors'):
+            if any(isinstance(e, dict) and str(e.get('Code', '')).lower() == 'invalid'
+                   and str(e.get('PropertyName', '')).lower().replace(' ', '') == 'apikey'
+                   for e in data['Errors']):
+                raise HTTPException(503, 'Mouser rejected the saved Search API key (invalid unique identifier). In My Mouser → API access, check Search API approval and copy the active Search API key into Supplier connections. Search and Order API keys are separate.')
             raise HTTPException(503, 'Mouser could not complete the search. Check the Search API key, account and remaining quota.')
         result = data.get('SearchResults')
         if not isinstance(result, dict) or not isinstance(result.get('Parts', []), list):

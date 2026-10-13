@@ -116,6 +116,37 @@ call. Unknown currencies, prices and stock are not fabricated as USD/free/in sto
 
 ## Preferred sellers and selected imports
 
+Supplier search is the first admin panel. A connected AliExpress buyer is selected
+on initial load, and the seller filter starts at **All suppliers / no seller restriction**.
+Bookmarks, including Retro Castle, are opt-in filters and are never auto-selected.
+**Search all suppliers** clears a chosen filter without deleting its bookmark.
+Connections, bookmarks, pricing rules, billing notes and keycap setup are collapsed
+below the search workflow. **Manage API connection** opens credentials when needed.
+
+For an individual item, search keywords or load its exact product URL, assess the
+live details, choose the exact variant, and click **Add & edit product**. A sole
+variant is selected automatically; multiple variants require a choice. The normal
+product editor opens with department, tags, descriptions, gallery and pricing.
+Each selected variant is a distinct draft; duplicate imports open the existing
+product instead. Refreshing supplier details does not overwrite owner edits.
+Bulk selection/review remains available. All imports remain unpublished drafts
+with fulfillment pending until the owner edits and publishes them normally.
+
+Mouser diagnostics: the live saved key was rejected with HTTP 200 containing
+`Errors: Code=Invalid, PropertyName=API Key, Message=Invalid unique identifier.`
+Its UUID formatting and lack of whitespace were checked, and the keyword request
+matches the official v1 schema. This response does not distinguish an unactivated
+key from a wrong/revoked key. Check **My Mouser → API access → Search API** for
+approval and the current key; Search and Order API keys are separate. Admin exposes
+this specific action using a fixed message, never raw provider text or credentials.
+The historical pending flag is a saved note, not a live claim about account approval.
+The owner subsequently confirmed that this was their pending **Order/Cart API key**,
+not a Search key. It was moved to private `orderKey` storage, with
+`orderApprovalPending: true`, and removed from `searchKey`. It does not configure
+or enable search. Request a separate Search API key through My Mouser's Search API
+section. Search disconnect preserves that separately stored Order key. API status
+exposes only boolean flags, never either credential; ordering remains disabled.
+
 Save a store's name, AliExpress Store ID and keywords in Preferred suppliers.
 Entering an ID builds its official HTTPS store URL; pasting a `/store/NUMBER` URL
 extracts the ID. The API also accepts an ID without a URL and rejects mismatched
