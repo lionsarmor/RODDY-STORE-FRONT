@@ -1270,6 +1270,8 @@ function loadPrintify(page = 1) {
               <pre class="setup-command">python3 /opt/roddy-store/backend/deploy/configure-printify.py</pre>
               <p class="help-copy">Hoodie artwork: the full RODDY logo in white with a red dot, on a transparent 3531 × 2352 px canvas. Select a black hoodie and upload this file to the front print area.</p>
               <p><a class="button small" href="./downloads/merch/roddy-hoodie-white-red-front.png" download="RODDY-hoodie-white-red-front.png">Download hoodie print PNG ↓</a></p>
+              <p class="help-copy">Desk-mat artwork follows the storefront ad: black, cream curves, red circle, and the original RODDY logo. This export is 9450 × 4650 px for a 31.5 × 15.5-inch layout; check the selected Printify template and bleed before ordering.</p>
+              <p><a class="button small" href="./downloads/merch/roddy-deskmat-black-cream-red-31.5x15.5.png" download="RODDY-deskmat-31.5x15.5.png">Download desk-mat print PNG ↓</a></p>
               <div class="admin-actions">
                 <a class="button small" href="https://printify.com/" target="_blank" rel="noopener noreferrer">Open Printify ↗</a>
                 <a class="button small" href="https://help.printify.com/hc/en-us/articles/4483626447249-How-can-I-generate-an-API-token" target="_blank" rel="noopener noreferrer">Token setup guide ↗</a>

@@ -15,3 +15,25 @@ dimensions the owner supplied. Final placement and Printify's resolution check
 must be reviewed in the product editor before saving the production product.
 
 This file prepares the artwork; it does not create or order a Printify product.
+
+# RODDY desk-mat artwork
+
+- Upload: `roddy-deskmat-black-cream-red-31.5x15.5.png`.
+- Vector master: `roddy-deskmat-black-cream-red-31.5x15.5.svg`.
+- Raster: 9450 × 4650 pixels, RGB PNG, opaque, 300 PPI metadata.
+- Assumed layout: large 31.5 × 15.5-inch mat. The owner has not yet supplied the
+  selected provider's exact print-area pixel dimensions or bleed template.
+- Design reference: storefront `desk-mat` cover image,
+  `public/img/products/roddy-8c017dc8-5866-4484-bfde-a0c61fa5c531.jpg`.
+- Flat reconstruction: near-black `#0B0B0B`, cream `#F3E8D4` curved lines, red
+  `#D52B2E` partial circle at upper right, cream/red original full RODDY logo at
+  lower right. Uses the original brand-pack logo paths without font substitution.
+- No mockup perspective, desk objects, lighting gradients, stitching, crop marks,
+  or rounded transparent corners are baked into the print image.
+
+The PNG was rendered directly from the SVG, not enlarged from the advertisement.
+In Printify, cover the entire print area and check the bleed/safe-area overlay.
+The edge motifs intentionally continue off the canvas; the logo is inset.
+If the chosen product template differs, export a matching canvas from the SVG
+instead of stretching the logo or assuming these nominal dimensions include bleed.
+This artwork has not been uploaded to or approved by Printify on the owner's behalf.
