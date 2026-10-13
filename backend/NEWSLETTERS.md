@@ -34,9 +34,13 @@ single opt-in, stored consent copy/time, a honeypot, same-origin checks and IP
 throttling. It sends no confirmation email and does not verify ownership of the
 submitted mailbox. Purchases and forum accounts never automatically join the list.
 Public responses do not disclose whether an address already exists. The invitation
-waits 25 seconds, initially shows a compact invitation (the email form opens only
-when the visitor chooses to sign up), does not take focus, hides on cart/contact/newsletter pages and
-active dialogs, and respects X dismissal for 30 days when storage is available.
+appears immediately on storefront pages, initially as a compact card (the email
+form opens only when the visitor chooses to sign up), and does not take focus.
+X closes it for the current page visit; refreshing or opening a fresh private
+window shows it again. Only a successful signup persists suppression through
+`roddy:newsletter:joined=yes` in localStorage. Old 30-day close preferences are
+removed, and signup changes from other tabs are reflected immediately. Draft
+previews still suppress the invitation because signup is unavailable there.
 
 ## Data and access
 

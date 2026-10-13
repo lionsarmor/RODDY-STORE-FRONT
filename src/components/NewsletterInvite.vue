@@ -1,34 +1,32 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
-import { useRoute } from 'vue-router';
-import { useUiStore } from '../stores/ui';
 import { useCatalogStore } from '../stores/catalog';
 import NewsletterSignup from './NewsletterSignup.vue';
-const route = useRoute();
-const ui = useUiStore();
 const catalog = useCatalogStore();
-const ready = ref(false);
-const expanded = ref(false);
-function joined() { dismissed.value = true; }
-const dismissed = ref(false);
-const overlayOpen = ref(false);
-let timer;
-const visible = computed(() => ready.value && !dismissed.value && !overlayOpen.value && !ui.themeOverlayOpen && catalog.loaded && !catalog.preview && !['cart', 'newsletter', 'contact'].includes(route.name));
-function close() {
-  dismissed.value = true;
-  try { localStorage.setItem('roddy:newsletter:dismissedUntil', String(Date.now() + 30 * 86400000)); } catch { /* Stays dismissed for this visit. */ }
+const JOINED_KEY = 'roddy:newsletter:joined';
+function alreadyJoined() {
+  try { return localStorage.getItem(JOINED_KEY) === 'yes'; } catch { return false; }
 }
+const subscribed = ref(alreadyJoined());
+const expanded = ref(false);
+const dismissed = ref(false);
+function joined() { subscribed.value = true; }
+function syncJoined(event) {
+  if (event.key === JOINED_KEY || event.key === null) subscribed.value = alreadyJoined();
+}
+const visible = computed(() => !subscribed.value && !dismissed.value && !catalog.preview);
+// X closes this page visit only. Successful signup hides it on future visits.
+function close() { dismissed.value = true; }
 onMounted(() => {
   window.addEventListener('roddy:newsletter:joined', joined);
-  try { dismissed.value = localStorage.getItem('roddy:newsletter:joined') === 'yes' || Number(localStorage.getItem('roddy:newsletter:dismissedUntil')) > Date.now(); } catch { /* Storage is optional. */ }
-  timer = setTimeout(() => {
-    overlayOpen.value = !!document.querySelector('dialog[open], [aria-modal="true"]');
-    ready.value = true;
-    // Avoid placing an invitation above an active dialog or theme selector.
-    timer = setInterval(() => { overlayOpen.value = !!document.querySelector('dialog[open], [aria-modal="true"]'); }, 1000);
-  }, 25000);
+  window.addEventListener('storage', syncJoined);
+  // Remove the old 30-day close preference without changing an existing signup.
+  try { localStorage.removeItem('roddy:newsletter:dismissedUntil'); } catch { /* Storage is optional. */ }
 });
-onBeforeUnmount(() => { clearTimeout(timer); clearInterval(timer); window.removeEventListener('roddy:newsletter:joined', joined); });
+onBeforeUnmount(() => {
+  window.removeEventListener('roddy:newsletter:joined', joined);
+  window.removeEventListener('storage', syncJoined);
+});
 </script>
 <template>
   <aside v-if="visible" class="newsletter-invite" aria-label="Occasional RODDY emails">
