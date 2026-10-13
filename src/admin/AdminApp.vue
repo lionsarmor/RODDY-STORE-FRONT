@@ -1290,8 +1290,8 @@ function syncPrintify(source, targetId) {
               <p><a class="button small" href="./downloads/merch/roddy-hoodie-white-red-front.png" download="RODDY-hoodie-white-red-front.png">Download hoodie print PNG ↓</a></p>
               <p class="help-copy">Desk-mat artwork follows the storefront ad: black, cream curves, red circle, and the original RODDY logo. Choose the file matching your selected SPOKE mat size. Each layout keeps the logo and curves in proportion. Apply a separate design to each size in Printify, then check the template bleed and safe area before ordering.</p>
               <div class="admin-actions">
-                <a class="button small" href="./downloads/merch/roddy-deskmat-spoke-12x18.png" download="RODDY-deskmat-spoke-12x18.png">Desk mat 12 × 18 inches PNG ↓</a>
-                <a class="button small" href="./downloads/merch/roddy-deskmat-spoke-12x22.png" download="RODDY-deskmat-spoke-12x22.png">Desk mat 12 × 22 inches PNG ↓</a>
+                <a class="button small" href="./downloads/merch/roddy-deskmat-spoke-12x18-printify.png" download="RODDY-deskmat-spoke-12x18-printify.png">Desk mat 12 × 18 inches PNG ↓</a>
+                <a class="button small" href="./downloads/merch/roddy-deskmat-spoke-12x22-printify.png" download="RODDY-deskmat-spoke-12x22-printify.png">Desk mat 12 × 22 inches PNG ↓</a>
                 <a class="button small" href="./downloads/merch/roddy-deskmat-spoke-16x32.png" download="RODDY-deskmat-spoke-16x32.png">Desk mat 16 × 32 inches PNG ↓</a>
               </div>
               <div class="admin-actions">

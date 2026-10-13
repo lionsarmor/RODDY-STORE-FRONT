@@ -56,11 +56,16 @@ shipping** button. Review the draft, preview it, then publish.
 | Hoodie 3XL | 41.99 | 25.09 | 16.90 |
 | Hoodie 4XL | 42.99 | 25.53 | 17.46 |
 | Hoodie 5XL | 42.99 | 25.66 | 17.33 |
+| Desk mat 12 × 18 | 17.99 | 10.67 | 7.32 |
+| Desk mat 12 × 22 | 19.99 | 11.49 | 8.50 |
 | Desk mat 16 × 32 | 27.99 | 15.60 | 12.39 |
 
 Based on connected product costs at setup. Gross profit excludes payment fees,
-taxes, returns and shipping. Customer shipping is separate. These storefront
-retail prices do not change the saved Printify listing prices.
+taxes, returns and shipping. Customer shipping is separate. Storefront draft price edits do not change saved Printify listing prices.
+The three desk-mat sizes were explicitly enabled through the owner-authorized
+setup, with matching listing prices and separate print areas. The two smaller
+sizes use 5610 × 3839 and 6791 × 3839 pixel artwork including template bleed;
+the existing large mat placement was preserved. No supplier order was created.
 
 ### Shipping estimates
 
@@ -71,6 +76,8 @@ uses the provider's variant ID and destination country; only USD rates are accep
 | Product | US first / additional | Canada first / additional |
 | --- | --- | --- |
 | Hoodie | $8.79 / $2.09 | $13.19 / $6.59 |
+| Desk mat 12 × 18 | $7.39 / $6.00 | $14.09 / $6.09 |
+| Desk mat 12 × 22 | $10.79 / $7.20 | $15.49 / $6.09 |
 | Desk mat 16 × 32 | $10.79 / $7.20 | $15.49 / $6.09 |
 
 The saved cart groups matching rates within each product. Different products are

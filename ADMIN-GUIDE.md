@@ -152,7 +152,7 @@ shown per first/additional item. Missing rates are shown as unavailable. It is a
 estimate until an address-specific checkout quote is implemented.
 
 Current hoodie listing: 10 colors, sizes S–5XL, 76 combinations (4XL/5XL have 8
-colors). Current desk mat listing: 16 × 32 inches. Enable and save new variants in
+colors). Current desk mat listing: 12 × 18, 12 × 22 and 16 × 32 inches, each with its own print artwork and price. Enable and save new variants in
 Printify, then refresh and review their artwork, retail prices and shipping.
 
 See [backend/PRINTIFY.md](backend/PRINTIFY.md) for account setup and remaining

@@ -47,10 +47,16 @@ function colorSwatch(color) {
 }
 const qty = ref(1);
 const activeIndex = ref(0);
+watch(() => selectedVariant.value?.id, () => { activeIndex.value = 0; });
+function chooseColor(color) {
+  selectedColor.value = color;
+  activeIndex.value = 0;
+}
 const expandedSpecs = ref(false);
 const lightbox = ref(null);
 const images = computed(() => [
   ...new Set([
+    ...(selectedVariant.value?.image ? [selectedVariant.value.image] : []),
     ...(product.value?.images || []),
     ...(!product.value?.images?.length && product.value?.coverImage
       ? [product.value.coverImage]
@@ -184,7 +190,7 @@ async function buyNow() {
             @click="lightbox.showModal()"
           >
             <img
-              :src="productImageUrl(activeIndex === 0 && selectedVariant?.image ? selectedVariant.image : images[activeIndex])"
+              :src="productImageUrl(images[activeIndex])"
               :alt="`${product.name} — image ${activeIndex + 1}`"
             /><span>⤢ Enlarge</span>
           </button>
@@ -250,7 +256,7 @@ async function buyNow() {
           <fieldset v-if="colors.length">
             <legend>Color <strong>{{ selectedColor }}</strong></legend>
             <div class="merch-choice-list">
-              <button v-for="color in colors" :key="color" type="button" :aria-pressed="selectedColor === color" @click="selectedColor = color">
+              <button v-for="color in colors" :key="color" type="button" :aria-pressed="selectedColor === color" @click="chooseColor(color)">
                 <span class="merch-swatch" :style="{background: colorSwatch(color)}" aria-hidden="true"></span>{{ color }}
               </button>
             </div>
@@ -484,7 +490,7 @@ async function buyNow() {
         Close ×</button
       ><img
         v-if="images.length"
-        :src="productImageUrl(activeIndex === 0 && selectedVariant?.image ? selectedVariant.image : images[activeIndex])"
+        :src="productImageUrl(images[activeIndex])"
         :alt="product.name"
       />
       <div v-if="images.length > 1" class="gallery-controls">

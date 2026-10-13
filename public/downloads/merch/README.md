@@ -23,15 +23,17 @@ landscape orientation: the longer dimension is the artwork width.
 
 | Printify size | Upload PNG | Pixel dimensions at 300 PPI |
 | --- | --- | --- |
-| 12 × 18 inches | `roddy-deskmat-spoke-12x18.png` | 5400 × 3600 |
-| 12 × 22 inches | `roddy-deskmat-spoke-12x22.png` | 6600 × 3600 |
+| 12 × 18 inches | `roddy-deskmat-spoke-12x18-printify.png` | 5610 × 3839 (includes template bleed) |
+| 12 × 22 inches | `roddy-deskmat-spoke-12x22-printify.png` | 6791 × 3839 (includes template bleed) |
 | 16 × 32 inches | `roddy-deskmat-spoke-16x32.png` | 9600 × 4800 |
 
 Each PNG has a matching editable SVG master. PNGs are opaque RGB with 300 PPI
 metadata. The smaller layouts reposition the right-hand curves and original
 logo, preserving their proportions instead of cropping or stretching the wide
-layout. These are nominal product dimensions; exact template bleed dimensions
-still need checking in Printify before production.
+layout. The two smaller uploads include bleed sized to the current SPOKE Printify
+API placeholders. Their nominal artwork remains centered without distorting
+the logo. The older nominal-size PNG/SVG files remain available. The large mat
+uses its existing uploaded image and owner-selected placement.
 
 - Product reference: https://printify.com/app/products/488/generic-brand/desk-mat
 - Design reference: storefront `desk-mat` cover image,
@@ -57,6 +59,9 @@ in Preview before saving.
 Printify template and variant design guide:
 https://help.printify.com/hc/en-us/articles/11240165642641-How-do-I-use-the-design-templates
 
-This artwork has not been uploaded to or approved by Printify on the owner's behalf.
+All three sizes are now configured in the connected Printify product. The two
+smaller template files were uploaded and applied to separate print areas through
+the API, while the large mat placement was preserved. Provider-generated mockups
+were checked; a physical sample has not been ordered.
 The earlier 31.5 × 15.5-inch provisional files remain available for existing links;
 use the matching SPOKE size above for the provider the owner selected.

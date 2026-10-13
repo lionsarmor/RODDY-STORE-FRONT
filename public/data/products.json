@@ -449,7 +449,7 @@
       "sku": "R-MERCH-001",
       "name": "DESK MAT",
       "category": "merch",
-      "price": 27.99,
+      "price": 17.99,
       "stock": 0,
       "trackStock": false,
       "type": "physical",
@@ -458,12 +458,12 @@
       "active": true,
       "tags": [],
       "pricePending": false,
-      "shortDescription": "The RODDY desk mat. Black, cream curves and a red dot. Available in the 16 × 32-inch layout.",
+      "shortDescription": "The RODDY desk mat. Black, cream curves and a red dot, in three sizes: 12 × 18, 12 × 22 and 16 × 32 inches.",
       "description": "# RODDY Desk Mat\n\n**Your desk. Your workspace. Your world.**\n\nWhether you're writing code, designing circuits, building your next big project, or spending the night exploring your favorite retro games, the **RODDY Desk Mat** gives your workspace a place to call home.\n\nCreated for developers, makers, gamers, engineers, and anyone who appreciates a great desk setup, the RODDY Desk Mat brings together everyday functionality and a clean, technology-inspired aesthetic.\n\nIts generous surface provides room for your keyboard, mouse, and other desktop essentials, helping create a comfortable, organized workspace for whatever you're working on.\n\n### Built for the Way You Work\n\nFrom modern development environments to vintage computers, electronics workbenches, and gaming stations, the RODDY Desk Mat fits naturally into almost any setup.\n\nThe smooth fabric surface is designed for comfortable mouse movement and everyday use, while the protective mat helps keep your desktop free from the wear and scratches of daily activity.\n\nWhether you're working with a mechanical keyboard, programming a microcontroller, designing your next PCB, or firing up a Commander X16, it's a practical addition to your workspace.\n\n### More Than Just a Desk Accessory\n\nRODDY is about curiosity, creativity, and the freedom to build things simply because they're interesting.\n\nOur projects span software, games, retro computing, electronics, and original hardware. The RODDY Desk Mat brings that same spirit to the place where those ideas begin.\n\nIt's not about having the most expensive setup. It's about having a workspace that inspires you to sit down, experiment, create, and keep building.\n\n### Highlights\n\n- **Spacious Desktop Coverage** — Room for your keyboard, mouse, and everyday essentials.\n- **Smooth Fabric Surface** — Designed for comfortable mouse movement and precise control.\n- **Workspace Protection** — Helps protect your desk from everyday scratches and wear.\n- **Versatile Design** — Perfect for programming, gaming, electronics, creative work, and retro computing.\n- **Original RODDY Branding** — A simple way to bring the RODDY maker spirit to your desk.\n\n### Why We Made It\n\nEverything we build at RODDY starts somewhere, usually at a desk covered in keyboards, circuit boards, coffee cups, and half-finished ideas.\n\nWe wanted something that belonged in that environment. Not another piece of disposable merchandise, but a useful everyday accessory that represents the people who love making things.\n\nThe RODDY Desk Mat is for the builders, the tinkerers, the programmers, and the people who never quite stop experimenting.\n\n**Make something. Break something. Learn something. Build again.**\n\n*RODDY — Made for Makers.*",
       "releaseNote": "Made to order. Merchandise ordering opens soon. Choose your options and save your selection.",
       "specs": {
-        "Size": "16\" × 32\"",
-        "Print provider": "SPOKE Custom Products"
+        "Print provider": "SPOKE Custom Products",
+        "Sizes": "12\" × 18\", 12\" × 22\", 16\" × 32\""
       },
       "images": [
         "img/products/roddy-a00cc37d-3bc5-4967-a955-50e8a3cfc60f.jpg",
@@ -482,56 +482,50 @@
         "shopId": 29298691,
         "blueprintId": 488,
         "printProviderId": 1,
-        "syncedAt": "2026-10-13T01:30:45.093Z",
+        "syncedAt": "2026-10-13T02:02:55.550Z",
         "shippingCountries": [
           "US",
           "CA"
         ],
         "shippingProfiles": [
           {
-            "countries": [
-              "US"
-            ],
             "variantIds": [
-              65240,
               65240
             ],
-            "firstItem": 7.39,
-            "additionalItem": 6
-          },
-          {
             "countries": [
               "CA"
-            ],
-            "variantIds": [
-              65240,
-              65240
             ],
             "firstItem": 14.09,
             "additionalItem": 6.09
           },
           {
+            "variantIds": [
+              65240
+            ],
             "countries": [
               "US"
             ],
+            "firstItem": 7.39,
+            "additionalItem": 6
+          },
+          {
             "variantIds": [
               65241,
-              65241,
-              72580,
               72580
+            ],
+            "countries": [
+              "US"
             ],
             "firstItem": 10.79,
             "additionalItem": 7.2
           },
           {
-            "countries": [
-              "CA"
-            ],
             "variantIds": [
               65241,
-              65241,
-              72580,
               72580
+            ],
+            "countries": [
+              "CA"
             ],
             "firstItem": 15.49,
             "additionalItem": 6.09
@@ -539,6 +533,30 @@
         ],
         "shippingWarning": "",
         "variants": [
+          {
+            "id": "65240",
+            "providerVariantId": 65240,
+            "sku": "42393991900885745015",
+            "size": "12\" × 18\"",
+            "color": "",
+            "colors": [],
+            "price": 17.99,
+            "enabled": true,
+            "available": true,
+            "image": "https://images-api.printify.com/mockup/6acd8183b52496d26b0ccfc0/65240/6570/desk-mat.jpg?camera_label=front"
+          },
+          {
+            "id": "65241",
+            "providerVariantId": 65241,
+            "sku": "32609796431604838671",
+            "size": "12\" × 22\"",
+            "color": "",
+            "colors": [],
+            "price": 19.99,
+            "enabled": true,
+            "available": true,
+            "image": "https://images-api.printify.com/mockup/6acd8183b52496d26b0ccfc0/65241/6569/desk-mat.jpg?camera_label=front"
+          },
           {
             "id": "72580",
             "providerVariantId": 72580,
