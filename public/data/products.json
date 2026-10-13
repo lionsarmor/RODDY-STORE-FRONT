@@ -2836,8 +2836,10 @@
       "tags": [],
       "shortDescription": "A wireless hub for retro machines.",
       "description": "",
-      "images": [],
-      "coverImage": "",
+      "images": [
+        "img/products/roddy-307f0526-9723-4908-84e0-3d4f6c1036ca.jpg"
+      ],
+      "coverImage": "img/products/roddy-307f0526-9723-4908-84e0-3d4f6c1036ca.jpg",
       "downloadUrl": "",
       "githubUrl": "https://github.com/lionsarmor/LINK-COMMANDER",
       "officeShipping": {},
