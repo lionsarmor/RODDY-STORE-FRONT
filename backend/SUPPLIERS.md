@@ -37,8 +37,56 @@ imports**. Save API credentials in its password fields over HTTPS:
 - Mouser: Search API key from My Mouser → API access. No Order key is requested.
 - AliExpress: approved Open Platform App Key and App Secret with Dropship search
   permission. Exact listing/SKU details also require an authorized buyer token.
-  An affiliate-only application's permissions may be insufficient. Renewal remains
-  manual in this phase; token errors are reported without exposing the token.
+  An affiliate-only application's permissions may be insufficient.
+
+### AliExpress approved-account onboarding
+
+Developer review approval is separate from application creation and buyer authorization.
+In App Console choose **Drop Shipping → Create App**, name it **RODDY Store**,
+and configure the exact callback shown in Suppliers admin:
+`https://store-api.143-244-168-180.sslip.io/suppliers/aliexpress/callback`.
+It is generated from the backend's trusted `STORE_PUBLIC_URL`, not a browser Host header.
+Save App Key and App Secret in the private admin form. Then click **Authorize
+AliExpress buyer**, open **Continue to AliExpress**, sign into the sourcing account
+on AliExpress, approve access, and return to admin → Reload supplier settings.
+Run a real keyword search and exact listing lookup to verify application permissions.
+Passwords and API secrets must not be pasted into chat, public files, or URLs.
+
+The owner-only start endpoint creates a ten-minute, single-use authorization ticket.
+A top-level backend visit sets a Secure/HttpOnly/SameSite=Lax host cookie before
+redirecting to AliExpress. Callback state is bound to that browser and the saved
+application credentials; missing, expired, replayed or mismatched state is rejected.
+Tickets and browser bindings are stored as hashes in SQLite. Changing credentials
+or disconnecting invalidates pending flows and clears tokens from a different app.
+
+The server exchanges the code using official GOP `/rest/auth/token/create` signing
+(API path + sorted parameters, HMAC-SHA256), then saves access/refresh tokens and
+expiry times privately. Before supplier reads it renews tokens within 30 minutes of
+expiry using `/rest/auth/token/refresh`. **Renew buyer authorization** also allows
+explicit renewal. If renewal expires or is revoked, authorize again. A manually
+entered token has no automatic renewal metadata. Provider errors never echo tokens.
+Testing/production application token lifetimes differ; use the returned durations,
+not assumed thirty-day validity. Authorization does not enable supplier ordering.
+
+### X16 keycaps manufacturer onboarding
+
+Suppliers admin includes the existing **v05 AULA F87/F87 Pro ANSI 87-key, 80% TKL**
+design, pinned to source revision `e0b66b85566b53df6d7770bc1ebc081df73d0756` in
+`lionsarmor/x16-keycaps`. The original checkout was inspected read-only. Its inventory
+has 87 keys, and the supplier package file hashes and ZIP integrity were checked.
+An identical supplier ZIP is hosted under `public/merch/keycaps/`, with its SHA-256
+recorded in `SHA256SUMS.txt`; it requires no GitHub access. No artwork was rebuilt.
+
+`public/merch/keycaps/FULFILLMENT_REQUEST.txt` is an unsent inquiry for Goblintech.
+The design already uses their ANSI80 template. Custom manufacturing and creator
+programs are leads, not confirmation of per-customer drop shipping or a public API.
+YUZU is linked as a no-minimum custom-set alternative; its external creator checkout
+is not assumed to integrate with Square.
+
+Request a quote, digital proof and one physical fit sample before enabling sales.
+Confirm repeat one-set pricing, US/Canada shipping, neutral packaging, design SKU,
+billing, order submission, tracking, defects and cancellations. Nothing sends this
+inquiry, orders a sample, charges a card, or publishes a purchasable keycap listing.
 
 Blank fields retain existing credentials. Values are cleared from the form after
 saving and never echoed in responses, public catalog, GitHub, localStorage or logs.
@@ -139,7 +187,8 @@ npm run build
 git diff --check
 ```
 
-Deploy `app.py`, `commerce.py`, `suppliers.py`, `supplier_clients.py` together.
+Deploy `app.py`, `commerce.py`, `suppliers.py`, `supplier_clients.py` and
+`aliexpress_auth.py` together.
 Migration adds private preference/cache/budget tables at startup and does not modify
 orders, forum, newsletter records, catalog or paid ZIPs. Preserve the existing 64KB
 Caddy store cap. Only newsletter routes and supplier-preferences JSON accept that

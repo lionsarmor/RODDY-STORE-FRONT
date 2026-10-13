@@ -13,6 +13,7 @@ from fastapi import HTTPException, Request
 
 from .newsletter_mail import text
 from .supplier_clients import AliExpress, Mouser, link
+from .aliexpress_auth import register_aliexpress_auth
 
 PROVIDERS = {'mouser', 'aliexpress'}
 
@@ -47,7 +48,7 @@ def write_connections(path, data):
             os.unlink(temporary)
 
 
-def register_suppliers(app, connect, require_admin, config_path):
+def register_suppliers(app, connect, require_admin, config_path, public_url, site, rate_limit):
     config_lock = threading.Lock()
     query_lock = threading.Lock()
     with connect() as db:
@@ -76,6 +77,9 @@ def register_suppliers(app, connect, require_admin, config_path):
                     raise HTTPException(429, 'Supplier request budget reached. Wait for its minute/day budget to reset. Cached results remain available.')
                 db.execute('INSERT INTO supplier_limits VALUES(?,1,?) ON CONFLICT(bucket) DO UPDATE SET count=count+1', (bucket, now + period))
 
+    refresh_buyer, callback_url = register_aliexpress_auth(app, connect, require_admin, config_path,
+        read_connections, write_connections, config_lock, reserve, public_url, site, rate_limit)
+
     def preferences(db):
         row = db.execute('SELECT * FROM supplier_preferences WHERE id=1').fetchone()
         return {**json.loads(row['data']), 'revision': row['revision']}
@@ -89,13 +93,17 @@ def register_suppliers(app, connect, require_admin, config_path):
         return [{'provider': provider,
                  'searchConfigured': bool(config.get(provider, {}).get('searchKey') if provider == 'mouser' else config.get(provider, {}).get('appKey') and config.get(provider, {}).get('appSecret')),
                  'buyerAuthorized': bool(config.get(provider, {}).get('accessToken')) if provider == 'aliexpress' else None,
+                 'accessExpiresAt': config.get(provider, {}).get('accessExpiresAt') if provider == 'aliexpress' else None,
+                 'refreshAvailable': bool(config.get(provider, {}).get('refreshToken')) if provider == 'aliexpress' else False,
+                 'callbackUrl': callback_url if provider == 'aliexpress' else '',
                  'searchVerifiedAt': config.get(provider, {}).get('verifiedAt'),
                  'approvalPending': config.get(provider, {}).get('approvalPending', False),
                  'capabilities': {'keywordSearch': True, 'productLookup': True, 'completeSellerCatalog': False, 'orderSubmission': False, 'automaticPayment': False}}
                 for provider in sorted(PROVIDERS)]
 
     def cached(provider, kind, query, page, country):
-        config = read_connections(config_path).get(provider, {})
+        with config_lock:
+            config = refresh_buyer() if provider == 'aliexpress' else read_connections(config_path).get(provider, {})
         if not config or (provider == 'mouser' and not config.get('searchKey')) or (provider == 'aliexpress' and not (config.get('appKey') and config.get('appSecret'))):
             raise HTTPException(409, 'Connect this supplier in Suppliers settings first. Website browsing is available without API credentials.')
         key_config = {k: v for k, v in config.items() if k not in {'verifiedAt', 'approvalPending'}}
@@ -140,6 +148,10 @@ def register_suppliers(app, connect, require_admin, config_path):
             if body.get('disconnect') is True:
                 config.pop(provider, None)
             else:
+                changed_app = provider == 'aliexpress' and any(body.get(k) and body[k] != entry.get(k) for k in ['appKey', 'appSecret'])
+                if changed_app or (provider == 'aliexpress' and body.get('accessToken')):
+                    for k in ['accessToken', 'refreshToken', 'accessExpiresAt', 'refreshExpiresAt', 'authorizedAt']:
+                        entry.pop(k, None)
                 for field in fields:
                     if body.get(field):
                         value = text(body[field], 4096 if field == 'accessToken' else 512, 'the API credential', True)
@@ -154,6 +166,9 @@ def register_suppliers(app, connect, require_admin, config_path):
                     entry['approvalPending'] = body['approvalPending']
                 config[provider] = entry
             write_connections(config_path, config)
+            if provider == 'aliexpress':
+                with connect() as db:
+                    db.execute('DELETE FROM supplier_oauth')
         return {'connections': connection_status(config)}
 
     @app.post('/admin/suppliers/preferences')

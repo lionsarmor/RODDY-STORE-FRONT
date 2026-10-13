@@ -494,5 +494,5 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
 
     register_forum(app, connect, require_admin, rate_limit, origins)
     register_newsletter(app, connect, require_admin, rate_limit, origins)
-    register_suppliers(app, connect, require_admin, os.getenv("SUPPLIERS_CONFIG", str(database.parent / "suppliers.json")))
+    register_suppliers(app, connect, require_admin, os.getenv("SUPPLIERS_CONFIG", str(database.parent / "suppliers.json")), public_url, site, rate_limit)
     return app

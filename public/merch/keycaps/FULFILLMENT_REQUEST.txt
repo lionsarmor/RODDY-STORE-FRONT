@@ -1,0 +1,55 @@
+Subject: RODDY X16 / AULA F87 — 87-key sample and made-to-order fulfillment inquiry
+To: sales@goblintechkeys.com / merch@goblintechkeys.com
+
+Hello Goblintechkeys team,
+
+We want to sell our RODDY X16 keycap design through our own storefront,
+https://roddy.world, with production and direct shipping after each paid order.
+Our backend and customer checkout use Square. We are asking for a quote and
+capability confirmation; this inquiry does not authorize manufacture or charges.
+
+The current v05 design and supplier review package are available here:
+https://roddy.world/merch/keycaps/RODDY_X16_GOBLINTECH_REVIEW_v05.zip
+SHA-256: 2e4537c96cd40db2fba61c79204d652dcab9c58799f43f3da710e088d3529eef
+
+Target: AULA F87 / F87 Pro, ANSI 87-key, 80% TKL mechanical keyboard.
+We need MX-compatible stems, a 6.25u spacebar, 2u Backspace, 2.25u Return and
+left Shift, 2.75u right Shift, 1.75u Shift Lock, 1.5u Tab and backslash,
+and seven 1.25u bottom modifiers. Please confirm row profile, stabilizers and
+F/J homing marks against your tooling before production.
+
+Artwork is already mapped into your ANSI 80% template. Printed legends and
+color accuracy take priority over shine-through. The design includes small
+vector X16 graphic sublegends and 16 color swatches on the number row.
+Please preserve the exact shapes, orientation, wording and key assignments.
+Please confirm PBT dye-sublimation, print tolerances, accepted outlined SVG/PDF
+formats, printable areas and color matching. We need an approved digital proof
+and one physical sample for test fit on the actual AULA before public sales.
+
+Please quote and confirm:
+
+1. One complete 87-key sample: setup, production, shipping and lead time.
+2. Repeat orders of this approved design, one set at a time: unit price,
+   any minimum volume or prepaid inventory commitment, production time,
+   and whether single-customer fulfillment is available without a bulk order.
+3. Tracked shipping to the United States and Canada, including any duties,
+   taxes, remote-area charges and delivery estimates.
+4. Neutral or RODDY-branded packaging with no supplier retail invoice/pricing.
+5. Whether you accept paid-order submissions through an API, webhook, CSV,
+   email or business portal; please provide documentation and onboarding terms.
+6. A stable SKU/design identifier so repeat orders use the approved v05 artwork
+   without requiring a fresh artwork review on every order.
+7. Supplier payment arrangements, failed-charge handling, and whether billing
+   can occur automatically after we verify customer payment through Square.
+8. Order acknowledgment and tracking delivery, cancellations before production,
+   defective/missing-key replacements, and duplicate-order prevention.
+9. Reseller terms and customer address handling/deletion requirements.
+
+We would prefer our customers to stay in our Square checkout rather than move
+to a separate supplier checkout. If your creator profit-sharing program uses
+a different sales process, please explain the options and fees separately.
+
+Please do not begin production until we approve your quote and digital proof.
+
+Thank you,
+RODDY

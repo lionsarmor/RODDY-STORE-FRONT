@@ -20,6 +20,9 @@ const review = ref(false);
 const busy = ref(false);
 const error = ref('');
 const message = ref('');
+const authorizationUrl = ref('');
+const keycapPackageUrl = import.meta.env.BASE_URL + 'merch/keycaps/RODDY_X16_GOBLINTECH_REVIEW_v05.zip';
+const keycapInquiryUrl = import.meta.env.BASE_URL + 'merch/keycaps/FULFILLMENT_REQUEST.txt';
 const rules = reactive({mode: 'markup', percent: 30, minimumProfit: 5, shippingBuffer: 15, feePercent: 2.9, feeFixed: .30, round99: true});
 const favorite = computed(() => preferences.value.favorites.find(f => f.id === favoriteId.value));
 const connection = computed(() => state.value?.connections.find(c => c.provider === provider.value));
@@ -33,13 +36,20 @@ async function act(fn) {
   try { await fn(); } catch (e) { error.value = e.message; }
   finally { busy.value = false; }
 }
-async function load() { state.value = await api(''); preferences.value = JSON.parse(JSON.stringify(state.value.preferences)); }
+async function load() { state.value = await api(''); preferences.value = JSON.parse(JSON.stringify(state.value.preferences)); authorizationUrl.value = ''; }
 watch(() => [props.connected, props.token], async () => {
   state.value = null; results.value = null; selected.value = [];
   Object.keys(credentials).forEach(key => credentials[key] = '');
   if (props.connected) await act(load);
 }, {immediate: true});
-watch(provider, () => { if (favorite.value && favorite.value.provider !== provider.value) favoriteId.value = ''; results.value = null; selected.value = []; review.value = false; Object.keys(credentials).forEach(key => credentials[key] = ''); });
+watch(provider, () => { if (favorite.value && favorite.value.provider !== provider.value) favoriteId.value = ''; results.value = null; selected.value = []; review.value = false; authorizationUrl.value = ''; Object.keys(credentials).forEach(key => credentials[key] = ''); });
+async function authorizeBuyer() {
+  const result = await api('/aliexpress/authorize', {});
+  const url = new URL(result.url);
+  if (url.origin !== new URL(props.catalog.settings.checkoutEndpoint).origin || url.protocol !== 'https:' || url.pathname !== '/suppliers/aliexpress/authorize' || !/^[A-Za-z0-9_-]{43}$/.test(url.searchParams.get('ticket') || '')) throw new Error('Invalid authorization destination.');
+  authorizationUrl.value = url.href;
+  message.value = 'Open Continue to AliExpress below within 10 minutes. Sign in on AliExpress, approve access, then return here and reload supplier settings. Your password stays on AliExpress.';
+}
 function setStoreId(f) { if (/^\d{1,20}$/.test(f.storeId || '')) f.url = `https://www.aliexpress.com/store/${f.storeId}`; }
 function extractStoreId(f) { try { const match = new URL(f.url).pathname.match(/\/store\/(\d+)/); f.storeId = match?.[1] || ''; } catch { f.storeId = ''; } }
 function addFavorite() { preferences.value.favorites.push({id: crypto.randomUUID(), name: '', provider: 'aliexpress', storeId: '', url: '', query: 'MiSTer FPGA'}); }
@@ -107,6 +117,13 @@ function importSelected() {
         <p><a href="https://www.mouser.com/en/api-order/" target="_blank" rel="noopener noreferrer">Mouser ordering & saved cards ↗</a> · <a href="https://printify.com/app/" target="_blank" rel="noopener noreferrer">Printify billing ↗</a> · <a href="https://openservice.aliexpress.com/" target="_blank" rel="noopener noreferrer">AliExpress API console ↗</a></p>
       </section>
       <section class="admin-section">
+        <h2>X16 keycaps · manufacturer setup</h2>
+        <p><strong>AULA F87 / F87 Pro · ANSI 87 keys · 80% TKL.</strong> The current v05 design includes the X16 graphic legends, blue/off-white/charcoal palette, number-row color swatches and 6.25u spacebar. It is already mapped to Goblintech's ANSI 80% template.</p>
+        <p class="notice">Supplier inquiry pending. Goblintech's custom manufacturing and creator services are candidates; one-set repeat fulfillment, price, US/Canada shipping, billing and any API still need written confirmation. No keycap product is available for checkout yet.</p>
+        <ol class="help-copy"><li>Download the current v05 package and fulfillment-request draft below. Send the request to sales@goblintechkeys.com or merch@goblintechkeys.com; nothing is sent by this admin.</li><li>Obtain a quote and digital proof, then order one sample and check all 87 keys on the actual AULA keyboard. Printed legends and color fidelity take priority over shine-through.</li><li>Confirm a stable design SKU, per-order shipping, supplier billing, tracking and order-submission method before connecting paid-order fulfillment. Keep the listing unavailable until those terms and the sample are accepted.</li></ol>
+        <div class="admin-actions"><a class="button small" :href="keycapPackageUrl" target="_blank" rel="noopener noreferrer">Download v05 supplier package ↗</a><a class="button small" :href="keycapInquiryUrl" download="RODDY-X16-FULFILLMENT-REQUEST.txt">Download fulfillment request</a><a class="button small" href="https://goblintechkeys.com/pages/custom-bulk-order-keycap-sets" target="_blank" rel="noopener noreferrer">Goblintech manufacturer ↗</a><a class="button small" href="https://yuzukeycaps.com/" target="_blank" rel="noopener noreferrer">YUZU · alternative maker ↗</a></div>
+      </section>
+      <section class="admin-section">
         <h2>Preferred suppliers</h2>
         <p class="help-copy">Bookmark stores such as Retro Castle with their exact official URL and a saved search such as “MiSTer FPGA”. Select the bookmark to restore your supplier and keywords, or open the store to browse its complete listings. Enter a numeric AliExpress Store ID to fill the URL automatically, or paste a /store/NUMBER URL to extract its ID. Use the store ID, not a product ID or seller member-account ID. Only listings you explicitly select become RODDY drafts.</p>
         <section v-for="(f, i) in preferences.favorites" :key="f.id" class="supplier-block">
@@ -121,11 +138,18 @@ function importSelected() {
       <section class="admin-section">
         <h2>Supplier API connection</h2>
         <label>Search provider<select v-model="provider"><option value="mouser">Mouser Electronics</option><option value="aliexpress">AliExpress</option></select></label>
-        <p class="notice">{{ connection?.approvalPending ? 'Mouser key saved; supplier approval is pending. Website search is available; try the API after approval.' : connection?.searchVerifiedAt ? 'Search API access verified by a successful read.' : connection?.searchConfigured ? 'Credentials configured — verify by searching below.' : 'API credentials not configured yet. Website searches still work.' }} <span v-if="provider === 'aliexpress'">{{ connection?.buyerAuthorized ? 'Buyer token saved; permissions and expiry are checked by AliExpress on use.' : 'Buyer authorization is needed to load exact product variants.' }}</span></p>
+        <p class="notice">{{ connection?.approvalPending ? 'Mouser key saved; supplier approval is pending. Website search is available; try the API after approval.' : connection?.searchVerifiedAt ? 'Search API access verified by a successful read.' : connection?.searchConfigured ? 'Credentials configured — verify by searching below.' : 'API credentials not configured yet. Website searches still work.' }} <span v-if="provider === 'aliexpress'">{{ connection?.buyerAuthorized ? 'Buyer token saved; verify permissions with an exact product lookup.' : 'Buyer authorization is needed to load exact product variants.' }}</span></p>
         <template v-if="provider === 'mouser'"><p class="help-copy">Create/sign in to My Mouser, request Search API access, then enter its Search API key here. Search and ordering use separate permissions; this field does not connect an Order API key.</p><label>Mouser Search API key<input v-model="credentials.searchKey" type="password" autocomplete="off" placeholder="Leave blank to keep the saved key" /></label><a href="https://www.mouser.com/en/api-search/" target="_blank" rel="noopener noreferrer">Get Mouser Search API access ↗</a></template>
-        <template v-else><p class="help-copy">Create an AliExpress Open Platform application with Dropship search/detail permissions. Enter its App Key and App Secret. Exact SKU details also need the buyer access token from its authorization flow. An affiliate-only key may not have these permissions. Account approval and token renewal are handled in AliExpress; rejected/expired access is reported here.</p><label>AliExpress App Key<input v-model="credentials.appKey" type="password" autocomplete="off" placeholder="Leave blank to keep saved" /></label><label>AliExpress App Secret<input v-model="credentials.appSecret" type="password" autocomplete="off" placeholder="Leave blank to keep saved" /></label><label>Authorized buyer access token<input v-model="credentials.accessToken" type="password" autocomplete="off" placeholder="Optional for search; required for product details" /></label></template>
+        <template v-else>
+          <p class="help-copy">Developer review approval lets you proceed with application setup. In AliExpress App Console, choose the active Drop Shipping category and Create App. Name it RODDY Store and request search and product-detail permissions. Commercial Developer, Self-Developer and Affiliates API are different categories. Save its App Key and App Secret here, then authorize the buyer account you will use for sourcing.</p>
+          <p class="help-copy">In the application settings, set this exact callback URL:</p><code class="supplier-callback">{{ connection?.callbackUrl || 'Backend HTTPS public URL needs configuration.' }}</code>
+          <label>AliExpress App Key<input v-model="credentials.appKey" type="password" autocomplete="off" placeholder="Leave blank to keep saved" /></label><label>AliExpress App Secret<input v-model="credentials.appSecret" type="password" autocomplete="off" placeholder="Leave blank to keep saved" /></label>
+          <details><summary>Advanced: manually supplied buyer token</summary><p class="help-copy">Prefer the authorization button below so the server can securely store and renew both tokens. A manually entered token has no automatic refresh unless you authorize again.</p><label>Authorized buyer access token<input v-model="credentials.accessToken" type="password" autocomplete="off" placeholder="Leave blank to use browser authorization" /></label></details>
+          <p v-if="connection?.accessExpiresAt" class="help-copy">Buyer access expires: {{ new Date(connection.accessExpiresAt * 1000).toLocaleString() }}. {{ connection.refreshAvailable ? 'The server renews it before supplier reads when renewal is still valid.' : 'Authorize again when it expires.' }}</p>
+        </template>
         <p class="help-copy">Credentials are sent over HTTPS to your backend, stored in a private mode-600 file, and never returned to the browser or saved in the public catalog. Blank fields keep existing values. Save, then run a search to check access. Do not paste credentials in chat or GitHub.</p>
         <div class="admin-actions"><button class="button primary" @click="act(saveConnection)">Save private API connection</button><button class="button small" :disabled="!connection?.searchConfigured" @click="act(async () => { await api('/connections', {provider, disconnect: true}); await load(); results = null; message = 'Connection removed locally. Revoke its key in the supplier dashboard if needed.'; })">Disconnect this API</button></div>
+        <div v-if="provider === 'aliexpress'" class="admin-actions"><button class="button small" :disabled="!connection?.searchConfigured || !connection?.callbackUrl" @click="act(authorizeBuyer)">Authorize AliExpress buyer</button><a v-if="authorizationUrl" class="button primary" :href="authorizationUrl" target="_blank" rel="noopener noreferrer">Continue to AliExpress ↗</a><button class="button small" :disabled="!connection?.refreshAvailable" @click="act(async () => { await api('/aliexpress/refresh', {}); await load(); message = 'Buyer authorization renewed privately. Run an exact product lookup to verify permissions.'; })">Renew buyer authorization</button></div>
       </section>
       <section class="admin-section">
         <h2>Search & inspect listings</h2>
@@ -158,5 +182,6 @@ function importSelected() {
   </div>
 </template>
 <style scoped>
+.supplier-callback{display:block;overflow-wrap:anywhere;padding:12px;border:1px solid var(--rule);margin:12px 0}.supplier-manager ol{padding-left:24px}.supplier-manager li{margin:8px 0;line-height:1.65}
 .supplier-manager fieldset{border:0;padding:0;min-width:0}.supplier-manager p{line-height:1.65}.supplier-manager a{text-decoration:underline}.supplier-block{border:1px solid var(--rule);padding:18px;margin:16px 0}.supplier-result{display:flex;gap:20px}.supplier-result>img{width:100px;height:100px;object-fit:contain;flex-shrink:0;background:white}.supplier-result>div{min-width:0;overflow-wrap:anywhere}.supplier-table{overflow:auto}.supplier-table table{width:100%;border-collapse:collapse}.supplier-table th,.supplier-table td{padding:14px;text-align:left;border-bottom:1px solid var(--rule)}@media(max-width:600px){.supplier-manager .form-grid{grid-template-columns:minmax(0,1fr)}.supplier-result{flex-direction:column}.supplier-block{padding:12px}}
 </style>
