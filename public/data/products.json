@@ -2842,7 +2842,41 @@
       "githubUrl": "https://github.com/lionsarmor/LINK-COMMANDER",
       "officeShipping": {},
       "specs": {},
-      "releaseNote": "Office shipping rates, price and stock will be configured before launch."
+      "releaseNote": "Office shipping rates, price and stock will be configured before launch.",
+      "compareAtPrice": 0,
+      "story": "",
+      "documentationUrl": "",
+      "merch": null
+    },
+    {
+      "id": "new-product",
+      "sku": "L-001",
+      "name": "Link Commander",
+      "category": "labs",
+      "price": 0,
+      "stock": 0,
+      "active": true,
+      "featured": true,
+      "description": "# LINK COMMANDER\n\n**Modern peripherals. Classic computers. One connection.**\n\nYour favorite retro computer deserves a modern keyboard and mouse.\n\n**LINK COMMANDER** is a retro peripheral interface designed to bridge the gap between modern input devices and classic computer hardware. Built for enthusiasts who love their vintage machines but appreciate the convenience of today's peripherals, LINK COMMANDER aims to make connecting your favorite keyboard and mouse easier than ever.\n\nNo need to hunt down aging keyboards, struggle with unreliable adapters, or sacrifice your preferred desktop setup just to enjoy classic computing.\n\n### Bridge Two Generations of Technology\n\nDesigned around a flexible peripheral interface, LINK COMMANDER brings together modern USB connectivity, legacy PS/2 interfaces, and support for retro-computer connections.\n\nWith two USB ports and two PS/2 ports, the device is being developed to accommodate a variety of input configurations, including support for compatible wireless receiver dongles.\n\nWhether you're restoring a vintage system, building a modern retro computer setup, or experimenting with new hardware, LINK COMMANDER is designed to help old and new technology work together.\n\n### Built for Retro Enthusiasts\n\nLINK COMMANDER is part of RODDY's growing collection of original hardware projects, developed with a simple philosophy: classic computers should remain useful, accessible, and enjoyable.\n\nWe're exploring compatibility with systems such as the Commander X16 and other retro platforms, with an emphasis on flexible connections, practical functionality, and a clean, compact design.\n\n### Planned Features\n\n- **2× USB-A ports** for compatible modern input devices and wireless receivers.\n- **2× PS/2 ports** for legacy keyboard and mouse connectivity.\n- **Retro-computer connectivity** through system-specific interfaces and adapters.\n- **Wireless peripheral support** for compatible 2.4 GHz receiver-based devices.\n- **Compact desktop design** that fits naturally alongside vintage hardware.\n- **Expandable compatibility** as development continues.\n\n### Modern Convenience. Retro Soul.\n\nWe love classic computers for their simplicity, personality, and the unique experience they offer. LINK COMMANDER is being built to preserve that experience while removing some of the frustrations of connecting modern peripherals.\n\nBecause enjoying yesterday's computers shouldn't mean giving up today's conveniences.\n\n**LINK COMMANDER — Connect the Generations.**\n\n*RODDY — Made for Makers.*\n\n### Release / Availability\n\n**Coming Soon — In Development**\n\nLINK COMMANDER is an original RODDY hardware project currently in development. Hardware specifications, supported systems, compatibility, and availability are subject to change as prototyping and testing continue.",
+      "specs": {},
+      "images": [],
+      "status": "coming-soon",
+      "type": "physical",
+      "coverImage": "img/products/roddy-51e57210-738f-40f3-a00f-1ac7f3bcc449.jpg",
+      "tags": [
+        "new-tag-2",
+        "new-tag-3"
+      ],
+      "trackStock": false,
+      "compareAtPrice": 0,
+      "shortDescription": "**Modern peripherals meet classic computers.** LINK COMMANDER is a compact retro peripheral interface designed to connect modern keyboards, mice, and compatible",
+      "story": "We love retro computers, but we don't love being limited to decades-old keyboards, worn-out mice, and complicated adapters.\n\nWhile working with systems like the Commander X16, we wanted the freedom to use our favorite modern peripherals without sacrificing the authentic retro computing experience.\n\nSo we started building LINK COMMANDER.\n\nOur goal is simple: make classic computers easier to use with modern hardware, reduce cable clutter, and create a flexible solution that works across multiple systems.\n\nBecause the best part of retro computing is exploring what these machines can do, not fighting to get your keyboard connected.\n\n**RODDY — Made for Makers.**",
+      "documentationUrl": "",
+      "releaseNote": "**Coming Soon — In Active Development**\n\nLINK COMMANDER is currently in development, with hardware prototyping, firmware development, and compatibility testing underway. Final specifications, supported peripherals, pricing, and release dates will be announced as the project progresses.\n\nFollow RODDY for development updates and future availability.",
+      "downloadUrl": "",
+      "githubUrl": "",
+      "merch": null,
+      "pricePending": true
     }
   ]
 }
