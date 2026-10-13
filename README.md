@@ -63,6 +63,19 @@ npm run build      # outputs to dist/
 npm run preview    # serves the production build locally
 ```
 
+Run `npm test` for the catalog and pricing checks. The supplier import browser
+regression also checks selection before options load, retries, bulk review,
+duplicate protection and the product editor. With a local dev server and
+Playwright/Chromium available, run:
+
+```sh
+SUPPLIER_TEST_BASE_URL=http://localhost:5173 node tests/supplier-import.browser.mjs
+```
+
+If Playwright is installed elsewhere, set `PLAYWRIGHT_MODULE` to its absolute
+`index.mjs` path. All external operations in this regression are mocked; it does
+not publish catalog changes or place supplier orders.
+
 ## Deploying to GitHub Pages
 
 This repo builds via GitHub Actions rather than serving raw files, since

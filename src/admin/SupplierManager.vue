@@ -1,5 +1,5 @@
 <script setup>
-import { computed, reactive, ref, watch } from 'vue';
+import { computed, nextTick, reactive, ref, watch } from 'vue';
 import { commerceRequest } from './commerce-api';
 import { priceEstimate, supplierDraft, supplierIdentity } from './supplier-model';
 const props = defineProps({catalog: Object, token: String, connected: Boolean});
@@ -14,9 +14,14 @@ const page = ref(1);
 const results = ref(null);
 const selected = ref([]);
 const variants = reactive({});
+const itemErrors = reactive({});
+const loadingItem = ref('');
+const optionInputs = {};
+let optionToFocus = '';
 const favoriteId = ref('');
 const category = ref(props.catalog.categories[0]?.id || '');
 const review = ref(false);
+const reviewPanel = ref(null);
 const busy = ref(false);
 const error = ref('');
 const message = ref('');
@@ -31,12 +36,17 @@ const connection = computed(() => state.value?.connections.find(c => c.provider 
 const websiteSearch = computed(() => provider.value === 'mouser' ? `https://www.mouser.com/c/?q=${encodeURIComponent(query.value)}` : `https://www.aliexpress.com/w/wholesale-${encodeURIComponent(query.value.replaceAll(' ', '-'))}.html`);
 const rows = computed(() => results.value?.products || []);
 const selection = computed(() => rows.value.filter(row => selected.value.includes(row.sku)));
+const readySelection = computed(() => selection.value.filter(eligible));
 const api = (path, body) => commerceRequest(props.catalog.settings.checkoutEndpoint, '/admin/suppliers' + path, props.token, body);
 async function act(fn) {
   if (busy.value) return;
   busy.value = true; error.value = ''; message.value = '';
   try { await fn(); } catch (e) { error.value = e.message; }
-  finally { busy.value = false; }
+  finally {
+    busy.value = false;
+    await nextTick();
+    optionInputs[optionToFocus]?.focus(); optionToFocus = '';
+  }
 }
 async function load() {
   state.value = await api(''); preferences.value = JSON.parse(JSON.stringify(state.value.preferences)); authorizationUrl.value = '';
@@ -78,24 +88,63 @@ async function search(next = 1) {
   page.value = next; selected.value = []; review.value = false;
   state.value = await api('');
   results.value.products = results.value.products.map(row => ({...row, checkedAt: results.value.checkedAt}));
+  Object.keys(itemErrors).forEach(key => delete itemErrors[key]);
 }
 async function lookup(value, existingRow) {
-  const data = await api('/product', {provider: provider.value, query: value, country: country.value});
-  const row = {...data.product, checkedAt: data.checkedAt};
-  if (row.variants?.length === 1) variants[row.sku] = row.variants[0].id;
-  if (!results.value) results.value = {products: [], hasMore: false, checkedAt: data.checkedAt};
-  const i = rows.value.findIndex(r => r.sku === (existingRow?.sku || row.sku));
-  if (i < 0) results.value.products.unshift(row); else results.value.products.splice(i, 1, row);
-  message.value = `${row.name}: supplier details loaded. Review stock, minimum quantity and variant before importing.`;
+  const sku = existingRow?.sku || value;
+  loadingItem.value = sku; delete itemErrors[sku];
+  try {
+    const data = await api('/product', {provider: provider.value, query: value, country: country.value});
+    const row = {...data.product, checkedAt: data.checkedAt, detailsLoaded: true};
+    if (row.variants?.length === 1) variants[row.sku] = row.variants[0].id;
+    if (!results.value) results.value = {products: [], hasMore: false, checkedAt: data.checkedAt};
+    const i = rows.value.findIndex(r => r.sku === (existingRow?.sku || row.sku));
+    if (i < 0) results.value.products.unshift(row); else results.value.products.splice(i, 1, row);
+    message.value = `${row.name}: supplier details loaded. Review stock, minimum quantity and variant before importing.`;
+    return row;
+  } catch (e) {
+    itemErrors[sku] = e.message;
+    throw e;
+  } finally { loadingItem.value = ''; }
 }
 function chosen(row) { return row.variants?.find(v => v.id === variants[row.sku]); }
 function existing(row) { return props.catalog.products.find(p => p.supplier && supplierIdentity(p) === supplierIdentity({...row, variantId: variants[row.sku] || ''})); }
 function sellerMatches(row) { return !favorite.value || favorite.value.provider !== 'aliexpress' || (!!favorite.value.storeId && row.sellerId === favorite.value.storeId); }
+function selectable(row) { return !!row.sku && !existing(row) && (!row.sellerId || sellerMatches(row)); }
 function eligible(row) { return !!row.sku && !existing(row) && sellerMatches(row) && (row.provider !== 'aliexpress' || !!chosen(row)); }
+function needsDetails(row) { return row.provider === 'aliexpress' && !row.variants?.length && !row.detailsLoaded; }
+function importIssue(row) {
+  if (itemErrors[row.sku]) return itemErrors[row.sku];
+  if (existing(row)) return 'This exact option is already in your catalog. Edit it or choose a different option.';
+  if (favorite.value && !sellerMatches(row)) return row.sellerId ? 'This seller does not match your filter. Choose All suppliers to import it.' : 'Load details to verify this seller.';
+  if (needsDetails(row)) return 'Load options to finish preparing this item.';
+  if (row.provider === 'aliexpress' && !row.variants?.length) return 'The supplier returned no exact options. Retry loading details or choose another listing.';
+  if (row.provider === 'aliexpress' && !chosen(row)) return 'Choose an exact option below before adding the draft.';
+  return '';
+}
+function focusOptions(row) { optionToFocus = row.sku; }
+async function openReview() { review.value = true; await nextTick(); reviewPanel.value?.scrollIntoView({block: 'start'}); }
+async function toggleSelection(row, checked) {
+  review.value = false;
+  if (!checked) { selected.value = selected.value.filter(s => s !== row.sku); return; }
+  selected.value = [...new Set([...selected.value, row.sku])];
+  if (needsDetails(row)) {
+    await act(async () => { row = await lookup(row.sku, row); focusOptions(row); });
+  }
+}
+function chooseVariant(row) {
+  delete itemErrors[row.sku];
+  if (!selectable(row)) selected.value = selected.value.filter(s => s !== row.sku);
+}
 function estimate(row) { try { return priceEstimate(chosen(row)?.costCents ?? row.costCents, rules); } catch { return null; } }
 function dollars(cents) { return Number.isInteger(cents) ? `$${(cents / 100).toFixed(2)}` : 'Unknown'; }
-function addAndEdit(row) {
-  if (!eligible(row)) throw new Error('Load item details and choose its exact option before adding.');
+async function addAndEdit(row) {
+  if (row.provider === 'aliexpress' && !row.variants?.length) row = await lookup(row.sku, row);
+  if (!eligible(row)) {
+    itemErrors[row.sku] = importIssue(row);
+    focusOptions(row);
+    return;
+  }
   if (!props.catalog.categories.some(c => c.id === category.value)) throw new Error('Choose a storefront department.');
   const draft = supplierDraft(row, variants[row.sku], category.value, rules, props.catalog.products);
   emit('import-products', [draft]);
@@ -105,6 +154,7 @@ function addAndEdit(row) {
 }
 function importSelected() {
   const drafts = [], failures = [];
+  if (!selection.value.length || readySelection.value.length !== selection.value.length) throw new Error('Finish choosing options for every selected item in the review below.');
   if (!props.catalog.categories.some(c => c.id === category.value)) throw new Error('Choose a storefront department.');
   for (const row of selection.value) {
     try {
@@ -122,7 +172,7 @@ function importSelected() {
     <section class="admin-section">
       <p class="eyebrow">DISCOVER · CHOOSE · REVIEW · PUBLISH</p>
       <h2>Suppliers & product imports</h2>
-      <p>Search for an individual item, inspect its price and stock, choose its option, then Add & edit product. The normal product editor opens for departments, tags, descriptions, pictures and pricing.</p>
+      <p>Search for an item and select it for import, or use Choose options & add. Options load automatically for individual selections. Choose the exact option, then open the normal product editor for departments, tags, descriptions, pictures and pricing.</p>
       <p v-if="!connected" class="notice">Connect to GitHub above to manage supplier connections and private search results.</p>
       <button class="button small" :disabled="!connected || busy" @click="act(load)">Reload supplier settings</button>
       <p v-if="error" class="form-error" role="alert" style="white-space:pre-wrap">{{ error }}</p><p v-if="message" class="notice" role="status">{{ message }}</p>
@@ -135,25 +185,42 @@ function importSelected() {
         <p class="help-copy">{{ connection?.searchVerifiedAt ? 'Supplier API verified.' : connection?.searchConfigured ? 'API credentials saved. Run a search to check current access.' : 'Connect this supplier to use API search.' }} <span v-if="connection?.approvalPending">Mouser approval has not been verified by a successful API read.</span> <button class="button small" @click="connectionsPanel.open = true; connectionsPanel.scrollIntoView({block: 'start'})">Manage API connection</button></p>
         <p v-if="provider === 'mouser' && connection?.orderKeyStored && !connection?.searchConfigured" class="notice">Your Order/Cart API key is saved separately{{ connection.orderApprovalPending ? ' and its approval is pending' : '' }}. Product searches need a different Search API key. Request Search API access below, then save that key in Supplier connections.</p>
         <div class="admin-actions"><button class="button primary" :disabled="!connection?.searchConfigured || !query.trim()" @click="act(() => search())">Search supplier API</button><button class="button small" :disabled="!connection?.searchConfigured || !query.trim()" @click="act(() => lookup(query))">Load exact part / item URL</button><a class="button small" :href="websiteSearch" target="_blank" rel="noopener noreferrer">Search supplier website ↗</a></div>
-        <p class="help-copy">Mouser: search keywords or load an exact Mouser part number. AliExpress: search keywords, then load a result to choose its exact variant and verify the seller. You can also paste an official /item/NUMBER.html URL or numeric product ID. Currency is USD where returned; unknown prices or stock remain unknown. Current search results are cached for five minutes to respect API quotas.</p>
+        <p class="help-copy">Mouser: search keywords or load an exact Mouser part number. AliExpress: select a result to load its exact options and verify the seller. You can also paste an official /item/NUMBER.html URL or numeric product ID. Currency is USD where returned; unknown prices or stock remain unknown. Current search results are cached for five minutes to respect API quotas.</p>
         <p v-if="results">Page {{ page }} · {{ results.total ?? 'Unknown total' }} matches · {{ results.cached ? 'Cached result' : 'API result' }} · checked {{ new Date(results.checkedAt * 1000).toLocaleString() }}. {{ provider === 'mouser' ? 'Mouser pricing follows the API account’s market; Canadian landed costs still need a shipping quote.' : 'Promotional and variant prices can change; search prices are indicative.' }}</p>
-        <div v-if="rows.length" class="admin-actions"><button class="button small" @click="selected = rows.filter(eligible).map(r => r.sku)">Select all eligible results on this page</button><button class="button small" @click="selected = []; review = false">Clear selection</button></div>
+        <div v-if="rows.length" class="admin-actions"><button class="button small" @click="selected = rows.filter(selectable).map(r => r.sku); review = false">Select results on this page</button><button class="button small" @click="selected = []; review = false">Clear selection</button><button class="button primary" :disabled="!selection.length" @click="openReview">Review selection ({{ selection.length }})</button></div>
         <section v-for="row in rows" :key="row.sku" class="supplier-block">
           <div class="supplier-result"><img v-if="row.image" :src="row.image" :alt="row.name" loading="lazy" /><div><h3>{{ row.name }}</h3><p>{{ row.manufacturer }} {{ row.manufacturerPartNumber }} · {{ row.sku }}</p><p>Supplier price: {{ dollars(chosen(row)?.costCents ?? row.costCents) }} · Stock: {{ chosen(row)?.availableQuantity ?? row.availableQuantity ?? 'Unknown' }} · Minimum {{ row.minimumQuantity }} · Order multiple {{ row.orderMultiple }}</p><p>{{ row.availability }} {{ row.leadTime ? `· Lead time: ${row.leadTime}` : '' }}</p><p v-if="row.sellerName">Seller: {{ row.sellerName }} · Store ID {{ row.sellerId }}</p><p v-if="row.restriction" class="notice">{{ row.restriction }}</p></div></div>
-          <label v-if="row.variants?.length">Exact supplier variant<select v-model="variants[row.sku]" aria-label="Exact supplier variant" @change="selected = selected.filter(s => s !== row.sku)"><option value="">Choose variant…</option><option v-for="v in row.variants" :key="v.id" :value="v.id">{{ v.label || v.id }} · {{ dollars(v.costCents) }} · stock {{ v.availableQuantity ?? 'unknown' }}</option></select></label>
+          <label v-if="row.variants?.length">Exact supplier variant<select :ref="el => { optionInputs[row.sku] = el; }" v-model="variants[row.sku]" aria-label="Exact supplier variant" @change="chooseVariant(row)"><option value="">Choose variant…</option><option v-for="v in row.variants" :key="v.id" :value="v.id">{{ v.label || v.id }} · {{ dollars(v.costCents) }} · stock {{ v.availableQuantity ?? 'unknown' }}</option></select></label>
           <p v-if="favorite && !sellerMatches(row)" class="notice">Seller not verified as the preferred store. Load details; a different seller cannot be imported under this preference.</p>
           <p v-if="estimate(row)" class="help-copy">Estimated retail ${{ estimate(row).retail.toFixed(2) }} · estimated profit ${{ estimate(row).profit.toFixed(2) }} per item using your pricing rules. Confirm actual shipping and fees before selling.</p>
-          <p v-if="row.provider === 'aliexpress' && !chosen(row)" class="help-copy">Load item details, then choose the exact option you want to add.</p>
-          <div class="admin-actions"><button v-if="!existing(row)" class="button primary" :disabled="!eligible(row)" @click="act(() => addAndEdit(row))">Add & edit product</button><button v-else class="button small" @click="emit('edit-product', existing(row))">Already in RODDY — edit</button><button class="button small" @click="act(() => lookup(row.sku, row))">Load / refresh details</button><a v-if="row.url" :href="row.url" target="_blank" rel="noopener noreferrer" class="button small">Supplier listing ↗</a><a v-if="row.datasheet" :href="row.datasheet" target="_blank" rel="noopener noreferrer" class="button small">Datasheet ↗</a><label class="check"><input v-model="selected" :value="row.sku" type="checkbox" :disabled="!eligible(row)" />Select for import</label></div>
+          <p v-if="loadingItem === row.sku" class="notice" role="status">Loading this item's options and seller details…</p>
+          <p v-else-if="itemErrors[row.sku]" class="form-error" role="alert">{{ itemErrors[row.sku] }}</p>
+          <p v-else-if="!eligible(row)" class="help-copy">{{ needsDetails(row) ? 'Select for import or choose options below to load this listing.' : importIssue(row) }}</p>
+          <p v-if="selected.includes(row.sku)" class="help-copy">{{ eligible(row) ? 'Selected and ready for import review.' : 'Selected — finish preparing its exact option before adding a draft.' }}</p>
+          <div class="admin-actions">
+            <button v-if="!existing(row)" class="button primary" :disabled="!selectable(row)" @click="act(() => addAndEdit(row))">{{ row.provider === 'aliexpress' && !row.variants?.length ? row.detailsLoaded ? 'Retry loading options' : 'Choose options & add' : row.provider === 'aliexpress' && !chosen(row) ? 'Choose an option above' : 'Add & edit product' }}</button>
+            <button v-else class="button small" @click="emit('edit-product', existing(row))">Already in RODDY — edit</button>
+            <button class="button small" @click="act(() => lookup(row.sku, row))">Load / refresh details</button>
+            <a v-if="row.url" :href="row.url" target="_blank" rel="noopener noreferrer" class="button small">Supplier listing ↗</a>
+            <a v-if="row.datasheet" :href="row.datasheet" target="_blank" rel="noopener noreferrer" class="button small">Datasheet ↗</a>
+            <label class="check"><input :checked="selected.includes(row.sku)" type="checkbox" :disabled="!selected.includes(row.sku) && !selectable(row)" @change="toggleSelection(row, $event.target.checked)" />Select for import</label>
+          </div>
         </section>
         <p v-if="results && !rows.length">No products returned. Try another query or browse the supplier website.</p>
-        <div v-if="results" class="admin-actions"><button class="button small" :disabled="page <= 1" @click="act(() => search(page - 1))">Previous results</button><button class="button small" :disabled="!results.hasMore" @click="act(() => search(page + 1))">More results</button><button class="button primary" :disabled="!selection.length" @click="review = true">Review {{ selection.length }} selected import(s)</button></div>
+        <div v-if="results" class="admin-actions"><button class="button small" :disabled="page <= 1" @click="act(() => search(page - 1))">Previous results</button><button class="button small" :disabled="!results.hasMore" @click="act(() => search(page + 1))">More results</button><button class="button primary" :disabled="!selection.length" @click="openReview">Review {{ selection.length }} selected import(s)</button></div>
       </section>
-      <section v-if="review" class="admin-section">
+      <section v-if="review" ref="reviewPanel" class="admin-section supplier-review">
         <h2>Review before adding hidden drafts</h2>
-        <p>Only these {{ selection.length }} selected listings will be added. Nothing is purchased or published. Unknown costs require manual pricing.</p>
-        <div class="supplier-table"><table><thead><tr><th>Listing</th><th>Proposed retail</th><th>Estimated profit / unit</th></tr></thead><tbody><tr v-for="row in selection" :key="row.sku"><td>{{ row.name }} {{ chosen(row)?.label }}</td><td>{{ estimate(row) ? '$' + estimate(row).retail.toFixed(2) : 'Manual pricing / check rules' }}</td><td>{{ estimate(row) ? '$' + estimate(row).profit.toFixed(2) : 'Unknown' }}</td></tr></tbody></table></div>
-        <button class="button primary" :disabled="!selection.length" @click="act(importSelected)">Add selected as hidden product drafts</button>
+        <p>{{ readySelection.length }} of {{ selection.length }} selected listings ready. Finish each item's options below or remove it from this selection. Page selection loads options one item at a time so it does not exhaust supplier API limits. Nothing is purchased or published. Unknown costs require manual pricing.</p>
+        <div class="supplier-table"><table><thead><tr><th>Listing & exact option</th><th>Proposed retail</th><th>Estimated profit / unit</th></tr></thead><tbody><tr v-for="row in selection" :key="row.sku"><td>
+          <strong>{{ row.name }}</strong>
+          <p v-if="importIssue(row)" :class="itemErrors[row.sku] ? 'form-error' : 'help-copy'">{{ importIssue(row) }}</p>
+          <label v-if="row.variants?.length">Exact supplier variant<select v-model="variants[row.sku]" aria-label="Exact supplier variant" @change="chooseVariant(row)"><option value="">Choose variant…</option><option v-for="v in row.variants" :key="v.id" :value="v.id">{{ v.label || v.id }} · {{ dollars(v.costCents) }} · stock {{ v.availableQuantity ?? 'unknown' }}</option></select></label>
+          <button v-if="needsDetails(row) || itemErrors[row.sku] || row.provider === 'aliexpress' && !row.variants?.length" class="button small" @click="act(() => lookup(row.sku, row))">{{ itemErrors[row.sku] || row.detailsLoaded ? 'Retry loading options' : 'Load options' }}</button>
+          <button class="button small" @click="selected = selected.filter(s => s !== row.sku)">Remove from selection</button>
+        </td><td>{{ estimate(row) ? '$' + estimate(row).retail.toFixed(2) : 'Manual pricing / check rules' }}</td><td>{{ estimate(row) ? '$' + estimate(row).profit.toFixed(2) : 'Unknown' }}</td></tr></tbody></table></div>
+        <p v-if="selection.length && readySelection.length !== selection.length" class="notice">Choose the missing options above before adding these drafts.</p>
+        <button class="button primary" :disabled="!selection.length || readySelection.length !== selection.length" @click="act(importSelected)">Add selected as hidden product drafts</button>
       </section>
       <details class="supplier-settings"><summary>Pricing rules & profit estimates</summary>
       <section class="admin-section">
