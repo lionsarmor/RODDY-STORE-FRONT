@@ -5,6 +5,7 @@ import Product from "./views/Product.vue";
 import Cart from "./views/Cart.vue";
 import About from "./views/About.vue";
 import Contact from "./views/Contact.vue";
+import Newsletter from "./views/Newsletter.vue";
 import NotFound from "./views/NotFound.vue";
 
 const router = createRouter({
@@ -18,6 +19,7 @@ const router = createRouter({
     { path: "/product/:id", name: "product", component: Product, props: true },
     { path: "/cart", name: "cart", component: Cart },
     { path: "/about", name: "about", component: About },
+    { path: "/newsletter", name: "newsletter", component: Newsletter },
     { path: "/contact", name: "contact", component: Contact },
     { path: "/:pathMatch(.*)*", name: "not-found", component: NotFound },
   ],

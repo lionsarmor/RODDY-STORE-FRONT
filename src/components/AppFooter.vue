@@ -35,6 +35,7 @@ const catalog = useCatalogStore();
           <RouterLink to="/about" class="mb-2 block font-mono text-sm hover:text-brand">About RODDY</RouterLink>
           <RouterLink to="/cart" class="mb-2 block font-mono text-sm hover:text-brand">Cart</RouterLink>
           <RouterLink to="/contact" class="mb-2 block font-mono text-sm hover:text-brand">Contact & community ↗</RouterLink>
+          <RouterLink to="/newsletter" class="mb-2 block font-mono text-sm hover:text-brand">Newsletter</RouterLink>
           <span class="block font-mono text-sm">PLAY · BUILD · PROGRAM · KEEP</span>
         </div>
       </div>

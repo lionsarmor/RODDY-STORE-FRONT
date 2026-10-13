@@ -1,4 +1,7 @@
-# Droplet checkout, community and paid downloads
+# Droplet checkout, community, newsletters and paid downloads
+
+Manual newsletters and private subscriber records use the same database and service.
+See [NEWSLETTERS.md](NEWSLETTERS.md) for the admin workflow and backup requirements.
 
 The same service also hosts the contact page's General forum, handle accounts and
 GitHub-owner moderation. See [FORUM.md](FORUM.md) for public/private contact flow,

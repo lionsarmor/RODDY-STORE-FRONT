@@ -3,6 +3,7 @@ import { onMounted, watch } from "vue";
 import AppHeader from "./components/AppHeader.vue";
 import AppFooter from "./components/AppFooter.vue";
 import ThemeOverlay from "./components/ThemeOverlay.vue";
+import NewsletterInvite from "./components/NewsletterInvite.vue";
 import Toast from "./components/Toast.vue";
 import { useCatalogStore } from "./stores/catalog";
 import { useTaglineStore } from "./stores/tagline";
@@ -45,5 +46,6 @@ watch(() => tagline.current, syncDocumentMeta);
   <AppFooter />
   <ThemeOverlay />
   <Toast />
+  <NewsletterInvite />
   <div class="crt-scanlines" />
 </template>

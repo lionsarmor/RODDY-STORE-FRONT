@@ -22,6 +22,7 @@ from fastapi.responses import FileResponse, JSONResponse
 from .square import Square, PaymentUnavailable, PaymentInputError
 from .printify import load_connection, PrintifyUnavailable
 from .commerce import Commerce
+from .newsletter import register_newsletter
 from .forum import register_forum
 
 
@@ -118,10 +119,11 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
 
     @app.middleware("http")
     async def headers(request, call_next):
-        # No API endpoint accepts a body larger than a small cart. Reject before parsing.
+        # Newsletter sections accept longer copy; other endpoints retain the small-cart limit.
         if request.method == "POST":
             body = await request.body()
-            if len(body) > 8192:
+            limit = 65536 if request.url.path.startswith("/admin/newsletters/") else 8192
+            if len(body) > limit:
                 return JSONResponse({"error": "Request too large."}, status_code=413)
         response = await call_next(request)
         response.headers["Cache-Control"] = "no-store"
@@ -490,4 +492,5 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
         return {"saved": True}
 
     register_forum(app, connect, require_admin, rate_limit, origins)
+    register_newsletter(app, connect, require_admin, rate_limit, origins)
     return app
