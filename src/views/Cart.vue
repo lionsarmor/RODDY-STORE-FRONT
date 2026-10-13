@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { useRoute } from "vue-router";
 import {
   useCatalogStore,
@@ -10,6 +10,8 @@ import {
 import { useCartStore } from "../stores/cart";
 import { useCheckoutStore } from "../stores/checkout";
 import { useUiStore } from "../stores/ui";
+import { estimateShipping, variantLabel, cartLineKey } from "../merch.js";
+const destination = ref("US");
 const route = useRoute();
 const catalog = useCatalogStore();
 const cart = useCartStore();
@@ -18,15 +20,20 @@ const ui = useUiStore();
 const items = computed(() => cart.hydrated(catalog));
 const missing = computed(() => cart.items.filter((i) => !catalog.byId(i.id)));
 const total = computed(() =>
-  items.value.reduce((sum, i) => sum + i.product.price * i.qty, 0),
+  items.value.reduce((sum, i) => sum + i.price * i.qty, 0),
 );
 const physical = computed(() =>
   items.value.some((i) => i.product.type !== "digital"),
 );
 const shipping = computed(() =>
-  physical.value ? Number(catalog.settings.shippingRate || 0) : 0,
+  physical.value ? estimateShipping(items.value, destination.value) : 0,
 );
 function itemError(item) {
+  if (item.product.merch) {
+    if (!item.variant || !item.variant.enabled) return "This selection is no longer offered. Choose a color and size on the product page.";
+    if (item.variant.available !== true) return "This selection is unavailable. Choose another color or size.";
+    return "Merchandise ordering opens soon. Your selection is saved.";
+  }
   if (item.product.type !== "digital" || item.product.price <= 0)
     return "Checkout currently supports paid software downloads. Get free products from their product pages.";
   if (item.qty !== 1) return "Choose one copy of this digital download.";
@@ -57,6 +64,7 @@ function updateQty(item, value) {
       item.product.type === "digital" ? 1 : 99,
       Math.max(1, Math.trunc(Number(value)) || 1),
     ),
+    item.variantId || "",
   );
 }
 </script>
@@ -76,21 +84,21 @@ function updateQty(item, value) {
     </div>
     <div v-else class="grid gap-8 lg:grid-cols-[1.5fr_1fr]">
       <div>
-        <div v-for="entry in missing" :key="entry.id" class="notice mb-4">
+        <div v-for="entry in missing" :key="cartLineKey(entry.id, entry.variantId)" class="notice mb-4">
           An item is no longer in the catalog: {{ entry.id }}.
-          <button class="text-button" @click="cart.remove(entry.id)">
+          <button class="text-button" @click="cart.remove(entry.id, entry.variantId)">
             Remove
           </button>
         </div>
         <div
           v-for="item in items"
-          :key="item.product.id"
+          :key="item.key"
           class="mb-4 flex flex-wrap items-center gap-5 border border-border bg-panel p-5"
         >
           <img
             v-if="item.product.coverImage || item.product.images[0]"
             :src="
-              productImageUrl(item.product.coverImage || item.product.images[0])
+              productImageUrl(item.variant?.image || item.product.coverImage || item.product.images[0])
             "
             :alt="item.product.name"
             class="h-20 w-20 object-cover"
@@ -101,11 +109,12 @@ function updateQty(item, value) {
               class="font-mono text-sm font-bold"
               >{{ item.product.name }}</RouterLink
             >
+            <p v-if="item.variant" class="mt-2 text-sm">{{ variantLabel(item.variant) }}</p>
             <p class="mt-2 font-mono text-xs text-text-dim">
               {{
                 item.product.pricePending
                   ? "Pricing TBA"
-                  : formatPrice(item.product.price) + " each"
+                  : formatPrice(item.price) + " each"
               }}
               · {{ item.product.type }}
             </p>
@@ -127,7 +136,7 @@ function updateQty(item, value) {
               "
               @change="updateQty(item, $event.target.value)"
           /></label>
-          <button class="text-button" @click="cart.remove(item.product.id)">
+          <button class="text-button" @click="cart.remove(item.product.id, item.variantId)">
             Remove
           </button>
         </div>
@@ -138,15 +147,14 @@ function updateQty(item, value) {
         <div class="mb-4 flex justify-between text-sm">
           <span>Subtotal</span><span>{{ formatPrice(total) }}</span>
         </div>
+        <label v-if="physical" class="merch-destination mb-4">Shipping estimate for<select v-model="destination"><option value="US">United States</option><option value="CA">Canada</option></select></label>
         <div class="mb-4 flex justify-between text-sm">
           <span>{{
-            physical ? catalog.settings.shippingLabel : "Shipping"
+            physical ? "Standard shipping estimate" : "Shipping"
           }}</span
           ><span>{{
             physical
-              ? shipping
-                ? formatPrice(shipping)
-                : "Free"
+              ? shipping === null ? "To be confirmed" : formatPrice(shipping)
               : "Not required"
           }}</span>
         </div>
@@ -154,10 +162,10 @@ function updateQty(item, value) {
           class="mb-5 flex justify-between border-t border-border pt-4 font-mono text-lg"
         >
           <span>Estimated total</span
-          ><span>{{ formatPrice(total + shipping) }}</span>
+          ><span>{{ formatPrice(total + (shipping || 0)) }}{{ shipping === null ? " + shipping" : "" }}</span>
         </div>
         <p class="mb-5 text-xs leading-relaxed text-text-dim">
-          USD. Your software download appears after payment is confirmed.
+          {{ physical ? "USD. Shipping is an estimate; products may ship separately. Merchandise ordering opens soon." : "USD. Your software download appears after payment is confirmed." }}
         </p>
         <button
           class="button primary w-full"
@@ -175,7 +183,7 @@ function updateQty(item, value) {
           Checkout is getting ready. Your cart is saved on this device.
         </p>
         <p v-if="invalid" class="release-note">
-          Update the unavailable items above to continue.
+          {{ physical ? "Your merchandise selections are saved. Remove merchandise to check out with software downloads." : "Update the unavailable items above to continue." }}
         </p>
         <p class="mt-4 text-center font-mono text-[9px] text-text-dim">
           SECURE PAYMENTS BY SQUARE

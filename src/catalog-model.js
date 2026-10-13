@@ -44,6 +44,7 @@ export function normalizeProduct(p) {
     releaseNote: p.releaseNote || "",
     downloadUrl: p.downloadUrl || "",
     githubUrl: p.githubUrl || "",
+    merch: p.merch ? { ...p.merch, variants: Array.isArray(p.merch.variants) ? p.merch.variants : [], shippingCountries: p.merch.shippingCountries || ["US", "CA"], shippingProfiles: p.merch.shippingProfiles || [] } : null,
   };
 }
 
@@ -112,6 +113,27 @@ export function validateCatalog(data) {
       errors.push(`${p.name}: choose AI Assisted or NO AI, not both.`);
     if (p.tags.includes("free") && p.price !== 0)
       errors.push(`${p.name}: FREE requires a zero price.`);
+    if (p.merch) {
+      const m = p.merch, ids = new Set(), combinations = new Set();
+      if (p.type !== "physical" || m.provider !== "printify") errors.push(`${p.name}: Printify requires a physical product.`);
+      if (!/^[a-zA-Z0-9_-]{1,80}$/.test(m.productId || "") || !Number.isInteger(m.shopId) || m.shopId < 1)
+        errors.push(`${p.name}: import a valid Printify product and store.`);
+      for (const v of m.variants) {
+        const combo = JSON.stringify([v.color, v.size]);
+        if (typeof v.id !== "string" || !v.id || ids.has(v.id) || combinations.has(combo) || !Number.isInteger(v.providerVariantId) || v.providerVariantId < 1)
+          errors.push(`${p.name}: variant IDs and color/size combinations must be unique and mapped to Printify.`);
+        ids.add(v.id); combinations.add(combo);
+        if (!Number.isFinite(v.price) || v.price <= 0 || v.price > 999999 || Math.abs(v.price * 100 - Math.round(v.price * 100)) > .00001)
+          errors.push(`${p.name}: every variant needs a valid retail price with at most two decimals.`);
+        if (typeof v.enabled !== "boolean" || ![true, false, null].includes(v.available)) errors.push(`${p.name}: invalid variant availability.`);
+        if (v.image && !safeLink(v.image)) errors.push(`${p.name}: invalid variant image URL.`);
+      }
+      if (!m.shippingCountries.length || m.shippingCountries.some(c => !/^[A-Z]{2}$/.test(c))) errors.push(`${p.name}: choose valid shipping countries.`);
+      for (const rate of m.shippingProfiles) {
+        if (!Array.isArray(rate.variantIds) || !Array.isArray(rate.countries) || [rate.firstItem, rate.additionalItem].some(n => !Number.isFinite(n) || n < 0))
+          errors.push(`${p.name}: invalid merchandise shipping rates.`);
+      }
+    }
     if (p.downloadUrl && !safeLink(p.downloadUrl))
       errors.push(`${p.name}: download must be an HTTP(S) URL.`);
     if (p.downloadUrl && p.price > 0)

@@ -10,6 +10,8 @@ import {
 import RoddyLogo from "../components/RoddyLogo.vue";
 import ProductTags from "../components/ProductTags.vue";
 import ThemeOverlay from "../components/ThemeOverlay.vue";
+import MerchEditor from "./MerchEditor.vue";
+import { importPrintifyProduct, priceLabel } from "../merch.js";
 import ProductEditor from "./ProductEditor.vue";
 import MediaEditor from "./MediaEditor.vue";
 import { useThemeStore } from "../stores/theme";
@@ -68,6 +70,8 @@ const draftMessage = ref("");
 const commerceBusy = ref(false);
 const connectionStatus = ref(null);
 const printifyStatus = ref(null);
+const printifyMapping = reactive({});
+const livePrintifyProducts = reactive({});
 const orders = ref([]);
 const ordersCursor = ref("");
 const ordersHasMore = ref(false);
@@ -541,8 +545,22 @@ function loadPrintify(page = 1) {
     printifyStatus.value = await commerceRequest(
       catalog.value.settings.checkoutEndpoint, `/admin/printify?page=${page}`, form.token,
     );
+    for (const product of printifyStatus.value.products) {
+      printifyMapping[product.id] ||= catalog.value.products.find(p => p.merch?.productId === product.id)?.id || "";
+    }
   });
 }
+function syncPrintify(source, targetId) {
+  commerce(async () => {
+    const target = catalog.value.products.find(p => p.id === targetId);
+    if (!target || target.type !== "physical") throw new Error("Choose a physical storefront product first.");
+    const detail = await commerceRequest(catalog.value.settings.checkoutEndpoint, `/admin/printify/products/${encodeURIComponent(source.id)}`, form.token);
+    livePrintifyProducts[targetId] = detail.product;
+    Object.assign(target, importPrintifyProduct(target, detail.product, detail.shopId));
+    status.value = `Imported ${target.merch.variants.length} combinations for ${target.name}. Review prices and shipping, then publish your draft.`;
+  });
+}
+
 </script>
 <template>
   <div class="admin-app">
@@ -885,14 +903,14 @@ function loadPrintify(page = 1) {
                         }}
                       </td>
                       <td>
-                        {{ p.pricePending ? "TBA" : formatPrice(p.price) }}
+                        {{ priceLabel(p) }}
                       </td>
                       <td>
                         <span class="table-status" :class="p.status">{{
                           !p.active ? "Hidden" : p.status.replace("-", " ")
                         }}</span>
                       </td>
-                      <td>{{ p.trackStock ? p.stock : "Unlimited" }}</td>
+                      <td>{{ p.merch ? "Printify variants" : p.trackStock ? p.stock : "Unlimited" }}</td>
                       <td>
                         <div class="admin-actions">
                           <button
@@ -1260,10 +1278,10 @@ function loadPrintify(page = 1) {
           <template v-if="tab === 'printify'">
             <section class="admin-section">
               <h2>Set up made-to-order merchandise</h2>
-              <p class="help-copy">Connect Printify to prepare the RODDY hoodie and desk mat. This panel reads products and size options; merchandise checkout and automatic production are not enabled yet.</p>
+              <p class="help-copy">Connect Printify to prepare the RODDY hoodie and desk mat. Import actual color/size combinations, retail prices and standard shipping from your Printify products. Review your draft below, then publish it to the storefront. Merchandise checkout and automatic production are not enabled yet.</p>
               <ol class="setup-list">
                 <li>Create a Printify account and an API store named RODDY.</li>
-                <li>In Printify Connections, generate a token with <code>shops.read</code> and <code>products.read</code>.</li>
+                <li>In Printify Connections, generate a token with <code>shops.read</code>, <code>products.read</code> and <code>catalog.read</code>.</li>
                 <li>Run the command below in your droplet console and enter the token at the hidden prompt.</li>
                 <li>Create your hoodie and desk mat in that Printify store, upload the print artwork, and select the sizes and colors you want to sell.</li>
               </ol>
@@ -1289,19 +1307,24 @@ function loadPrintify(page = 1) {
                 <section v-for="product in printifyStatus.products" :key="product.id" class="admin-section">
                   <h3>{{ product.title }}</h3>
                   <p class="help-copy">Printify product: {{ product.id }}</p>
-                  <ul class="printify-variants">
-                    <li v-for="variant in product.variants" :key="variant.id">
-                      <strong>{{ variant.title }}</strong>
-                      <span>{{ variant.enabled ? "Selected in Printify" : "Not selected" }} · {{ variant.available === true ? "In stock" : variant.available === false ? "Out of stock" : "Stock not reported" }}</span>
-                    </li>
-                  </ul>
+                  <p class="help-copy">{{ product.variants.filter(v => v.enabled).length }} enabled variants · {{ [...new Set(product.variants.filter(v => v.enabled).map(v => v.color).filter(Boolean))].length }} colors · {{ [...new Set(product.variants.filter(v => v.enabled).map(v => v.size).filter(Boolean))].join(', ') }}</p>
+                  <div class="admin-actions">
+                    <label>Storefront product<select v-model="printifyMapping[product.id]"><option value="">Choose a product…</option><option v-for="target in catalog.products.filter(p => p.type === 'physical')" :key="target.id" :value="target.id">{{ target.name }}</option></select></label>
+                    <button class="button small" :disabled="commerceBusy || !printifyMapping[product.id]" @click="syncPrintify(product, printifyMapping[product.id])">Import options & shipping</button>
+                  </div>
                 </section>
                 <div class="admin-actions">
                   <button v-if="printifyStatus.page > 1" class="button small" :disabled="commerceBusy" @click="loadPrintify(printifyStatus.page - 1)">Previous products</button>
                   <button v-if="printifyStatus.hasMore" class="button small" :disabled="commerceBusy" @click="loadPrintify(printifyStatus.page + 1)">More products</button>
                 </div>
               </template>
-              <p class="help-copy">Before sales can open, the products need retail prices, customer shipping options, and a tested payment-to-production connection. Printify charges production and shipping to your Printify account separately from customer payments.</p>
+              <section v-for="target in catalog.products.filter(p => p.merch)" :key="target.id" class="admin-section">
+                <h2>{{ target.name }}</h2>
+                <button class="button small" :disabled="!connected || commerceBusy" @click="syncPrintify({id: target.merch.productId}, target.id)">Refresh stock, costs & shipping</button>
+                <p class="help-copy">Refreshing keeps your storefront retail prices and offer checkboxes. Size/color combinations disabled in Printify are removed; newly enabled combinations are imported.</p>
+                <MerchEditor :product="target" :live-product="livePrintifyProducts[target.id]" />
+              </section>
+              <p class="help-copy">Before sales can open, a tested payment-to-production connection and address-specific shipping quotes are required. Printify charges production and shipping to your Printify account separately from customer payments.</p>
             </section>
           </template>
           <template v-if="tab === 'orders'"

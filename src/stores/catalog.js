@@ -66,6 +66,7 @@ export const useCatalogStore = defineStore("catalog", {
 export function stockState(product) {
   if (product.status === 'coming-soon') return 'soon';
   if (product.status === 'sold-out') return 'out';
+  if (product.merch && !product.merch.variants.some(v => v.enabled && v.available !== false)) return 'out';
   if (product.active && product.trackStock === false) return 'in';
   if (!product.active || product.stock <= 0) return "out";
   if (product.stock <= 5) return "low";
@@ -77,7 +78,7 @@ export function stockLabel(product) {
   if (state === 'soon') return 'Coming soon';
   if (state === "out") return "Sold out";
   if (state === "low") return `Only ${product.stock} left`;
-  return "In stock";
+  return product.merch ? "Made to order" : "In stock";
 }
 
 export function formatPrice(amount) {

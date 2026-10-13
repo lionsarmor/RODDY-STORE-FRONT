@@ -7,6 +7,7 @@ import {
   formatPrice,
   productImageUrl,
 } from "../stores/catalog";
+import { merchVariants, optionValues, findVariant, priceLabel, shippingFor } from "../merch.js";
 import { safeLink } from "../catalog-model.js";
 import { useCartStore } from "../stores/cart";
 import { useUiStore } from "../stores/ui";
@@ -25,6 +26,25 @@ const product = computed(() => catalog.byId(props.id));
 const state = computed(() =>
   product.value ? stockState(product.value) : "out",
 );
+const selectedColor = ref("");
+const selectedSize = ref("");
+const destination = ref("US");
+const variants = computed(() => merchVariants(product.value));
+const colors = computed(() => optionValues(product.value, "color"));
+const sizes = computed(() => optionValues(product.value, "size"));
+const selectedVariant = computed(() => findVariant(product.value, selectedColor.value, selectedSize.value));
+const selectedShipping = computed(() => shippingFor(product.value, selectedVariant.value, destination.value));
+const selectionValid = computed(() => !product.value?.merch || (selectedVariant.value && selectedVariant.value.available === true));
+watch(() => product.value?.merch, () => {
+  selectedColor.value = colors.value.includes("Black") ? "Black" : colors.value[0] || "";
+  selectedSize.value = variants.value.find(v => v.color === selectedColor.value && v.available === true)?.size || variants.value.find(v => v.color === selectedColor.value)?.size || "";
+}, {immediate: true});
+watch(selectedColor, () => {
+  if (!selectedVariant.value) selectedSize.value = variants.value.find(v => v.color === selectedColor.value && v.available === true)?.size || variants.value.find(v => v.color === selectedColor.value)?.size || "";
+});
+function colorSwatch(color) {
+  return variants.value.find(v => v.color === color)?.colors?.[0] || "transparent";
+}
 const qty = ref(1);
 const activeIndex = ref(0);
 const expandedSpecs = ref(false);
@@ -107,11 +127,12 @@ function quantity() {
   );
 }
 function addToCart() {
-  if (!purchasable.value) return;
-  cart.add(product.value.id, quantity(), maxQty.value);
+  if (!purchasable.value || !selectionValid.value) return;
+  cart.add(product.value.id, quantity(), maxQty.value, selectedVariant.value?.id || "");
   ui.toast(`Added ${product.value.name} to cart`);
 }
 async function buyNow() {
+  if (product.value.type !== "digital") return;
   try {
     await checkout.checkout([{ id: product.value.id, qty: quantity() }]);
   } catch (e) {
@@ -163,7 +184,7 @@ async function buyNow() {
             @click="lightbox.showModal()"
           >
             <img
-              :src="productImageUrl(images[activeIndex])"
+              :src="productImageUrl(activeIndex === 0 && selectedVariant?.image ? selectedVariant.image : images[activeIndex])"
               :alt="`${product.name} — image ${activeIndex + 1}`"
             /><span>⤢ Enlarge</span>
           </button>
@@ -214,19 +235,41 @@ async function buyNow() {
         <p class="detail-short">{{ product.shortDescription }}</p>
         <div class="detail-price">
           {{
-            product.pricePending
-              ? "Pricing to be announced"
-              : product.price === 0
-                ? "FREE"
-                : formatPrice(product.price)
+            selectedVariant && !product.pricePending
+              ? formatPrice(selectedVariant.price)
+              : priceLabel(product)
           }}
           <del
             v-if="
-              !product.pricePending && product.compareAtPrice > product.price
+              !product.pricePending && product.compareAtPrice > (selectedVariant?.price ?? product.price)
             "
             >{{ formatPrice(product.compareAtPrice) }}</del
           ><small v-if="!product.pricePending && product.price > 0">USD</small>
         </div>
+        <section v-if="product.merch" class="merch-options" aria-label="Choose merchandise options">
+          <fieldset v-if="colors.length">
+            <legend>Color <strong>{{ selectedColor }}</strong></legend>
+            <div class="merch-choice-list">
+              <button v-for="color in colors" :key="color" type="button" :aria-pressed="selectedColor === color" @click="selectedColor = color">
+                <span class="merch-swatch" :style="{background: colorSwatch(color)}" aria-hidden="true"></span>{{ color }}
+              </button>
+            </div>
+          </fieldset>
+          <fieldset v-if="sizes.length">
+            <legend>Size <strong>{{ selectedSize }}</strong></legend>
+            <div class="merch-choice-list">
+              <button v-for="size in sizes" :key="size" type="button" :disabled="!findVariant(product, selectedColor, size)" :aria-pressed="selectedSize === size" @click="selectedSize = size">{{ size }}<span v-if="!findVariant(product, selectedColor, size)"> · Unavailable</span></button>
+            </div>
+          </fieldset>
+          <p v-if="selectedVariant?.available === false" class="notice" role="status">This color and size is out of stock. Please choose another combination.</p>
+          <p v-else-if="selectedVariant?.available !== true" class="notice">Availability needs confirmation before ordering.</p>
+          <label class="merch-destination">Ship to
+            <select v-model="destination"><option v-for="country in product.merch.shippingCountries" :key="country" :value="country">{{ country === 'US' ? 'United States' : country === 'CA' ? 'Canada' : country }}</option></select>
+          </label>
+          <p class="merch-shipping" v-if="selectedShipping">Standard shipping estimate: <strong>{{ formatPrice(selectedShipping.firstItem) }}</strong> for the first item; {{ formatPrice(selectedShipping.additionalItem) }} per additional item. USD. Final shipping depends on the delivery address.</p>
+          <p v-else class="merch-shipping">Shipping estimate unavailable for this selection and destination. Shipping will be confirmed before payment.</p>
+          <p class="merch-shipping">Made to order. Merchandise ordering opens soon; you can save your selection in your cart.</p>
+        </section>
         <div v-if="state === 'soon'" class="coming-soon-panel">
           <span>↗</span>
           <div>
@@ -263,8 +306,9 @@ async function buyNow() {
                 min="1"
                 :max="maxQty"
             /></label>
-            <button class="button" @click="addToCart">Add to cart +</button>
+            <button class="button" :disabled="!selectionValid" @click="addToCart">{{ product.merch ? "Save selection +" : "Add to cart +" }}</button>
             <button
+              v-if="product.type === 'digital'"
               class="button primary"
               :disabled="
                 checkout.loading ||
@@ -440,7 +484,7 @@ async function buyNow() {
         Close ×</button
       ><img
         v-if="images.length"
-        :src="productImageUrl(images[activeIndex])"
+        :src="productImageUrl(activeIndex === 0 && selectedVariant?.image ? selectedVariant.image : images[activeIndex])"
         :alt="product.name"
       />
       <div v-if="images.length > 1" class="gallery-controls">

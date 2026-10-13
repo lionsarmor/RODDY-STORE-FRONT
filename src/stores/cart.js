@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import { cartLineKey, hydrateLine } from "../merch.js";
 
 const CART_KEY = "roddy:cart";
 
@@ -13,7 +14,8 @@ function readCart() {
         typeof i.id === "string" &&
         Number.isInteger(i.qty) &&
         i.qty > 0 &&
-        i.qty <= 99,
+        i.qty <= 99 &&
+        (i.variantId === undefined || typeof i.variantId === "string"),
     );
   } catch (e) {
     return [];
@@ -38,23 +40,23 @@ export const useCartStore = defineStore("cart", {
       }
     },
 
-    add(productId, qty = 1, maxQty = 99) {
-      const existing = this.items.find((i) => i.id === productId);
+    add(productId, qty = 1, maxQty = 99, variantId = "") {
+      const existing = this.items.find((i) => cartLineKey(i.id, i.variantId) === cartLineKey(productId, variantId));
       qty = Math.min(99, Math.max(1, Math.trunc(Number(qty)) || 1));
       if (existing) existing.qty = Math.min(maxQty, existing.qty + qty);
-      else this.items.push({ id: productId, qty });
+      else this.items.push({ id: productId, qty, ...(variantId ? {variantId} : {}) });
       this.persist();
     },
 
-    setQty(productId, qty) {
-      if (qty <= 0) return this.remove(productId);
-      const existing = this.items.find((i) => i.id === productId);
+    setQty(productId, qty, variantId = "") {
+      if (qty <= 0) return this.remove(productId, variantId);
+      const existing = this.items.find((i) => cartLineKey(i.id, i.variantId) === cartLineKey(productId, variantId));
       if (existing) existing.qty = qty;
       this.persist();
     },
 
-    remove(productId) {
-      this.items = this.items.filter((i) => i.id !== productId);
+    remove(productId, variantId = "") {
+      this.items = this.items.filter((i) => cartLineKey(i.id, i.variantId) !== cartLineKey(productId, variantId));
       this.persist();
     },
 
@@ -68,7 +70,7 @@ export const useCartStore = defineStore("cart", {
       return this.items
         .map((i) => {
           const product = catalogStore.byId(i.id);
-          return product ? { product, qty: i.qty } : null;
+          return product ? hydrateLine(i, product) : null;
         })
         .filter(Boolean);
     },

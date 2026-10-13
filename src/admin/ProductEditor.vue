@@ -1,5 +1,6 @@
 <script setup>
 import { computed, ref } from "vue";
+import MerchEditor from "./MerchEditor.vue";
 import MediaEditor from "./MediaEditor.vue";
 import ProductTags from "../components/ProductTags.vue";
 import { specsToText, textToSpecs } from "./utils";
@@ -45,7 +46,7 @@ function toggleTag(id) {
       aria-label="Product editor sections"
     >
       <button
-        v-for="t in ['details', 'images', 'pricing', 'links']"
+        v-for="t in ['details', 'images', 'pricing', ...(product.merch ? ['options & shipping'] : []), 'links']"
         :key="t"
         role="tab"
         :aria-selected="tab === t"
@@ -153,10 +154,12 @@ function toggleTag(id) {
       </button>
     </div>
     <div v-if="tab === 'pricing'" class="editor-content">
+      <p v-if="product.merch" class="notice">Merchandise prices are set per color and size in Options & shipping. The base price is the lowest enabled variant price.</p>
       <div class="form-grid">
         <label
-          >Price (USD)<input
+          >Base / fallback price (USD)<input
             v-model.number="product.price"
+            :disabled="!!product.merch"
             type="number"
             min="0"
             step=".01" /></label
@@ -188,7 +191,7 @@ function toggleTag(id) {
       >
       <label class="check"
         ><input v-model="product.trackStock" type="checkbox" />Track stock (turn
-        off for unlimited digital products)</label
+        off for digital products or made-to-order merchandise)</label
       >
       <label class="check"
         ><input v-model="product.active" type="checkbox" />Visible in
@@ -204,6 +207,7 @@ function toggleTag(id) {
         the Orders panel.
       </p>
     </div>
+    <div v-if="tab === 'options & shipping'" class="editor-content"><MerchEditor :product="product" /></div>
     <div v-if="tab === 'links'" class="editor-content">
       <label
         >Documentation / schematics URL<input

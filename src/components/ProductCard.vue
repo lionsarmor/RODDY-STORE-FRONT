@@ -6,6 +6,7 @@ import {
   productImageUrl,
   useCatalogStore,
 } from "../stores/catalog";
+import { priceLabel } from "../merch.js";
 import ProductTags from "./ProductTags.vue";
 import ProductArtwork from "./ProductArtwork.vue";
 defineProps({ product: { type: Object, required: true } });
@@ -65,11 +66,7 @@ const catalog = useCatalogStore();
       <div class="product-card-bottom">
         <span
           >{{
-            product.pricePending
-              ? "Details to come"
-              : product.price === 0
-                ? "FREE"
-                : formatPrice(product.price)
+            priceLabel(product)
           }}
           <del
             v-if="

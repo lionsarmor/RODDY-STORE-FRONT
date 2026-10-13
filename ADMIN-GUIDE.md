@@ -11,9 +11,9 @@ The curated catalog contains DESK COMMANDER in Apps, I KNOW WHAT I SAW in Games,
 KEYCHAIN KREATURES in Pocket, and KESTREL COMPUTER in Computers. The latter two
 are explicitly coming soon. The existing game price and stock are retained;
 review them before enabling checkout. DESK COMMANDER is a paid $3.99 USD software download.
-DESK MAT and HOODIE are listed under Merch as coming-soon entries with
-unannounced pricing. Add their images, specifications, prices and stock in
-the product editor when ready. No AI-related claims were assigned to products
+DESK MAT and HOODIE have Printify color/size options, retail prices and standard
+shipping estimates under Merch. Customers can browse and save selections;
+merchandise ordering opens after physical checkout and production are integrated. No AI-related claims were assigned to products
 without confirmation.
 
 Use Products to search/filter the catalog and open a single product editor.
@@ -130,3 +130,31 @@ are not configured. Arrange applicable tax treatment before enabling live sales.
 Validation: `npm test`, `python3 -m unittest discover -s backend -p 'test_*.py'`,
 and `npm run build` after installing the backend dependencies in a virtual
 environment. Repository tests use a fake provider and do not make real charges.
+
+## Printify merchandise options
+
+Open **Printify merchandise** to load products from the connected account. Choose
+which storefront product each Printify product belongs to, then import its options
+and shipping. Existing products have **Refresh stock, costs & shipping**. A refresh
+preserves edited retail prices and offer checkboxes, removes variants disabled in
+Printify, and imports newly enabled variants at their saved Printify retail price.
+Review changes and click **Publish** to update the live catalog.
+
+Each mapped product shows its exact color/size combinations. Filter by size or
+color, enter a bulk price, and apply it to the filtered rows. You can edit each
+price or uncheck combinations you do not want to offer. Gross profit and margin
+use live production costs and exclude payment fees, taxes, shipping and returns.
+Those private production costs are never published into the storefront catalog.
+
+The product editor also has **Options & shipping** for draft price edits and
+US/Canada shipping settings. Standard shipping is imported from Printify and
+shown per first/additional item. Missing rates are shown as unavailable. It is an
+estimate until an address-specific checkout quote is implemented.
+
+Current hoodie listing: 10 colors, sizes S–5XL, 76 combinations (4XL/5XL have 8
+colors). Current desk mat listing: 16 × 32 inches. Enable and save new variants in
+Printify, then refresh and review their artwork, retail prices and shipping.
+
+See [backend/PRINTIFY.md](backend/PRINTIFY.md) for account setup and remaining
+payment, production and tracking integration. No production order is created by
+importing, refreshing or publishing the catalog.

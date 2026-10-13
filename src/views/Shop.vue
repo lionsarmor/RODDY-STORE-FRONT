@@ -1,4 +1,5 @@
 <script setup>
+import { priceLabel } from "../merch.js";
 import { computed, ref } from "vue";
 import { useRoute } from "vue-router";
 import {
@@ -176,7 +177,7 @@ function clearFilters() {
                     ? "PRICING TO BE ANNOUNCED"
                     : spotlight.price === 0
                       ? "FREE TO EXPLORE"
-                      : formatPrice(spotlight.price) + " USD"
+                      : priceLabel(spotlight) + " USD"
             }}</span>
           </div>
         </div>

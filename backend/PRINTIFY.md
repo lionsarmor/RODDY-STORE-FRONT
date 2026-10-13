@@ -1,66 +1,108 @@
-# Printify setup for the RODDY hoodie and desk mat
+# Printify merchandise for the RODDY storefront
 
-Status: account connection and private product/variant discovery are implemented.
-Customer size selection, physical checkout, shipping quotes, production submission,
-and tracking delivery are **not yet implemented**. Physical products remain coming
-soon. Existing Square digital checkout continues to operate independently.
+Implemented: private account connection, product/variant discovery, storefront
+color and size selection, matching mockups, variant prices, a variant-aware saved
+cart, and US/Canada standard shipping estimates. The admin imports products,
+refreshes stock and shipping, edits variant prices individually or in bulk, and
+shows live production costs and gross margins privately.
 
-## Connect the account
+Merchandise payment, address-specific shipping quotes, production submission and
+tracking are **not yet implemented**. The product page lets customers save a
+selection and clearly states that ordering opens soon. Existing Square software
+checkout operates independently; the backend continues rejecting physical orders.
 
-1. Create a [Printify account](https://printify.com/) and complete onboarding.
-2. In Connections, generate an API token with `shops.read` and `products.read`.
-   Those are sufficient for this setup stage. See the
-   [official token instructions](https://help.printify.com/hc/en-us/articles/4483626447249-How-can-I-generate-an-API-token).
-3. Create an API store named RODDY under My Stores → Add a new store → API.
-   See [Printify's API setup instructions](https://developers.printify.com/#create-a-personal-access-token).
-4. In the droplet console, run:
+## Account setup
 
-   ```sh
-   python3 /opt/roddy-store/backend/deploy/configure-printify.py
-   ```
+Create an API store and save the products in it. Generate a personal access token
+under Printify → My Profile → Connections with `shops.read`, `products.read` and
+`catalog.read`. Run this in the droplet console as root:
 
-   Paste the token only into the hidden prompt. The helper lists accessible stores,
-   asks you to select one if necessary, verifies product access, and atomically
-   saves `/etc/roddy-store/printify.json` as root:roddystore with mode 640. It does
-   not alter Square credentials, restart services, or create any supplier orders.
-5. Open the RODDY admin, connect to GitHub, and select **Printify merchandise →
-   Check connection & load products**. Empty inventory is expected initially.
+```sh
+python3 /opt/roddy-store/backend/deploy/configure-printify.py
+```
 
-Create the hoodie and desk mat in that same Printify store. Use the original print
-artwork and the provider's product templates; storefront mockup photos are not
-automatically usable as production artwork. Enable the actual hoodie sizes/colors
-and mat dimensions you intend to sell. Save both products, then reload the panel.
+The hidden prompt verifies shops and product access, then saves
+`/etc/roddy-store/printify.json` as root:roddystore with mode 640. Credentials are
+read on demand; replacing the token needs no service restart. Do not paste tokens
+into the catalog, GitHub, or chat. Replace a token that has been shared in chat.
 
-## Next integration stage
+## Product and variant sync
 
-The product IDs, variant IDs and costs from the connected account are needed to
-map the storefront's `hoodie` and `desk-mat` products. Choose retail prices and
-shipping destinations after checking supplier costs. Keep the products unavailable
-until the following flow is implemented and validated:
+Open Admin → Printify merchandise and connect to GitHub as the store owner. Use
+**Check connection & load products**, choose the matching storefront product, and
+**Import options & shipping**. Existing mappings have a **Refresh stock, costs &
+shipping** button. Review the draft, preview it, then publish.
 
-- Variant-aware cart and checkout with server-validated variant IDs and prices.
-- Customer shipping address and a supplier shipping quote before payment.
-- Square payment verification followed by a durable fulfillment queue, independent
-  of whether the customer returns to the receipt page.
-- An order reference and reconciliation for ambiguous provider timeouts to prevent
-  duplicate manufacturing. Persist the supplier order ID before production release.
-- Create and release Printify orders, then update production and shipment tracking.
-- Refund/cancellation handling: a Square refund alone does not cancel manufacturing.
+- Only supplier-enabled combinations are imported. Color and size come from
+  Printify option IDs, not text guessed from titles.
+- Refresh preserves edited storefront prices and offer checkboxes for existing
+  variants. It removes supplier-disabled variants and adds newly enabled variants
+  at their saved Printify retail prices. Review new prices before publishing.
+- Stock is a published snapshot. Refresh before updating the listing; it is not
+  a live checkout stock check.
+- Retail prices are USD. Production costs remain in the private admin response;
+  they are not copied to the public catalog.
+- Photos uploaded through the existing admin gallery are preserved. A selected
+  variant can show its matching Printify mockup as the first gallery image.
+- Use **Options & shipping** in a product editor for offline draft pricing and
+  shipping country settings. Live costs require a refresh in the Printify panel.
 
-Order submission will need `orders.read` and `orders.write`, and other scopes as
-required for shipping/catalog or webhook integrations. Do not enable Printify's
-automatic production approval while testing the submission flow. Printify has its
-own manufacturing/shipping billing, separate from Square customer payments. This
-connection step has not placed a sample order or charged the account.
+### Launch pricing, 2026-10-13
 
-## Operations
+| Product / size | Retail USD | Production cost USD | Gross profit USD |
+| --- | ---: | ---: | ---: |
+| Hoodie S–XL | 35.99 | 21.58 | 14.41 |
+| Hoodie 2XL | 39.99 | 23.77 | 16.22 |
+| Hoodie 3XL | 41.99 | 25.09 | 16.90 |
+| Hoodie 4XL | 42.99 | 25.53 | 17.46 |
+| Hoodie 5XL | 42.99 | 25.66 | 17.33 |
+| Desk mat 16 × 32 | 27.99 | 15.60 | 12.39 |
 
-`GET /admin/printify?page=1` requires the configured GitHub administrator. The
-response contains store identity and product/variant summaries, never the Printify
-token. Pagination is bounded and constructed using the fixed provider host; the
-server does not follow pagination URLs supplied in API response data.
+Based on connected product costs at setup. Gross profit excludes payment fees,
+taxes, returns and shipping. Customer shipping is separate. These storefront
+retail prices do not change the saved Printify listing prices.
 
-The connection file is read on demand, so replacing credentials with the helper
-does not need a backend restart. Back up this file privately and rotate the token
-through Printify before its expiration. A missing file reports "not connected";
-API authentication and network errors are displayed without provider response bodies.
+### Shipping estimates
+
+The integration reads the **v2 standard shipping** endpoint. The older v1 endpoint
+can mix multiple shipping methods in its profiles, so it is not used. Matching
+uses the provider's variant ID and destination country; only USD rates are accepted.
+
+| Product | US first / additional | Canada first / additional |
+| --- | --- | --- |
+| Hoodie | $8.79 / $2.09 | $13.19 / $6.59 |
+| Desk mat 16 × 32 | $10.79 / $7.20 | $15.49 / $6.09 |
+
+The saved cart groups matching rates within each product. Different products are
+estimated separately because they may ship separately. A missing rate is
+unavailable, never implicitly free. These are provider standard-rate estimates,
+not guaranteed final address-specific shipping charges or delivery times.
+
+## Private API
+
+- `GET /admin/printify?page=1`: store identity and paginated product/variant summaries.
+- `GET /admin/printify/products/{product_id}`: selected product, actual options,
+  variant prices/costs/availability, mockups, and standard shipping profiles.
+
+Both endpoints require the configured GitHub administrator. They never return
+the Printify token, raw provider error bodies or artwork print-area configuration.
+Requests use fixed Printify hosts and bounded pagination; supplied pagination URLs
+are never followed. A shipping permission/network failure keeps import available
+with an explicit warning and no shipping rates.
+
+## Remaining order integration
+
+Before merchandise sales open, implement and validate:
+
+- Server validation of mapped variants, current stock and retail prices.
+- Customer address collection and Printify's address-specific shipping quote.
+- Square verification and a durable fulfillment queue independent of the receipt page.
+- Idempotent order references and reconciliation after ambiguous timeouts.
+- Production release, shipment tracking and cancellation/refund handling.
+
+This requires `orders.read` and `orders.write`, and appropriate webhook scopes.
+Printify bills manufacturing and shipping separately from Square customer payments.
+No supplier order or sample purchase was created during catalog setup.
+
+References: [Printify API](https://developers.printify.com/),
+[token setup](https://help.printify.com/hc/en-us/articles/4483626447249-How-can-I-generate-an-API-token).

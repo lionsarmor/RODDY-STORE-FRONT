@@ -321,6 +321,14 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
             raise PrintifyUnavailable("The configured Printify store is no longer accessible. Run setup again.")
         return {"configured": True, "fulfillmentEnabled": False, "shop": shop, **client.products(page)}
 
+    @app.get("/admin/printify/products/{product_id}")
+    def printify_product(product_id: str, request: Request):
+        require_admin(request)
+        client = load_connection(printify_config)
+        if client is None:
+            raise HTTPException(409, "Connect Printify using the droplet setup command first.")
+        return {"shopId": client.shop_id, "product": client.product(product_id)}
+
     @app.get("/admin/orders")
     def admin_orders(request: Request):
         require_admin(request)
