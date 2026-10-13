@@ -22,6 +22,7 @@ from fastapi.responses import FileResponse, JSONResponse
 from .square import Square, PaymentUnavailable, PaymentInputError
 from .printify import load_connection, PrintifyUnavailable
 from .commerce import Commerce
+from .forum import register_forum
 
 
 def checkout_url(value):
@@ -488,4 +489,5 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
         commerce.update(order["session"], "printify", "submitted", supplier_id=found["id"])
         return {"saved": True}
 
+    register_forum(app, connect, require_admin, rate_limit, origins)
     return app

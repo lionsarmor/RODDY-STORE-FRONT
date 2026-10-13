@@ -18,6 +18,7 @@ const navLinks = computed(() => [
   { label: "Shop", to: "/shop", query: {} },
   ...catalog.categories.map(c => ({ label: c.name, to: '/shop', query: { cat: c.id } })),
   { label: "About", to: "/about", query: {} },
+  { label: "Contact", to: "/contact", query: {} },
 ]);
 
 // RouterLink's exact-active-class only checks the matched route record, so

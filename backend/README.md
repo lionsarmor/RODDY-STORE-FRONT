@@ -1,4 +1,8 @@
-# Droplet checkout and paid downloads
+# Droplet checkout, community and paid downloads
+
+The same service also hosts the contact page's General forum, handle accounts and
+GitHub-owner moderation. See [FORUM.md](FORUM.md) for public/private contact flow,
+session handling, administration and validation.
 
 The GitHub Pages storefront uses this separate FastAPI service on the existing
 DigitalOcean droplet. Square hosts payment entry; the droplet never receives card

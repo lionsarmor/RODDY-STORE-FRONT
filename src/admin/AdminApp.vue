@@ -11,6 +11,7 @@ import RoddyLogo from "../components/RoddyLogo.vue";
 import ProductTags from "../components/ProductTags.vue";
 import ThemeOverlay from "../components/ThemeOverlay.vue";
 import OrderManager from "./OrderManager.vue";
+import ForumManager from "./ForumManager.vue";
 import MerchEditor from "./MerchEditor.vue";
 import { importPrintifyProduct, priceLabel } from "../merch.js";
 import ProductEditor from "./ProductEditor.vue";
@@ -43,6 +44,7 @@ const tabs = [
   { id: "checkout", label: "Checkout & Square", icon: "▣" },
   { id: "printify", label: "Printify merchandise", icon: "◇" },
   { id: "orders", label: "Orders", icon: "▤" },
+  { id: "forum", label: "Community forum", icon: "☷" },
 ];
 const form = reactive({
   owner: "lionsarmor",
@@ -1309,6 +1311,7 @@ function syncPrintify(source, targetId) {
             </section>
           </template>
           <template v-if="tab === 'orders'"><OrderManager :endpoint="catalog.settings.checkoutEndpoint" :token="form.token" :connected="connected" /></template>
+          <template v-if="tab === 'forum'"><ForumManager :endpoint="catalog.settings.checkoutEndpoint" :token="form.token" :connected="connected" /></template>
 
         </fieldset>
         <p v-else class="empty-state">Loading your control desk…</p>

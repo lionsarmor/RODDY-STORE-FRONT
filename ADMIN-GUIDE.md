@@ -1,5 +1,19 @@
 # RODDY Control Desk
 
+## Contact and community forum
+
+Visitors use `/#/contact` to create a handle, post questions/comments and reply on
+the General board. Open **Community forum** after connecting with your GitHub
+owner account to post/reply as **RODDY**, hide/restore content, close/reopen
+discussions or disable a handle. Disabling a handle revokes its sessions; hide
+its posts separately if needed. Forum data saves directly on the droplet and
+does not require publishing the catalog. See [backend/FORUM.md](backend/FORUM.md).
+
+The private contact modal opens an email draft addressed to
+**roddy2020@protonmail.com** for issues, concerns, suggestions and collaborations.
+Visitors review and send through their own email app, or copy the draft into
+webmail. Private messages do not appear on the public board or in store admin.
+
 Open `/admin.html` on the store, or the same path on your local Vite server.
 The editor opens in local draft mode, so you can explore it without credentials.
 Connect to GitHub before publishing. Nothing is deployed by merely opening or

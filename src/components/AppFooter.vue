@@ -34,7 +34,7 @@ const catalog = useCatalogStore();
           <h4 class="mb-3 font-mono text-[0.7rem] uppercase tracking-wide text-text-dim">Company</h4>
           <RouterLink to="/about" class="mb-2 block font-mono text-sm hover:text-brand">About RODDY</RouterLink>
           <RouterLink to="/cart" class="mb-2 block font-mono text-sm hover:text-brand">Cart</RouterLink>
-          <a v-if="catalog.settings.supportEmail" :href="'mailto:' + catalog.settings.supportEmail" class="mb-2 block font-mono text-sm hover:text-brand">Contact RODDY ↗</a>
+          <RouterLink to="/contact" class="mb-2 block font-mono text-sm hover:text-brand">Contact & community ↗</RouterLink>
           <span class="block font-mono text-sm">PLAY · BUILD · PROGRAM · KEEP</span>
         </div>
       </div>
