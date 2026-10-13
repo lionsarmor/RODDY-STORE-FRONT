@@ -81,6 +81,16 @@ class MixedCheckoutTests(unittest.TestCase):
         response=type('Response',(),{'raise_for_status':lambda _:None,'json':lambda _:{'login':'lionsarmor'}})()
         with patch('backend.app.httpx.get',return_value=response):
             return self.client.request(method,path,json=body,headers={'authorization':'Bearer owner'})
+    def test_pending_supplier_product_cannot_accidentally_become_office_fulfillment(self):
+        office = self.catalog['products'][2]
+        office['supplier'] = {'provider': 'mouser', 'supplierSku': '123-FPGA', 'fulfillment': 'pending'}
+        self.assertEqual(self.quote([{'id': 'office', 'qty': 1}]).status_code, 409)
+        self.assertEqual(self.provider.created, [])
+        office['supplier']['fulfillment'] = 'office'
+        result = self.quote([{'id': 'office', 'qty': 1}])
+        self.assertEqual(result.status_code, 200, result.text)
+        self.assertEqual(result.json()['subtotal'], 1799)
+
     def test_mixed_order_total_repriced_shipping_and_no_production_before_payment(self):
         q=self.quote(); self.assertEqual(q.status_code,200,q.text); q=q.json()
         self.assertEqual(q['subtotal'],399+3599*2+1799)

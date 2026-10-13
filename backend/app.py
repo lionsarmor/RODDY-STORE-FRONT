@@ -22,6 +22,7 @@ from fastapi.responses import FileResponse, JSONResponse
 from .square import Square, PaymentUnavailable, PaymentInputError
 from .printify import load_connection, PrintifyUnavailable
 from .commerce import Commerce
+from .suppliers import register_suppliers
 from .newsletter import register_newsletter
 from .forum import register_forum
 
@@ -122,7 +123,7 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
         # Newsletter sections accept longer copy; other endpoints retain the small-cart limit.
         if request.method == "POST":
             body = await request.body()
-            limit = 65536 if request.url.path.startswith("/admin/newsletters/") else 8192
+            limit = 65536 if (request.url.path.startswith("/admin/newsletters/") or request.url.path == "/admin/suppliers/preferences") else 8192
             if len(body) > limit:
                 return JSONResponse({"error": "Request too large."}, status_code=413)
         response = await call_next(request)
@@ -493,4 +494,5 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
 
     register_forum(app, connect, require_admin, rate_limit, origins)
     register_newsletter(app, connect, require_admin, rate_limit, origins)
+    register_suppliers(app, connect, require_admin, os.getenv("SUPPLIERS_CONFIG", str(database.parent / "suppliers.json")))
     return app

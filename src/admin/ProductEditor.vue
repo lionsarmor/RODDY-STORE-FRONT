@@ -47,7 +47,7 @@ function toggleTag(id) {
       aria-label="Product editor sections"
     >
       <button
-        v-for="t in ['details', 'images', 'pricing', ...(product.type === 'physical' ? ['options & shipping'] : []), 'links']"
+        v-for="t in ['details', 'images', 'pricing', ...(product.type === 'physical' ? ['options & shipping', ...(product.supplier ? ['supplier'] : [])] : []), 'links']"
         :key="t"
         role="tab"
         :aria-selected="tab === t"
@@ -208,6 +208,19 @@ function toggleTag(id) {
       </p>
     </div>
     <div v-if="tab === 'options & shipping'" class="editor-content"><MerchEditor v-if="product.merch" :product="product" /><OfficeShipping v-else :product="product" /></div>
+    <div v-if="tab === 'supplier' && product.supplier" class="editor-content">
+      <h3>{{ product.supplier.provider === 'mouser' ? 'Mouser Electronics' : 'AliExpress' }}</h3>
+      <p class="help-copy">Listing {{ product.supplier.supplierSku }} · Variant {{ product.supplier.variantId || 'not applicable' }}</p>
+      <p class="help-copy">{{ product.supplier.manufacturer }} {{ product.supplier.manufacturerPartNumber }} · {{ product.supplier.sellerName }}</p>
+      <p class="help-copy">Supplier minimum {{ product.supplier.minimumQuantity }} · Order multiple {{ product.supplier.orderMultiple }} · Last checked {{ product.supplier.checkedAt ? new Date(product.supplier.checkedAt * 1000).toLocaleString() : 'unknown' }}</p>
+      <p class="notice">Direct Mouser/AliExpress fulfillment is not enabled. Supplier availability is not office stock. Searching/importing does not order goods, reserve them or promise shipping.</p>
+      <label>Fulfillment mode<select v-model="product.supplier.fulfillment"><option value="pending">Supplier fulfillment pending — cannot buy</option><option value="office">I stock and ship this item from my office</option></select></label>
+      <p class="help-copy">Choose office only for inventory you actually own. Set tracked stock in Orders → Office inventory and shipping rates in Options & shipping. Choose Available in Pricing only when stock and shipping are ready. Customers pay through Square and you manage office fulfillment in Orders.</p>
+      <a v-if="product.supplier.productUrl?.startsWith('https://')" class="button small" :href="product.supplier.productUrl" target="_blank" rel="noopener noreferrer">View supplier listing ↗</a>
+      <p class="help-copy">Refresh a listing through Suppliers & imports → Load / refresh details. It will not overwrite this product's name, description, pictures or retail price. Duplicate listings are detected by supplier, product and variant.</p>
+      <button class="button small" @click="product.supplier = null">Disconnect supplier link</button>
+      <p class="help-copy">Disconnecting keeps your product and its current price/content. It does not cancel a supplier order or change office stock.</p>
+    </div>
     <div v-if="tab === 'links'" class="editor-content">
       <label
         >Documentation / schematics URL<input

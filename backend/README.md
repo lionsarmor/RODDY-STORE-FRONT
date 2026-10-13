@@ -1,5 +1,8 @@
 # Droplet checkout, community, newsletters and paid downloads
 
+Supplier search/import connections are described in [SUPPLIERS.md](SUPPLIERS.md).
+Direct Mouser/AliExpress ordering remains disabled until separately implemented and verified.
+
 Manual newsletters and private subscriber records use the same database and service.
 See [NEWSLETTERS.md](NEWSLETTERS.md) for the admin workflow and backup requirements.
 

@@ -117,6 +117,8 @@ class Commerce:
             if (not p or not p.get("active") or p.get("status") != "available" or p.get("pricePending")
                     or p.get("downloadUrl") or "free" in p.get("tags", [])):
                 raise HTTPException(409, "An item is unavailable. Refresh your cart.")
+            if p.get("supplier") and (not isinstance(p["supplier"], dict) or p["supplier"].get("fulfillment") != "office" or p.get("merch") or p["supplier"].get("provider") not in {"mouser", "aliexpress"}):
+                raise HTTPException(409, "Supplier fulfillment is not configured for this item. It cannot be purchased yet.")
             item = {"id": p["id"], "name": p["name"], "qty": line["qty"], "variantId": line["variantId"]}
             if p.get("type") == "digital":
                 if line["qty"] != 1 or line["variantId"]:

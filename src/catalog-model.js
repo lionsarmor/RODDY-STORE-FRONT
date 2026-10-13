@@ -45,6 +45,7 @@ export function normalizeProduct(p) {
     downloadUrl: p.downloadUrl || "",
     githubUrl: p.githubUrl || "",
     officeShipping: p.officeShipping || {},
+    supplier: p.supplier || null,
     merch: p.merch ? { ...p.merch, variants: Array.isArray(p.merch.variants) ? p.merch.variants : [], shippingCountries: p.merch.shippingCountries || ["US", "CA"], shippingProfiles: p.merch.shippingProfiles || [] } : null,
   };
 }
@@ -71,6 +72,7 @@ export function safeLink(value) {
 export function validateCatalog(data) {
   const errors = [];
   const skus = new Set();
+  const supplierKeys = new Set();
   for (const [label, list] of [
     ["Product", data.products],
     ["Category", data.categories],
@@ -117,6 +119,19 @@ export function validateCatalog(data) {
     for (const [country, rate] of Object.entries(p.officeShipping || {})) {
       if (!["US", "CA"].includes(country) || !rate || [rate.firstItem, rate.additionalItem].some(n => !Number.isFinite(n) || n < 0 || n > 999999 || Math.abs(n*100-Math.round(n*100)) > .00001))
         errors.push(`${p.name}: enter valid office shipping rates for US or Canada.`);
+    }
+    if (p.supplier) {
+      const s = p.supplier;
+      const key = JSON.stringify([s.provider, String(s.supplierSku || "").toLowerCase(), s.variantId || ""]);
+      if (!["mouser", "aliexpress"].includes(s.provider) || p.type !== "physical" || p.merch)
+        errors.push(`${p.name}: choose one supported physical-product supplier.`);
+      if (typeof s.supplierSku !== "string" || !s.supplierSku.trim() || s.supplierSku.length > 80 || supplierKeys.has(key))
+        errors.push(`${p.name}: supplier listing and variant must be present and unique.`);
+      supplierKeys.add(key);
+      if (!["pending", "office"].includes(s.fulfillment)) errors.push(`${p.name}: choose pending or office fulfillment. Direct supplier ordering is not enabled.`);
+      if (s.provider === "aliexpress" && (typeof s.variantId !== "string" || !s.variantId)) errors.push(`${p.name}: choose an exact AliExpress variant before importing.`);
+      if (s.productUrl && (!safeLink(s.productUrl) || !s.productUrl.startsWith("https://"))) errors.push(`${p.name}: use a valid HTTPS supplier listing URL.`);
+      if ([s.minimumQuantity, s.orderMultiple].some(n => !Number.isInteger(n) || n < 1)) errors.push(`${p.name}: supplier minimums must be positive whole numbers.`);
     }
     if (p.merch) {
       const m = p.merch, ids = new Set(), combinations = new Set();
