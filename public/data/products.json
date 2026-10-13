@@ -155,12 +155,13 @@
       "githubUrl": "https://github.com/lionsarmor/WEATHER-COMMANDER",
       "pricePending": false,
       "merch": null,
-      "officeShipping": {}
+      "officeShipping": {},
+      "supplier": null
     },
     {
       "id": "shadow-over-space",
       "sku": "R-A001",
-      "name": "Shadow Over Space",
+      "name": "SHADOW OVER SPACE",
       "category": "games",
       "price": 0,
       "stock": 0,
@@ -217,7 +218,8 @@
       "story": "",
       "documentationUrl": "",
       "merch": null,
-      "officeShipping": {}
+      "officeShipping": {},
+      "supplier": null
     },
     {
       "id": "desk-commander-cartridge",
@@ -278,7 +280,8 @@
       "story": "",
       "documentationUrl": "",
       "merch": null,
-      "officeShipping": {}
+      "officeShipping": {},
+      "supplier": null
     },
     {
       "id": "desk-commander",
@@ -342,7 +345,8 @@
       "story": "We created Desk Commander because we believe the Commander X16 deserves more than a command prompt. Inspired by the classic graphical desktops that made early personal computers so exciting, we wanted to bring that same sense of discovery, creativity, and accessibility to modern 8-bit computing. Desk Commander is our way of making the X16 feel like a complete personal computer again—not just a machine for running games, but a platform for exploring, creating, and getting things done. It's about pushing the boundaries of what 8-bit hardware can do while celebrating everything that made those early computers special.",
       "documentationUrl": "https://roddy.world/docs/desk-commander.html",
       "merch": null,
-      "officeShipping": {}
+      "officeShipping": {},
+      "supplier": null
     },
     {
       "id": "iknowwhatisaw",
@@ -393,7 +397,8 @@
       "documentationUrl": "",
       "pricePending": false,
       "merch": null,
-      "officeShipping": {}
+      "officeShipping": {},
+      "supplier": null
     },
     {
       "id": "keychain-kreatures",
@@ -439,7 +444,8 @@
       "story": "",
       "documentationUrl": "",
       "merch": null,
-      "officeShipping": {}
+      "officeShipping": {},
+      "supplier": null
     },
     {
       "id": "kestrel-computer",
@@ -467,7 +473,8 @@
       "story": "",
       "documentationUrl": "",
       "merch": null,
-      "officeShipping": {}
+      "officeShipping": {},
+      "supplier": null
     },
     {
       "id": "desk-mat",
@@ -596,7 +603,8 @@
           }
         ]
       },
-      "officeShipping": {}
+      "officeShipping": {},
+      "supplier": null
     },
     {
       "id": "hoodie",
@@ -2832,12 +2840,13 @@
           }
         ]
       },
-      "officeShipping": {}
+      "officeShipping": {},
+      "supplier": null
     },
     {
       "id": "new-product",
       "sku": "L-001",
-      "name": "Link Commander",
+      "name": "LINK COMMANDER",
       "category": "labs",
       "price": 0,
       "stock": 0,
@@ -2863,7 +2872,8 @@
       "githubUrl": "",
       "merch": null,
       "pricePending": true,
-      "officeShipping": {}
+      "officeShipping": {},
+      "supplier": null
     }
   ]
 }
