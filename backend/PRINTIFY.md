@@ -7,15 +7,14 @@ refreshes stock and shipping, edits variant prices individually or in bulk, and
 shows live production costs and gross margins privately.
 
 Merchandise payment, address-specific shipping quotes, production submission and
-tracking are **not yet implemented**. The product page lets customers save a
-selection and clearly states that ordering opens soon. Existing Square software
-checkout operates independently; the backend continues rejecting physical orders.
+tracking are integrated with mixed-cart Square checkout. See [COMMERCE.md](COMMERCE.md)
+for deployment switches, office shipping, inventory and recovery procedures.
 
 ## Account setup
 
 Create an API store and save the products in it. Generate a personal access token
 under Printify → My Profile → Connections with `shops.read`, `products.read` and
-`catalog.read`. Run this in the droplet console as root:
+`catalog.read`, `orders.read` and `orders.write`. Run this in the droplet console as root:
 
 ```sh
 python3 /opt/roddy-store/backend/deploy/configure-printify.py
@@ -97,19 +96,15 @@ Requests use fixed Printify hosts and bounded pagination; supplied pagination UR
 are never followed. A shipping permission/network failure keeps import available
 with an explicit warning and no shipping rates.
 
-## Remaining order integration
+## Orders and production
 
-Before merchandise sales open, implement and validate:
-
-- Server validation of mapped variants, current stock and retail prices.
-- Customer address collection and Printify's address-specific shipping quote.
-- Square verification and a durable fulfillment queue independent of the receipt page.
-- Idempotent order references and reconciliation after ambiguous timeouts.
-- Production release, shipment tracking and cancellation/refund handling.
-
-This requires `orders.read` and `orders.write`, and appropriate webhook scopes.
-Printify bills manufacturing and shipping separately from Square customer payments.
-No supplier order or sample purchase was created during catalog setup.
+Mixed checkout, address-specific shipping quotes, payment verification, durable
+supplier submission/reconciliation and tracking are implemented. See
+[COMMERCE.md](COMMERCE.md) for configuration, the fulfillment lifecycle, office
+inventory and recovery procedures. Order operations additionally require
+`orders.read` and `orders.write`. Printify bills manufacturing and shipping
+separately from Square customer payments. Keep its billing method ready.
+No supplier order or sample purchase was created during validation.
 
 References: [Printify API](https://developers.printify.com/),
 [token setup](https://help.printify.com/hc/en-us/articles/4483626447249-How-can-I-generate-an-API-token).

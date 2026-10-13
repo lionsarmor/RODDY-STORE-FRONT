@@ -312,7 +312,7 @@ async function buyNow() {
                 min="1"
                 :max="maxQty"
             /></label>
-            <button class="button" :disabled="!selectionValid" @click="addToCart">{{ product.merch ? "Save selection +" : "Add to cart +" }}</button>
+            <button class="button" :disabled="!selectionValid" @click="addToCart">Add to cart +</button>
             <button
               v-if="product.type === 'digital'"
               class="button primary"

@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from "vue";
+import { computed, ref, reactive, watch } from "vue";
 import { useRoute } from "vue-router";
 import {
   useCatalogStore,
@@ -11,7 +11,11 @@ import { useCartStore } from "../stores/cart";
 import { useCheckoutStore } from "../stores/checkout";
 import { useUiStore } from "../stores/ui";
 import { estimateShipping, variantLabel, cartLineKey } from "../merch.js";
-const destination = ref("US");
+const address = reactive({first_name: "", last_name: "", email: "", phone: "", country: "US", region: "", address1: "", address2: "", city: "", zip: ""});
+const destination = computed(() => address.country);
+const quote = ref(null);
+const quoting = ref(false);
+const quoteError = ref("");
 const route = useRoute();
 const catalog = useCatalogStore();
 const cart = useCartStore();
@@ -32,11 +36,11 @@ function itemError(item) {
   if (item.product.merch) {
     if (!item.variant || !item.variant.enabled) return "This selection is no longer offered. Choose a color and size on the product page.";
     if (item.variant.available !== true) return "This selection is unavailable. Choose another color or size.";
-    return "Merchandise ordering opens soon. Your selection is saved.";
+    return "";
   }
-  if (item.product.type !== "digital" || item.product.price <= 0)
-    return "Checkout currently supports paid software downloads. Get free products from their product pages.";
-  if (item.qty !== 1) return "Choose one copy of this digital download.";
+  if (item.product.price <= 0) return "Get free downloads from their product pages.";
+  if (item.product.type === "digital" && item.qty !== 1) return "Choose one copy of this digital download.";
+  if (item.product.type === "physical" && !item.product.trackStock) return "This office-shipped item needs inventory configured before checkout.";
   if (
     ["soon", "out"].includes(stockState(item.product)) ||
     item.product.pricePending
@@ -49,10 +53,24 @@ function itemError(item) {
 const invalid = computed(
   () => missing.value.length > 0 || items.value.some(itemError),
 );
-async function checkoutAll() {
-  if (invalid.value) return;
+watch(() => JSON.stringify([cart.items, address]), () => { quote.value = null; quoteError.value = ""; });
+async function getQuote() {
+  quoting.value = true; quoteError.value = ""; quote.value = null;
+  const fingerprint = JSON.stringify([cart.items, address]);
   try {
-    await checkout.checkout(cart.items);
+    const res = await fetch(catalog.settings.checkoutEndpoint.replace(/\/$/, "") + "/quote", {
+      method: "POST", headers: {"content-type": "application/json"}, body: JSON.stringify({items: cart.items, address})
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Could not calculate shipping.");
+    if (fingerprint === JSON.stringify([cart.items, address])) quote.value = data;
+  } catch (e) { quoteError.value = e.message; }
+  finally { quoting.value = false; }
+}
+async function checkoutAll() {
+  if (invalid.value || (physical.value && !quote.value)) return;
+  try {
+    await checkout.checkout(cart.items, physical.value ? quote.value?.quoteId : "");
   } catch (e) {
     ui.toast(e.message);
   }
@@ -147,14 +165,31 @@ function updateQty(item, value) {
         <div class="mb-4 flex justify-between text-sm">
           <span>Subtotal</span><span>{{ formatPrice(total) }}</span>
         </div>
-        <label v-if="physical" class="merch-destination mb-4">Shipping estimate for<select v-model="destination"><option value="US">United States</option><option value="CA">Canada</option></select></label>
+        <form v-if="physical" class="shipping-form mb-6" @submit.prevent="getQuote">
+          <h3 class="font-mono mb-4">DELIVERY ADDRESS</h3>
+          <div class="shipping-fields">
+            <label>First name<input v-model="address.first_name" autocomplete="given-name" maxlength="80" required /></label>
+            <label>Last name<input v-model="address.last_name" autocomplete="family-name" maxlength="80" required /></label>
+            <label class="wide">Email<input v-model="address.email" type="email" autocomplete="email" maxlength="254" required /></label>
+            <label class="wide">Phone<input v-model="address.phone" type="tel" autocomplete="tel" maxlength="30" required /></label>
+            <label class="wide">Address<input v-model="address.address1" autocomplete="address-line1" maxlength="150" required /></label>
+            <label class="wide">Apartment / suite (optional)<input v-model="address.address2" autocomplete="address-line2" maxlength="150" /></label>
+            <label class="wide">City<input v-model="address.city" autocomplete="address-level2" maxlength="100" required /></label>
+            <label>Country<select v-model="address.country" autocomplete="country"><option value="US">United States</option><option value="CA">Canada</option></select></label>
+            <label>State / province code<input v-model="address.region" autocomplete="address-level1" placeholder="CA / ON" minlength="2" maxlength="2" required /></label>
+            <label class="wide">ZIP / postal code<input v-model="address.zip" autocomplete="postal-code" maxlength="12" required /></label>
+          </div>
+          <button class="button w-full mt-4" type="submit" :disabled="quoting || invalid || catalog.preview">{{ quoting ? 'Calculating…' : 'Calculate shipping' }}</button>
+          <p v-if="quoteError" class="release-note" role="alert">{{ quoteError }}</p>
+          <p v-if="quote" class="text-xs mt-3">Shipping confirmed for this address. Quote valid for 15 minutes.</p>
+        </form>
         <div class="mb-4 flex justify-between text-sm">
           <span>{{
-            physical ? "Standard shipping estimate" : "Shipping"
+            physical ? (quote ? "Standard shipping" : "Shipping estimate") : "Shipping"
           }}</span
           ><span>{{
             physical
-              ? shipping === null ? "To be confirmed" : formatPrice(shipping)
+              ? quote ? formatPrice(quote.shipping / 100) : shipping === null ? "Calculate above" : formatPrice(shipping)
               : "Not required"
           }}</span>
         </div>
@@ -162,16 +197,17 @@ function updateQty(item, value) {
           class="mb-5 flex justify-between border-t border-border pt-4 font-mono text-lg"
         >
           <span>Estimated total</span
-          ><span>{{ formatPrice(total + (shipping || 0)) }}{{ shipping === null ? " + shipping" : "" }}</span>
+          ><span>{{ formatPrice(quote ? quote.amountTotal / 100 : total + (shipping || 0)) }}{{ physical && !quote ? " (estimate)" : "" }}</span>
         </div>
         <p class="mb-5 text-xs leading-relaxed text-text-dim">
-          {{ physical ? "USD. Shipping is an estimate; products may ship separately. Merchandise ordering opens soon." : "USD. Your software download appears after payment is confirmed." }}
+          {{ physical ? "USD. One payment covers your order. Downloads unlock after payment; made-to-order and office items ship separately." : "USD. Your software download appears after payment is confirmed." }}
         </p>
         <button
           class="button primary w-full"
           :disabled="
             checkout.loading ||
             invalid ||
+            (physical && !quote) ||
             !catalog.settings.checkoutEnabled ||
             catalog.preview
           "
@@ -183,7 +219,7 @@ function updateQty(item, value) {
           Checkout is getting ready. Your cart is saved on this device.
         </p>
         <p v-if="invalid" class="release-note">
-          {{ physical ? "Your merchandise selections are saved. Remove merchandise to check out with software downloads." : "Update the unavailable items above to continue." }}
+          Update the unavailable items above to continue.
         </p>
         <p class="mt-4 text-center font-mono text-[9px] text-text-dim">
           SECURE PAYMENTS BY SQUARE
@@ -192,3 +228,10 @@ function updateQty(item, value) {
     </div>
   </div>
 </template>
+
+<style scoped>
+.shipping-fields { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+.shipping-fields label { display:grid; gap:6px; min-width:0; font-size:12px; }
+.shipping-fields .wide { grid-column:1/-1; }
+.shipping-fields input, .shipping-fields select { width:100%; min-width:0; background:var(--color-panel, #101115); color:inherit; border:1px solid var(--color-border, #444); padding:10px; font:inherit; }
+</style>

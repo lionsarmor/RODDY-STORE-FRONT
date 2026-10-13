@@ -10,6 +10,7 @@ import {
 import RoddyLogo from "../components/RoddyLogo.vue";
 import ProductTags from "../components/ProductTags.vue";
 import ThemeOverlay from "../components/ThemeOverlay.vue";
+import OrderManager from "./OrderManager.vue";
 import MerchEditor from "./MerchEditor.vue";
 import { importPrintifyProduct, priceLabel } from "../merch.js";
 import ProductEditor from "./ProductEditor.vue";
@@ -72,9 +73,6 @@ const connectionStatus = ref(null);
 const printifyStatus = ref(null);
 const printifyMapping = reactive({});
 const livePrintifyProducts = reactive({});
-const orders = ref([]);
-const ordersCursor = ref("");
-const ordersHasMore = ref(false);
 const draftKey = computed(
   () => `roddy:admin:draft:${form.owner}/${form.repo}@${form.branch}`,
 );
@@ -223,7 +221,6 @@ function disconnect() {
   status.value = "Disconnected. Your catalog draft is still open.";
   connectionStatus.value = null;
   printifyStatus.value = null;
-  orders.value = [];
 }
 function reconcileCatalog(result, base = JSON.parse(baseline.value), local = catalog.value) {
   const remote = normalizeCatalog(result.catalog);
@@ -523,21 +520,6 @@ function checkConnection() {
       catalog.value.settings.checkoutEndpoint,
       "/health",
     );
-  });
-}
-function loadOrders(more = false) {
-  commerce(async () => {
-    const data = await commerceRequest(
-      catalog.value.settings.checkoutEndpoint,
-      "/admin/orders" +
-        (more && ordersCursor.value
-          ? "?after=" + encodeURIComponent(ordersCursor.value)
-          : ""),
-      form.token,
-    );
-    orders.value = more ? [...orders.value, ...data.data] : data.data;
-    ordersHasMore.value = data.has_more;
-    ordersCursor.value = data.next_cursor || "";
   });
 }
 function loadPrintify(page = 1) {
@@ -1247,14 +1229,13 @@ function syncPrintify(source, targetId) {
               <section class="admin-section">
                 <h2>Digital delivery</h2>
                 <p class="help-copy">
-                  Checkout currently supports paid digital downloads, one copy
+                  Checkout supports mixed carts with digital downloads, one copy
                   per product. Files are released only after server verification
                   of the correct USD payment. Download links last 15 minutes and
                   can be refreshed from the private order page for 30 days.
                 </p>
                 <p class="help-copy">
-                  Physical orders, promotions, and automatic tax are not
-                  configured. Arrange applicable tax treatment before accepting
+                  Promotions and automatic tax are not configured. Arrange applicable tax treatment before accepting
                   live payments.
                 </p>
               </section>
@@ -1278,10 +1259,10 @@ function syncPrintify(source, targetId) {
           <template v-if="tab === 'printify'">
             <section class="admin-section">
               <h2>Set up made-to-order merchandise</h2>
-              <p class="help-copy">Connect Printify to prepare the RODDY hoodie and desk mat. Import actual color/size combinations, retail prices and standard shipping from your Printify products. Review your draft below, then publish it to the storefront. Merchandise checkout and automatic production are not enabled yet.</p>
+              <p class="help-copy">Connect Printify to prepare the RODDY hoodie and desk mat. Import actual color/size combinations, retail prices and standard shipping from your Printify products. Review your draft below, then publish it to the storefront. Checkout automatically submits paid merchandise orders and refreshes production and tracking.</p>
               <ol class="setup-list">
                 <li>Create a Printify account and an API store named RODDY.</li>
-                <li>In Printify Connections, generate a token with <code>shops.read</code>, <code>products.read</code> and <code>catalog.read</code>.</li>
+                <li>In Printify Connections, generate a token with <code>shops.read</code>, <code>products.read</code> and <code>catalog.read</code>, <code>orders.read</code> and <code>orders.write</code>.</li>
                 <li>Run the command below in your droplet console and enter the token at the hidden prompt.</li>
                 <li>Create your hoodie and desk mat in that Printify store, upload the print artwork, and select the sizes and colors you want to sell.</li>
               </ol>
@@ -1324,74 +1305,11 @@ function syncPrintify(source, targetId) {
                 <p class="help-copy">Refreshing keeps your storefront retail prices and offer checkboxes. Size/color combinations disabled in Printify are removed; newly enabled combinations are imported.</p>
                 <MerchEditor :product="target" :live-product="livePrintifyProducts[target.id]" />
               </section>
-              <p class="help-copy">Before sales can open, a tested payment-to-production connection and address-specific shipping quotes are required. Printify charges production and shipping to your Printify account separately from customer payments.</p>
+              <p class="help-copy">Customers can combine merchandise and downloads in one checkout. The backend quotes shipping for their address, verifies payment, submits Printify orders and refreshes tracking. Printify charges production and shipping to your Printify account separately; keep its payment method funded. Review exceptions in Orders.</p>
             </section>
           </template>
-          <template v-if="tab === 'orders'"
-            ><div class="section-heading">
-              <p class="help-copy">
-                Latest 100 checkout attempts, newest first. Payment status
-                reflects the last server verification. Use Square for current
-                transaction details, receipts and refunds.
-              </p>
-              <div class="admin-actions">
-                <button
-                  class="button small"
-                  :disabled="!connected || commerceBusy"
-                  @click="loadOrders()"
-                >
-                  {{ commerceBusy ? "Loading…" : "Load orders ↻" }}</button
-                ><a
-                  href="https://squareup.com/dashboard/sales/transactions"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="button small"
-                  >Open Square ↗</a
-                >
-              </div>
-            </div>
-            <div class="product-table-wrap">
-              <table class="admin-table">
-                <thead>
-                  <tr>
-                    <th>Date</th>
-                    <th>Reference</th>
-                    <th>Total</th>
-                    <th>Payment</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="order in orders" :key="order.id">
-                    <td>
-                      {{ new Date(order.created * 1000).toLocaleDateString() }}
-                    </td>
-                    <td>{{ order.id.slice(-12) }}</td>
-                    <td>
-                      {{
-                        new Intl.NumberFormat("en-US", {
-                          style: "currency",
-                          currency: order.currency || "USD",
-                        }).format((order.amount_total || 0) / 100)
-                      }}
-                    </td>
-                    <td>{{ order.payment_status.replaceAll("_", " ") }}</td>
-                  </tr>
-                </tbody>
-              </table>
-              <p v-if="!orders.length" class="empty-state">
-                Connect your checkout server, then load orders to see real
-                transactions here.
-              </p>
-            </div>
-            <button
-              v-if="ordersHasMore"
-              class="button"
-              :disabled="commerceBusy"
-              @click="loadOrders(true)"
-            >
-              Load older orders
-            </button></template
-          >
+          <template v-if="tab === 'orders'"><OrderManager :endpoint="catalog.settings.checkoutEndpoint" :token="form.token" :connected="connected" /></template>
+
         </fieldset>
         <p v-else class="empty-state">Loading your control desk…</p>
         <footer class="admin-footer">

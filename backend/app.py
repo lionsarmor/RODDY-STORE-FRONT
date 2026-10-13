@@ -1,7 +1,8 @@
-"""Small, digital-only checkout and private-file delivery service for the droplet."""
+"""Checkout, digital delivery and fulfillment service for the droplet."""
 
 import hashlib
-from contextlib import contextmanager
+from contextlib import contextmanager, asynccontextmanager
+import threading
 import json
 import os
 from pathlib import Path
@@ -18,8 +19,9 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 
-from .square import Square, PaymentUnavailable
+from .square import Square, PaymentUnavailable, PaymentInputError
 from .printify import load_connection, PrintifyUnavailable
+from .commerce import Commerce
 
 
 def checkout_url(value):
@@ -29,7 +31,7 @@ def checkout_url(value):
 
 
 def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
-               catalog_loader=None, enabled=None, site=None, public_url=None, printify_config=None):
+               catalog_loader=None, enabled=None, site=None, public_url=None, printify_config=None, physical_enabled=None, printify_factory=None, worker_enabled=None):
     database = Path(database or os.getenv("STORE_DATABASE", "/var/lib/roddy-store/orders.sqlite3"))
     private_dir = Path(private_dir or os.getenv("STORE_PRIVATE_DIR", "/var/lib/roddy-store/files")).resolve()
     manifest = manifest or os.getenv("STORE_MANIFEST", "/etc/roddy-store/digital-products.json")
@@ -41,6 +43,9 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
                                   os.getenv("SQUARE_MODE", "sandbox"))
     admin_login = os.getenv("ADMIN_GITHUB_LOGIN", "lionsarmor")
     printify_config = printify_config or os.getenv("PRINTIFY_CONFIG", "/etc/roddy-store/printify.json")
+    physical_enabled = physical_enabled if physical_enabled is not None else os.getenv("STORE_PHYSICAL_ENABLED", "false") == "true"
+    worker_enabled = worker_enabled if worker_enabled is not None else os.getenv("STORE_FULFILLMENT_WORKER", "false") == "true"
+    printify_factory = printify_factory or (lambda: load_connection(printify_config))
     origins = os.getenv("ALLOWED_ORIGINS", "https://roddy.world,https://www.roddy.world").split(",")
 
     def load_catalog():
@@ -86,7 +91,27 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
         """)
     os.chmod(database, 0o600)
 
-    app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
+    @asynccontextmanager
+    async def lifespan(app):
+        stop = threading.Event()
+        def work():
+            while not stop.is_set():
+                try:
+                    commerce.tick()
+                except Exception:
+                    # No exception payloads: providers may include personal data.
+                    import logging
+                    logging.getLogger("roddy-store").error("Fulfillment worker needs attention; check store admin.")
+                stop.wait(30)
+        thread = threading.Thread(target=work, daemon=True) if worker_enabled else None
+        if thread:
+            thread.start()
+        yield
+        stop.set()
+        if thread:
+            thread.join(timeout=5)
+
+    app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None, lifespan=lifespan)
     app.add_middleware(CORSMiddleware, allow_origins=origins,
                        allow_methods=["POST", "GET"], allow_headers=["content-type", "authorization"])
 
@@ -110,6 +135,10 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
     @app.exception_handler(RequestValidationError)
     async def validation_error(_, exc):
         return JSONResponse({"error": "Invalid request."}, status_code=422)
+
+    @app.exception_handler(PaymentInputError)
+    async def payment_input_error(_, exc):
+        return JSONResponse({"error": str(exc)}, status_code=400)
 
     @app.exception_handler(PaymentUnavailable)
     async def provider_error(_, exc):
@@ -206,9 +235,25 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
 
     def verify(order):
         paid = bool(order["provider_id"] and provider.paid(order["provider_id"], order["amount"]))
-        with connect() as db:
-            db.execute("UPDATE orders SET paid=? WHERE session=?", (int(paid), order["session"]))
+        commerce.mark_paid(order, paid)
         return paid
+
+    commerce = Commerce(connect, catalog_loader, price_cart, provider, printify_factory, physical_enabled)
+    app.state.commerce = commerce
+
+    @app.post("/quote")
+    def quote(request: Request, body: dict):
+        rate_limit(request, "quote", 10)
+        if not enabled or not provider.configured:
+            raise HTTPException(503, "Checkout is unavailable.")
+        if request.headers.get("origin") not in origins:
+            raise HTTPException(403, "Start checkout from the RODDY store.")
+        return commerce.quote(body)
+
+    @app.get("/inventory")
+    def inventory(request: Request):
+        rate_limit(request, "inventory", 30)
+        return {"items": [{"id": i["id"], "available": i["available"]} for i in commerce.inventory()]}
 
     @app.get("/health")
     def health(request: Request):
@@ -217,7 +262,7 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
         account_ready = provider.check_account() if configured else False
         return {"provider": provider.name, "configured": configured,
                 "accountReady": account_ready, "mode": provider.mode,
-                "checkoutEnabled": enabled}
+                "checkoutEnabled": enabled, "physicalEnabled": physical_enabled, "fulfillmentWorker": worker_enabled}
 
     @app.post("/checkout")
     def checkout(request: Request, body: dict):
@@ -226,6 +271,9 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
             raise HTTPException(503, "Online checkout is getting ready. Please check back soon.")
         if request.headers.get("origin") not in origins:
             raise HTTPException(403, "Checkout must start from the RODDY store.")
+        if body.get("quoteId"):
+            order = commerce.prepare(body)
+            return finish_checkout(order)
         cart = normalize_cart(body)
         try:
             request_id = str(UUID(body.get("requestId", ""), version=4))
@@ -247,15 +295,26 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
             raise HTTPException(409, "This checkout reference belongs to a different cart.")
         if order["created"] < time.time() - 3600:
             raise HTTPException(409, "This checkout has expired. Start a new checkout from your cart.")
+        return finish_checkout(order)
+
+    def finish_checkout(order):
+        if order.get("cancelled"):
+            raise HTTPException(409, "This checkout was canceled. Start again from your cart.")
         if not order["url"]:
-            order["items"] = json.loads(order["items"])
-            provider_id, url = provider.create_checkout(order, site + "/order.html#session_id=" + order["session"])
+            order["items"] = json.loads(order["items"]) if isinstance(order["items"], str) else order["items"]
+            if order.get("address") and isinstance(order["address"], str):
+                order["address"] = json.loads(order["address"])
+            result = provider.create_checkout(order, site + "/order.html#session_id=" + order["session"])
+            provider_id, url = result[:2]
+            link_id = result[2] if len(result) > 2 else None
             if not checkout_url(url):
                 raise HTTPException(503, "Payment service returned an invalid destination.")
             with connect() as db:
-                db.execute("UPDATE orders SET provider_id=?,url=? WHERE request_id=?", (provider_id, url, request_id))
+                db.execute("UPDATE orders SET provider_id=?,url=?,link_id=? WHERE request_id=?", (provider_id, url, link_id, order["request_id"]))
             order["url"] = url
         return {"url": order["url"], "provider": provider.name, "sessionId": order["session"]}
+
+    commerce.recover = finish_checkout
 
     @app.post("/order")
     def order_status(request: Request, body: dict):
@@ -268,6 +327,8 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
             with connect() as db:
                 db.execute("DELETE FROM tickets WHERE expires < ?", (now,))
                 for item in json.loads(order["items"]):
+                    if item.get("kind", "digital") != "digital":
+                        continue
                     private_file(item)
                     ticket = secrets.token_urlsafe(32)
                     db.execute("INSERT INTO tickets VALUES(?,?,?,?)",
@@ -276,7 +337,9 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
                                       "url": public_url + "/download/" + ticket,
                                       "expiresAt": now + 900})
         return {"paid": paid, "amountTotal": order["amount"], "currency": "USD", "downloads": downloads,
-                "mode": provider.mode}
+                "mode": provider.mode, "shipping": order.get("shipping", 0),
+                "items": [{"id": i["id"], "variantId": i.get("variantId", ""), "name": i["name"], "qty": i.get("qty", 1), "kind": i.get("kind", "digital"), "label": i.get("label", "")} for i in json.loads(order["items"])],
+                "fulfillments": [{k: v for k, v in f.items() if k not in {"supplierId", "error"}} for f in commerce.fulfillments(order["session"])] if paid else []}
 
     @app.get("/download/{ticket}")
     def download(request: Request, ticket: str):
@@ -296,7 +359,7 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
         return FileResponse(private_file(item), media_type="application/zip", filename=item["file"])
 
     def require_admin(request):
-        rate_limit(request, "admin", 10)
+        rate_limit(request, "admin", 60)
         token = request.headers.get("authorization", "")
         if not token.startswith("Bearer "):
             raise HTTPException(401, "Sign in with GitHub first.")
@@ -319,7 +382,7 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
         shop = next((s for s in client.shops() if s["id"] == client.shop_id), None)
         if not shop:
             raise PrintifyUnavailable("The configured Printify store is no longer accessible. Run setup again.")
-        return {"configured": True, "fulfillmentEnabled": False, "shop": shop, **client.products(page)}
+        return {"configured": True, "fulfillmentEnabled": physical_enabled and worker_enabled, "shop": shop, **client.products(page)}
 
     @app.get("/admin/printify/products/{product_id}")
     def printify_product(product_id: str, request: Request):
@@ -333,10 +396,96 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
     def admin_orders(request: Request):
         require_admin(request)
         with connect() as db:
-            rows = db.execute("SELECT provider_id,created,amount,paid FROM orders ORDER BY created DESC LIMIT 100").fetchall()
-        return {"data": [{"id": row["provider_id"] or "not-created", "created": row["created"],
-                          "amount_total": row["amount"], "currency": "USD",
-                          "payment_status": "paid" if row["paid"] else "unconfirmed"} for row in rows],
-                "has_more": False}
+            rows = db.execute("SELECT * FROM orders ORDER BY created DESC LIMIT 100").fetchall()
+        return {"data": [{"id": row["request_id"], "providerId": row["provider_id"], "created": row["created"],
+                          "amount_total": row["amount"], "shipping": row["shipping"], "currency": "USD",
+                          "payment_status": "paid" if row["paid"] else "canceled" if row["cancelled"] else "unconfirmed",
+                          "address": json.loads(row["address"]) if row["address"] else None,
+                          "items": [{"id": i["id"], "name": i["name"], "qty": i.get("qty", 1), "kind": i.get("kind", "digital"), "label": i.get("label", "")} for i in json.loads(row["items"])],
+                          "fulfillments": commerce.fulfillments(row["session"])} for row in rows], "has_more": False}
+
+    @app.get("/admin/inventory")
+    def admin_inventory(request: Request):
+        require_admin(request)
+        return {"items": commerce.inventory()}
+
+    @app.post("/admin/inventory/{product_id}")
+    def set_inventory(product_id: str, request: Request, body: dict):
+        require_admin(request)
+        stock = body.get("stock")
+        if type(stock) is not int or not 0 <= stock <= 100000:
+            raise HTTPException(400, "Stock must be a whole number from zero to 100000.")
+        if product_id not in {i["id"] for i in commerce.inventory()}:
+            raise HTTPException(404, "Office product not found.")
+        with connect() as db:
+            db.execute("BEGIN IMMEDIATE")
+            held = db.execute("SELECT COALESCE(SUM(qty),0) FROM reservations WHERE product=?", (product_id,)).fetchone()[0]
+            if stock < held:
+                raise HTTPException(409, "Stock cannot be lower than current reservations. Cancel unpaid orders first.")
+            db.execute("UPDATE inventory SET stock=? WHERE product=?", (stock, product_id))
+        return {"items": commerce.inventory()}
+
+    @app.post("/admin/orders/{reference}/shipment")
+    def office_shipment(reference: str, request: Request, body: dict):
+        require_admin(request)
+        with connect() as db:
+            row = db.execute("SELECT * FROM orders WHERE request_id=?", (reference,)).fetchone()
+        if not row:
+            raise HTTPException(404, "Order not found.")
+        order = dict(row)
+        if not verify(order):
+            raise HTTPException(409, "Payment must be fully confirmed before shipping.")
+        if not any(i.get("kind") == "office" for i in json.loads(order["items"])):
+            raise HTTPException(409, "This order has no office shipment.")
+        carrier, number, url = (str(body.get(k, "")).strip() for k in ["carrier", "number", "url"])
+        if not carrier or not number or len(carrier) > 100 or len(number) > 150 or (url and (len(url) > 1000 or not urlsplit(url).scheme in {"http", "https"} or not urlsplit(url).hostname or urlsplit(url).username)):
+            raise HTTPException(400, "Enter a carrier, tracking number and optional HTTP(S) tracking URL.")
+        commerce.update(order["session"], "office", "shipped", shipments=[{"carrier": carrier, "number": number, "url": url}])
+        return {"saved": True}
+
+    @app.post("/admin/orders/{reference}/cancel")
+    def cancel_unpaid_order(reference: str, request: Request, body: dict):
+        require_admin(request)
+        with connect() as db:
+            row = db.execute("SELECT * FROM orders WHERE request_id=?", (reference,)).fetchone()
+        if not row:
+            raise HTTPException(404, "Order not found.")
+        order = dict(row)
+        if order["cancelled"]:
+            return {"saved": True}
+        if order["provider_id"] and verify(order):
+            raise HTTPException(409, "Paid orders need a refund in Square and supplier review before cancellation.")
+        if not order["provider_id"]:
+            finish_checkout(order)
+            with connect() as db:
+                order = dict(db.execute("SELECT * FROM orders WHERE request_id=?", (reference,)).fetchone())
+        if not order["link_id"]:
+            raise HTTPException(409, "This older payment link must be canceled in Square.")
+        provider.cancel_checkout(order["link_id"])
+        if verify(order):
+            raise HTTPException(409, "Payment arrived during cancellation. Review this paid order before refunding or shipping.")
+        with connect() as db:
+            db.execute("UPDATE orders SET cancelled=1 WHERE session=?", (order["session"],))
+            db.execute("DELETE FROM reservations WHERE session=?", (order["session"],))
+        return {"saved": True}
+
+    @app.post("/admin/orders/{reference}/reconcile")
+    def reconcile_order(reference: str, request: Request, body: dict):
+        require_admin(request)
+        with connect() as db:
+            row = db.execute("SELECT * FROM orders WHERE request_id=?", (reference,)).fetchone()
+        if not row:
+            raise HTTPException(404, "Order not found.")
+        order = dict(row)
+        if not verify(order):
+            raise HTTPException(409, "Payment is not confirmed.")
+        supplier = printify_factory()
+        if not supplier:
+            raise HTTPException(409, "Connect Printify first.")
+        found = supplier.find_order("RODDY-" + reference)
+        if not found:
+            raise HTTPException(409, "No matching Printify order found. Check the supplier dashboard before creating anything manually.")
+        commerce.update(order["session"], "printify", "submitted", supplier_id=found["id"])
+        return {"saved": True}
 
     return app

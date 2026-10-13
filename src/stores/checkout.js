@@ -7,7 +7,7 @@ export const useCheckoutStore = defineStore("checkout", {
 
   actions: {
     /** items: [{ id, qty }] — same shape as the cart store's items. */
-    async checkout(items) {
+    async checkout(items, quoteId = "") {
       if (!items.length) return;
       const catalog = useCatalogStore();
       if (catalog.preview)
@@ -25,7 +25,7 @@ export const useCheckoutStore = defineStore("checkout", {
         // Reuse the same reference after a network error so retries cannot create
         // multiple payment links for the same attempt. A changed cart starts anew.
         const cartKey = JSON.stringify(
-          [...items].sort((a, b) => a.id.localeCompare(b.id)),
+          {items: [...items].sort((a, b) => (a.id + (a.variantId || "")).localeCompare(b.id + (b.variantId || ""))), quoteId},
         );
         let attempt = this.attempt;
         try {
@@ -56,7 +56,7 @@ export const useCheckoutStore = defineStore("checkout", {
           {
             method: "POST",
             headers: { "content-type": "application/json" },
-            body: JSON.stringify({ items, requestId: attempt.requestId }),
+            body: JSON.stringify({ items, requestId: attempt.requestId, ...(quoteId ? {quoteId} : {}) }),
           },
         );
         const data = await res.json().catch(() => ({}));

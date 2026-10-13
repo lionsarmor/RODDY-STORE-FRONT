@@ -42,6 +42,17 @@ export const useCatalogStore = defineStore("catalog", {
         this.products = data.products;
         this.tags = data.tags;
         this.settings = data.settings;
+        if (!this.preview && /^https:\/\//.test(this.settings.checkoutEndpoint || "")) {
+          try {
+            const response = await fetch(this.settings.checkoutEndpoint.replace(/\/$/, "") + "/inventory", {cache: "no-store"});
+            if (response.ok) {
+              for (const item of (await response.json()).items || []) {
+                const product = this.products.find(p => p.id === item.id && p.type === "physical" && !p.merch);
+                if (product && Number.isInteger(item.available) && item.available >= 0) product.stock = item.available;
+              }
+            }
+          } catch { /* Backend checkout always revalidates stock. */ }
+        }
         this.loaded = true;
       } catch (err) {
         this.error = err.message;

@@ -1,5 +1,6 @@
 <script setup>
 import { computed, ref } from "vue";
+import OfficeShipping from "./OfficeShipping.vue";
 import MerchEditor from "./MerchEditor.vue";
 import MediaEditor from "./MediaEditor.vue";
 import ProductTags from "../components/ProductTags.vue";
@@ -46,7 +47,7 @@ function toggleTag(id) {
       aria-label="Product editor sections"
     >
       <button
-        v-for="t in ['details', 'images', 'pricing', ...(product.merch ? ['options & shipping'] : []), 'links']"
+        v-for="t in ['details', 'images', 'pricing', ...(product.type === 'physical' ? ['options & shipping'] : []), 'links']"
         :key="t"
         role="tab"
         :aria-selected="tab === t"
@@ -203,11 +204,10 @@ function toggleTag(id) {
       >
       <p class="help-copy">
         A FREE tag requires a price of $0. Coming-soon products stay visible but
-        cannot be purchased. Stock is managed manually; reconcile paid orders in
-        the Orders panel.
+        cannot be purchased. Office stock is seeded from this quantity once, then managed live in Orders → Office inventory. Paid sales deduct stock automatically; restock there.
       </p>
     </div>
-    <div v-if="tab === 'options & shipping'" class="editor-content"><MerchEditor :product="product" /></div>
+    <div v-if="tab === 'options & shipping'" class="editor-content"><MerchEditor v-if="product.merch" :product="product" /><OfficeShipping v-else :product="product" /></div>
     <div v-if="tab === 'links'" class="editor-content">
       <label
         >Documentation / schematics URL<input

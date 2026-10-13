@@ -95,9 +95,10 @@ Wallet availability depends on the Square account, browser, and buyer location.
 
 ## Payment and delivery behavior
 
-- Only active, available, priced digital products with a private release manifest
-  can be purchased. One copy of each product is allowed. Free downloads remain
-  direct public links; physical goods are currently rejected by the backend.
+- Active, available paid digital products require a private release manifest;
+  one copy per product is allowed. Free downloads remain direct public links.
+  With physical checkout enabled, Printify and office items share the same cart;
+  see [COMMERCE.md](COMMERCE.md) for shipping, inventory and fulfillment.
 - The server re-prices IDs from the published GitHub catalog. Browser-supplied
   prices are ignored. Each persisted attempt snapshots the trusted price/file.
 - Persistent request references and Square idempotency keys recover network
@@ -121,8 +122,8 @@ Wallet availability depends on the Square account, browser, and buyer location.
 - The admin order list uses the existing GitHub owner sign-in and returns only
   the latest 100 attempts, without receipt tokens or private file paths. It
   shows the last verified status; Square is authoritative for current payments,
-  refunds, and disputes. No promotions, physical fulfillment, automated dispute
-  handling, or tax reporting are implemented.
+  refunds, and disputes. Promotions, automated dispute handling and tax reporting
+  are not implemented. Mixed fulfillment is described in COMMERCE.md.
 
 ## Operations and rollback
 
@@ -145,3 +146,5 @@ the store price covers the packaged download, not exclusive access to source.
 API references: [create payment link](https://developer.squareup.com/reference/square/checkout-api/create-payment-link),
 [retrieve order](https://developer.squareup.com/reference/square/orders-api/retrieve-order),
 [get payment](https://developer.squareup.com/reference/square/payments-api/get-payment).
+
+For mixed carts, Printify fulfillment, office shipping and inventory, see [COMMERCE.md](COMMERCE.md).

@@ -7,6 +7,10 @@ class PaymentUnavailable(Exception):
     pass
 
 
+class PaymentInputError(PaymentUnavailable):
+    pass
+
+
 class Square:
     name = "square"
 
@@ -28,8 +32,10 @@ class Square:
                 headers={"Authorization": "Bearer " + self.token,
                          "Square-Version": "2026-09-16"},
             )
-            response.raise_for_status()
             data = response.json()
+            if response.status_code == 400 and any(e.get("code") == "INVALID_EMAIL_ADDRESS" for e in data.get("errors", [])):
+                raise PaymentInputError("Square could not accept that email address. Check it and calculate shipping again.")
+            response.raise_for_status()
             if data.get("errors"):
                 raise ValueError("Square returned errors")
             return data
@@ -43,20 +49,35 @@ class Square:
                 and "CREDIT_CARD_PROCESSING" in location.get("capabilities", []))
 
     def create_checkout(self, order, return_url):
-        data = self.request("POST", "/v2/online-checkout/payment-links", {
-            "idempotency_key": order["request_id"],
-            "quick_pay": {
-                "name": " + ".join(item["name"] for item in order["items"]),
-                "location_id": self.location,
-                "price_money": {"amount": order["amount"], "currency": "USD"},
-            },
-            "checkout_options": {
-                "redirect_url": return_url,
-                "ask_for_shipping_address": False,
-                "enable_tipping": False,
-            },
-        })["payment_link"]
-        return data["order_id"], data["url"]
+        address = order.get("address")
+        options = {"redirect_url": return_url, "ask_for_shipping_address": False,
+                   "enable_tipping": False, "enable_coupon": False, "enable_loyalty": False}
+        payload = {"idempotency_key": order["request_id"], "checkout_options": options}
+        if order.get("quote_id"):
+            payload["order"] = {"location_id": self.location, "reference_id": order["request_id"],
+                "line_items": [{"name": (i["name"] + (" — " + i["label"] if i.get("label") else ""))[:500],
+                                "quantity": str(i.get("qty", 1)),
+                                "base_price_money": {"amount": i["cents"], "currency": "USD"}} for i in order["items"]]}
+            if order.get("shipping"):
+                # checkout_options.shipping_fee requires a second, editable
+                # shipping address. Keep RODDY's quoted address fixed instead.
+                payload["order"]["service_charges"] = [{"name": "Standard shipping",
+                    "amount_money": {"amount": order["shipping"], "currency": "USD"},
+                    "calculation_phase": "SUBTOTAL_PHASE", "taxable": False}]
+            if address:
+                payload["pre_populated_data"] = {"buyer_email": address["email"]}
+                # Address is already validated/quoted on RODDY and stays fixed.
+                payload["payment_note"] = "Delivery address and order tracking: " + return_url
+        else:
+            payload["quick_pay"] = {"name": " + ".join(i["name"] for i in order["items"]),
+                "location_id": self.location, "price_money": {"amount": order["amount"], "currency": "USD"}}
+        link = self.request("POST", "/v2/online-checkout/payment-links", payload)["payment_link"]
+        return link["order_id"], link["url"], link.get("id")
+
+    def cancel_checkout(self, link_id):
+        if not isinstance(link_id, str) or not link_id.isalnum():
+            raise PaymentUnavailable("Invalid payment link reference.")
+        return self.request("DELETE", "/v2/online-checkout/payment-links/" + link_id)
 
     def paid(self, provider_id, amount):
         order = self.request("GET", "/v2/orders/" + provider_id)["order"]

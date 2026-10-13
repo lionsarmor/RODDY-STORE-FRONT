@@ -345,7 +345,8 @@
         "Developer": "RODDY",
         "Genre": "Retro-Inspired Indie Game",
         "Technology": "C / Native Cross-Platform Development",
-        "Category": "Games & Entertainment"
+        "Category": "Games & Entertainment",
+        "Download platforms": "Windows x86-64, Linux x86-64, ESP32-C3 Super Mini"
       },
       "images": [
         "img/products/roddy-7e077071-9625-489f-8e38-c04d0226ddec.jpg",
@@ -371,8 +372,8 @@
       "shortDescription": "**I KNOW WHAT I SAW** is an original retro-inspired indie game for PC and ESP32, blending mystery, imagination, and classic gaming charm. ",
       "coverImage": "img/products/roddy-cfdc4d6e-7628-4bfe-8bde-b146799549e0.jpg",
       "compareAtPrice": 0,
-      "releaseNote": "**Coming Soon — In Development**\n\nI KNOW WHAT I SAW is currently in development for PC and ESP32. But you can play the first two Alpha chapters for FREE,  We're continuing to refine the experience and prepare both versions for release. An official launch date has not yet been announced. Follow RODDY for development updates, previews, and availability information.",
-      "downloadUrl": "https://github.com/lionsarmor/I-KNOW-WHAT-I-SAW---C-VERSION-/releases/latest",
+      "releaseNote": "Free download: Windows and Linux desktop builds plus ESP32-C3 Super Mini firmware. Extract the ZIP and follow the included instructions. ESP32-C3 hardware playback has not yet been verified.",
+      "downloadUrl": "https://roddy.world/downloads/I-KNOW-WHAT-I-SAW.zip",
       "githubUrl": "",
       "story": "We created **I KNOW WHAT I SAW** because we love the creativity and simplicity of classic video games. We wanted to build something original that captures the mystery, imagination, and excitement of old-school gaming while proving that even tiny, affordable hardware like the ESP32 can deliver a fun experience. It's a celebration of independent development, creative experimentation, and the belief that great games are defined by their ideas, not their hardware requirements.",
       "documentationUrl": "",
@@ -467,7 +468,7 @@
       "pricePending": false,
       "shortDescription": "The RODDY desk mat. Black, cream curves and a red dot, in three sizes: 12 × 18, 12 × 22 and 16 × 32 inches.",
       "description": "# RODDY Desk Mat\n\n**Your desk. Your workspace. Your world.**\n\nWhether you're writing code, designing circuits, building your next big project, or spending the night exploring your favorite retro games, the **RODDY Desk Mat** gives your workspace a place to call home.\n\nCreated for developers, makers, gamers, engineers, and anyone who appreciates a great desk setup, the RODDY Desk Mat brings together everyday functionality and a clean, technology-inspired aesthetic.\n\nIts generous surface provides room for your keyboard, mouse, and other desktop essentials, helping create a comfortable, organized workspace for whatever you're working on.\n\n### Built for the Way You Work\n\nFrom modern development environments to vintage computers, electronics workbenches, and gaming stations, the RODDY Desk Mat fits naturally into almost any setup.\n\nThe smooth fabric surface is designed for comfortable mouse movement and everyday use, while the protective mat helps keep your desktop free from the wear and scratches of daily activity.\n\nWhether you're working with a mechanical keyboard, programming a microcontroller, designing your next PCB, or firing up a Commander X16, it's a practical addition to your workspace.\n\n### More Than Just a Desk Accessory\n\nRODDY is about curiosity, creativity, and the freedom to build things simply because they're interesting.\n\nOur projects span software, games, retro computing, electronics, and original hardware. The RODDY Desk Mat brings that same spirit to the place where those ideas begin.\n\nIt's not about having the most expensive setup. It's about having a workspace that inspires you to sit down, experiment, create, and keep building.\n\n### Highlights\n\n- **Spacious Desktop Coverage** — Room for your keyboard, mouse, and everyday essentials.\n- **Smooth Fabric Surface** — Designed for comfortable mouse movement and precise control.\n- **Workspace Protection** — Helps protect your desk from everyday scratches and wear.\n- **Versatile Design** — Perfect for programming, gaming, electronics, creative work, and retro computing.\n- **Original RODDY Branding** — A simple way to bring the RODDY maker spirit to your desk.\n\n### Why We Made It\n\nEverything we build at RODDY starts somewhere, usually at a desk covered in keyboards, circuit boards, coffee cups, and half-finished ideas.\n\nWe wanted something that belonged in that environment. Not another piece of disposable merchandise, but a useful everyday accessory that represents the people who love making things.\n\nThe RODDY Desk Mat is for the builders, the tinkerers, the programmers, and the people who never quite stop experimenting.\n\n**Make something. Break something. Learn something. Build again.**\n\n*RODDY — Made for Makers.*",
-      "releaseNote": "Made to order. Merchandise ordering opens soon. Choose your options and save your selection.",
+      "releaseNote": "Made to order. Choose your size, then check out with any other products. Shipping is calculated for your address; items may arrive separately.",
       "specs": {
         "Print provider": "SPOKE Custom Products",
         "Sizes": "12\" × 18\", 12\" × 22\", 16\" × 32\""
@@ -595,7 +596,7 @@
       "pricePending": false,
       "shortDescription": "The RODDY logo hoodie. 10 colors and sizes S–5XL, with color availability varying by size.",
       "description": "# RODDY Hoodie\n\n**Stay comfortable. Stay curious. Keep building.**\n\nWhether you're writing code late into the night, working on your latest electronics project, exploring retro computers, or just taking a break from creating something new, the **RODDY Hoodie** is made for the people who never stop making things.\n\nFeaturing original RODDY branding and a clean, everyday style, this hoodie brings the spirit of our workshop into something you can wear anywhere.\n\nFrom your home workspace to the gaming room, the makerspace, or wherever your next project takes you, it's a comfortable way to represent a community built around curiosity, creativity, and technology.\n\n### Made for Makers\n\nRODDY is about more than software, hardware, and games. It's about the satisfaction of turning an idea into something real.\n\nWe believe in experimenting, learning by doing, and building things simply because they're interesting. The RODDY Hoodie represents that philosophy without needing to say too much.\n\nWhether you're a programmer, engineer, gamer, retro computing enthusiast, or someone who just loves figuring out how things work, you're part of the crowd we made this for.\n\n### Everyday Comfort, Maker Spirit\n\nDesigned as a versatile addition to your everyday wardrobe, the RODDY Hoodie is equally at home during long coding sessions, weekend projects, gaming marathons, or casual adventures.\n\nIt's simple, practical, and unmistakably RODDY.\n\n**Make something. Break something. Learn something. Build again.**\n\n*RODDY — Made for Makers.*",
-      "releaseNote": "Made to order. Merchandise ordering opens soon. Choose your options and save your selection.",
+      "releaseNote": "Made to order. Choose your color and size, then check out with any other products. Shipping is calculated for your address; items may arrive separately.",
       "specs": {
         "Garment": "Gildan 18500 — Unisex Heavy Blend™ Hooded Sweatshirt",
         "Sizes": "S, M, L, XL, 2XL, 3XL, 4XL, 5XL",
@@ -2813,6 +2814,30 @@
           }
         ]
       }
+    },
+    {
+      "id": "link-commander",
+      "sku": "R-LINK-001",
+      "name": "LINK COMMANDER",
+      "category": "labs",
+      "type": "physical",
+      "price": 0,
+      "pricePending": true,
+      "stock": 0,
+      "trackStock": true,
+      "status": "coming-soon",
+      "active": false,
+      "featured": false,
+      "tags": [],
+      "shortDescription": "A wireless hub for retro machines.",
+      "description": "",
+      "images": [],
+      "coverImage": "",
+      "downloadUrl": "",
+      "githubUrl": "https://github.com/lionsarmor/LINK-COMMANDER",
+      "officeShipping": {},
+      "specs": {},
+      "releaseNote": "Office shipping rates, price and stock will be configured before launch."
     }
   ]
 }

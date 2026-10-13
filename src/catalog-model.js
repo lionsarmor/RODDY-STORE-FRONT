@@ -44,6 +44,7 @@ export function normalizeProduct(p) {
     releaseNote: p.releaseNote || "",
     downloadUrl: p.downloadUrl || "",
     githubUrl: p.githubUrl || "",
+    officeShipping: p.officeShipping || {},
     merch: p.merch ? { ...p.merch, variants: Array.isArray(p.merch.variants) ? p.merch.variants : [], shippingCountries: p.merch.shippingCountries || ["US", "CA"], shippingProfiles: p.merch.shippingProfiles || [] } : null,
   };
 }
@@ -113,6 +114,10 @@ export function validateCatalog(data) {
       errors.push(`${p.name}: choose AI Assisted or NO AI, not both.`);
     if (p.tags.includes("free") && p.price !== 0)
       errors.push(`${p.name}: FREE requires a zero price.`);
+    for (const [country, rate] of Object.entries(p.officeShipping || {})) {
+      if (!["US", "CA"].includes(country) || !rate || [rate.firstItem, rate.additionalItem].some(n => !Number.isFinite(n) || n < 0 || n > 999999 || Math.abs(n*100-Math.round(n*100)) > .00001))
+        errors.push(`${p.name}: enter valid office shipping rates for US or Canada.`);
+    }
     if (p.merch) {
       const m = p.merch, ids = new Set(), combinations = new Set();
       if (p.type !== "physical" || m.provider !== "printify") errors.push(`${p.name}: Printify requires a physical product.`);

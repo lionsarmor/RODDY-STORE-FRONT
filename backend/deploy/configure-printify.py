@@ -62,7 +62,8 @@ def main():
         print(f"Connected Printify store: {selected['title']} ({selected['id']}).")
         print(f"Products on first page: {len(inventory['products'])}.")
         print("Open RODDY admin > Printify merchandise > Check connection & load products.")
-        print("Merchandise ordering is not enabled. No orders were created or charged.")
+        print("Connection saved. Merchandise sales follow the deployment's checkout and fulfillment settings.")
+        print("Setup did not create or charge any orders.")
     except PrintifyUnavailable as exc:
         parser.error(str(exc) + " Nothing saved.")
 

@@ -1,4 +1,4 @@
-"""Read-only Printify product, variant and standard shipping discovery."""
+"""Printify catalog discovery, shipping quotes and payment-gated order operations."""
 import json
 from pathlib import Path
 import re
@@ -140,6 +140,62 @@ class Printify:
             if variant not in profile["variantIds"]:
                 profile["variantIds"].append(variant)
         return list(profiles.values())
+
+
+    def post(self, path, body=None):
+        request = Request("https://api.printify.com/v1/" + path, data=json.dumps(body or {}).encode(), method="POST", headers={
+            "Authorization": "Bearer " + self.token, "User-Agent": "RODDY-Store/1.0",
+            "Accept": "application/json", "Content-Type": "application/json"})
+        try:
+            with urlopen(request, timeout=30) as response:
+                raw = response.read()
+                return json.loads(raw) if raw else {}
+        except (HTTPError, URLError, TimeoutError, ValueError):
+            # Neither credentials nor provider responses containing customer details
+            # belong in logs or customer errors. Caller reconciles ambiguous writes.
+            raise PrintifyUnavailable("Printify could not complete this request. Check the order in store admin.") from None
+
+
+    def quote_shipping(self, lines, address):
+        self.check_shop()
+        data = self.post(f"shops/{self.shop_id}/orders/shipping.json", {"line_items": lines, "address_to": address})
+        amount = data.get("standard") if isinstance(data, dict) else None
+        if type(amount) is not int or not 0 <= amount <= 99999999:
+            raise PrintifyUnavailable("Standard shipping is unavailable for this address and selection.")
+        return amount
+
+
+    def submit_order(self, external, lines, address):
+        self.check_shop()
+        data = self.post(f"shops/{self.shop_id}/orders.json", {"external_id": external, "label": external,
+            "line_items": lines, "shipping_method": 1, "send_shipping_notification": True, "address_to": address})
+        if not isinstance(data, dict) or not re.fullmatch(r"[a-zA-Z0-9_-]{1,80}", str(data.get("id", ""))):
+            raise PrintifyUnavailable("Printify submission outcome needs review in store admin.")
+        return data
+
+
+    def order(self, order_id):
+        self.check_shop()
+        if not re.fullmatch(r"[a-zA-Z0-9_-]{1,80}", order_id):
+            raise PrintifyUnavailable("Invalid supplier order reference.")
+        return self.get(f"shops/{self.shop_id}/orders/{order_id}.json")
+
+
+    def find_order(self, external):
+        self.check_shop()
+        for page in range(1, 101):
+            data = self.get(f"shops/{self.shop_id}/orders.json?page={page}&limit=10")
+            for order in data.get("data", []):
+                if external in [order.get("external_id"), order.get("metadata", {}).get("shop_order_id")]:
+                    return order
+            if not data.get("next_page_url"):
+                return None
+        raise PrintifyUnavailable("Order search exceeded 100 pages. Reconcile this reference in Printify.")
+
+
+    def send_to_production(self, order_id):
+        self.order(order_id)  # validates the fixed-host path and shop ownership
+        return self.post(f"shops/{self.shop_id}/orders/{order_id}/send_to_production.json")
 
 
 def load_connection(path="/etc/roddy-store/printify.json"):

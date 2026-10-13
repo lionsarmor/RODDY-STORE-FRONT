@@ -19,6 +19,10 @@ const state = ref("loading");
 const message = ref("");
 const downloads = ref([]);
 const sandbox = ref(false);
+const fulfillments = ref([]);
+const orderItems = ref([]);
+let cartReconciled = false;
+try { cartReconciled = sessionStorage.getItem("roddy:cart-reconciled:" + sessionId) === "1"; } catch {}
 async function verify() {
   state.value = "loading";
   downloads.value = [];
@@ -52,7 +56,16 @@ async function verify() {
           url: downloadDestination(d.url, catalog.settings.checkoutEndpoint),
         }))
         .filter((d) => d.url);
-      cart.clear();
+      fulfillments.value = data.fulfillments || [];
+      orderItems.value = data.items || [];
+      if (!cartReconciled) {
+        for (const item of orderItems.value) {
+          const entry = cart.items.find(i => i.id === item.id && (i.variantId || "") === (item.variantId || ""));
+          if (entry) cart.setQty(item.id, entry.qty - item.qty, item.variantId || "");
+        }
+        cartReconciled = true;
+        try { sessionStorage.setItem("roddy:cart-reconciled:" + sessionId, "1"); } catch {}
+      }
       try {
         sessionStorage.removeItem("roddy:checkout-attempt");
       } catch {}
@@ -91,7 +104,7 @@ onMounted(verify);
       <p class="text-sm leading-relaxed text-text-dim">
         {{
           state === "paid"
-            ? "Your payment is confirmed. Download your software below."
+            ? "Your payment is confirmed. Downloads and shipment updates are shown below."
             : message
         }}
       </p>
@@ -104,12 +117,18 @@ onMounted(verify);
           rel="noreferrer"
           >↓ Download {{ file.name }}</a
         >
+        <section v-for="f in fulfillments" :key="f.kind" class="border border-border p-4 text-left">
+          <h2 class="font-bold">{{f.kind === 'office' ? 'Ships from RODDY' : 'Made to order'}} · {{f.state.replaceAll('-', ' ')}}</h2>
+          <p v-for="s in f.shipments" :key="s.number" class="mt-3 text-sm">{{s.carrier}} · {{s.number}} <a v-if="/^https?:\/\//.test(s.url || '')" :href="s.url" target="_blank" rel="noopener noreferrer" class="text-button">Track shipment ↗</a></p>
+          <p v-if="f.state === 'review'" class="mt-3 text-sm">RODDY is reviewing fulfillment. Your payment is confirmed.</p>
+        </section>
+        <p v-if="orderItems.some(i => i.kind !== 'digital')" class="text-sm">Items may arrive in separate shipments. Check this page for updates.</p>
         <p class="text-xs leading-relaxed text-text-dim">
-          Extract the ZIP into your SD-card root. Download links last 15
-          minutes; check payment status again to refresh them. Bookmark this
+          Follow the instructions inside your download. Download links last 15
+          minutes; check order status again to refresh them. Bookmark this
           page privately to return to your order for 30 days.
         </p>
-        <p v-if="!downloads.length" class="release-note">
+        <p v-if="!downloads.length && orderItems.some(i => i.kind === 'digital')" class="release-note">
           Your download is unavailable. Please contact RODDY with your receipt.
         </p>
       </div>
@@ -117,7 +136,7 @@ onMounted(verify);
         REF {{ sessionId.slice(-12).toUpperCase() }}
       </p>
       <button v-if="state !== 'loading'" class="button mb-4" @click="verify">
-        Check payment status ↻</button
+        Check order status ↻</button
       ><a href="./index.html#/shop" class="button primary"
         >Back to the catalog ↗</a
       >

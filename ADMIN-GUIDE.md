@@ -12,8 +12,7 @@ KEYCHAIN KREATURES in Pocket, and KESTREL COMPUTER in Computers. The latter two
 are explicitly coming soon. The existing game price and stock are retained;
 review them before enabling checkout. DESK COMMANDER is a paid $3.99 USD software download.
 DESK MAT and HOODIE have Printify color/size options, retail prices and standard
-shipping estimates under Merch. Customers can browse and save selections;
-merchandise ordering opens after physical checkout and production are integrated. No AI-related claims were assigned to products
+shipping estimates under Merch. Customers can combine merchandise with downloads and office-shipped items in one checkout. No AI-related claims were assigned to products
 without confirmation.
 
 Use Products to search/filter the catalog and open a single product editor.
@@ -94,8 +93,7 @@ Open **Printify merchandise** to connect a Printify API store and inspect its
 hoodie sizes/colors and desk-mat variants. The token is entered only in the
 droplet console; the panel uses your GitHub administrator login to read the
 private connection. The panel also offers the white/red RODDY hoodie print PNG.
-Follow [backend/PRINTIFY.md](backend/PRINTIFY.md). This is account/product setup;
-customer merchandise checkout and automatic fulfillment are not implemented yet.
+Follow [backend/PRINTIFY.md](backend/PRINTIFY.md) for account setup and [backend/COMMERCE.md](backend/COMMERCE.md) for automatic fulfillment and recovery.
 
 ## Square checkout and delivery
 
@@ -108,7 +106,7 @@ setup. Keep public checkout disabled until a Square sandbox payment and private
 ZIP download have both been verified. The connection check reports account
 readiness, sandbox/live mode, and the server's separate checkout switch.
 
-The backend currently accepts paid digital downloads only, one copy per product.
+The backend accepts mixed carts. Paid digital downloads allow one copy per product.
 Install approved ZIPs in its private files directory and map product IDs to
 filenames and SHA-256 hashes in its protected manifest. Do not publish paid file
 URLs in the product editor. Removing an old public link cannot remove earlier
@@ -124,8 +122,7 @@ status. Use Square's dashboard for current transactions, customer receipts,
 refunds, and disputes. The GitHub token is sent to your configured backend to
 verify the store owner; only configure your own trusted HTTPS endpoint.
 
-Physical fulfillment, promotions, automatic tax, and automated dispute handling
-are not configured. Arrange applicable tax treatment before enabling live sales.
+Promotions, automatic tax and automated dispute handling are not configured. Arrange applicable tax treatment before enabling live sales.
 
 Validation: `npm test`, `python3 -m unittest discover -s backend -p 'test_*.py'`,
 and `npm run build` after installing the backend dependencies in a virtual
@@ -158,3 +155,26 @@ Printify, then refresh and review their artwork, retail prices and shipping.
 See [backend/PRINTIFY.md](backend/PRINTIFY.md) for account setup and remaining
 payment, production and tracking integration. No production order is created by
 importing, refreshing or publishing the catalog.
+
+## Mixed orders and office inventory
+
+Customers can combine paid downloads, made-to-order merchandise and office-shipped
+items in one cart. Physical carts collect the delivery address and calculate an
+actual shipping quote before opening Square. The backend verifies payment and
+handles digital delivery and Printify production automatically.
+
+Orders now includes paid/unconfirmed/needs-attention filters, line-item colors and
+sizes, shipping addresses, separate Printify/office status, tracking and live
+office stock. Save office stock there; catalog stock only seeds new products.
+In each office product's Options & shipping tab, set US/Canada first/additional
+item rates and publish. Leave unavailable destinations disabled. Link Commander
+is scaffolded hidden/coming soon; Keychain Kreatures remains coming soon.
+See [backend/COMMERCE.md](backend/COMMERCE.md) for operation and recovery.
+
+I KNOW WHAT I SAW downloads directly from
+`https://roddy.world/downloads/I-KNOW-WHAT-I-SAW.zip`: Windows x86-64, Linux x86-64
+and ESP32-C3 Super Mini firmware, instructions and checksums. No GitHub account or
+source checkout is required. Rebuild artifacts using the game's downloadable-build
+workflow, then run `python3 tools/package-game.py ARTIFACT_DIR --source COMMIT`.
+Include SDL2's license at `ARTIFACT_DIR/SDL2-LICENSE.txt`. ESP32-C3 hardware playback
+has not been verified; the package includes the required wiring and flash commands.
