@@ -92,6 +92,11 @@
       "id": "new-tag-4",
       "label": "Atari 2600",
       "color": "#ba3b3b"
+    },
+    {
+      "id": "new-tag-5",
+      "label": "MisterFPGA",
+      "color": "#741632"
     }
   ],
   "products": [
