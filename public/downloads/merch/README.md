@@ -18,11 +18,13 @@ This file prepares the artwork; it does not create or order a Printify product.
 
 # RODDY desk-mat artwork
 
-- Upload: `roddy-deskmat-black-cream-red-31.5x15.5.png`.
-- Vector master: `roddy-deskmat-black-cream-red-31.5x15.5.svg`.
-- Raster: 9450 × 4650 pixels, RGB PNG, opaque, 300 PPI metadata.
-- Assumed layout: large 31.5 × 15.5-inch mat. The owner has not yet supplied the
-  selected provider's exact print-area pixel dimensions or bleed template.
+- Upload: `roddy-deskmat-spoke-16x32.png`.
+- Vector master: `roddy-deskmat-spoke-16x32.svg`.
+- Raster: 9600 × 4800 pixels, RGB PNG, opaque, 300 PPI metadata.
+- Layout: large 16 × 32-inch mat from SPOKE Custom Products, selected from the
+  provider and size range supplied by the owner. The exact template bleed dimensions
+  still need checking in Printify before production.
+- Product reference: https://printify.com/app/products/488/generic-brand/desk-mat
 - Design reference: storefront `desk-mat` cover image,
   `public/img/products/roddy-8c017dc8-5866-4484-bfde-a0c61fa5c531.jpg`.
 - Flat reconstruction: near-black `#0B0B0B`, cream `#F3E8D4` curved lines, red
@@ -37,3 +39,6 @@ The edge motifs intentionally continue off the canvas; the logo is inset.
 If the chosen product template differs, export a matching canvas from the SVG
 instead of stretching the logo or assuming these nominal dimensions include bleed.
 This artwork has not been uploaded to or approved by Printify on the owner's behalf.
+
+The earlier 31.5 × 15.5-inch provisional files remain available for existing links;
+use the SPOKE 16 × 32-inch version for the provider the owner selected.
