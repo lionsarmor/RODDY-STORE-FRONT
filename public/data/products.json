@@ -5,13 +5,13 @@
     "heroEyebrow": "WELCOME TO THE RODDY WORLD",
     "heroTitle": "THE FUTURE\nIS PERSONAL.",
     "heroDescription": "Pocket-sized worlds. Strange new games. Computers with character. Welcome to a different kind of technology company.",
-    "heroProductId": "keychain-kreatures",
+    "heroProductId": "new-product",
     "heroImage": "",
     "heroButton": "Explore the catalog",
     "featuredTitle": "SMALL CATALOG. BIG IDEAS.",
     "manifestoTitle": "LESS DISPOSABLE.\nMORE DISCOVERABLE.",
     "manifestoText": "We believe technology should invite you in. Push a button. Meet a creature. Make something strange. There is still room for a little wonder.",
-    "supportEmail": "",
+    "supportEmail": "roddy2020@protonmail.com",
     "checkoutEnabled": true,
     "checkoutEndpoint": "https://store-api.143-244-168-180.sslip.io",
     "allowPromotionCodes": false,
@@ -2819,36 +2819,6 @@
           }
         ]
       }
-    },
-    {
-      "id": "link-commander",
-      "sku": "R-LINK-001",
-      "name": "LINK COMMANDER",
-      "category": "labs",
-      "type": "physical",
-      "price": 0,
-      "pricePending": true,
-      "stock": 0,
-      "trackStock": true,
-      "status": "coming-soon",
-      "active": false,
-      "featured": false,
-      "tags": [],
-      "shortDescription": "A wireless hub for retro machines.",
-      "description": "",
-      "images": [
-        "img/products/roddy-307f0526-9723-4908-84e0-3d4f6c1036ca.jpg"
-      ],
-      "coverImage": "img/products/roddy-307f0526-9723-4908-84e0-3d4f6c1036ca.jpg",
-      "downloadUrl": "",
-      "githubUrl": "https://github.com/lionsarmor/LINK-COMMANDER",
-      "officeShipping": {},
-      "specs": {},
-      "releaseNote": "Office shipping rates, price and stock will be configured before launch.",
-      "compareAtPrice": 0,
-      "story": "",
-      "documentationUrl": "",
-      "merch": null
     },
     {
       "id": "new-product",
