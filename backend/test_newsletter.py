@@ -76,7 +76,8 @@ class NewsletterTests(unittest.TestCase):
         data = self.admin("POST", "/prepare", {"id": draft["id"], "revision": 1}).json()
         self.assertEqual(data["batches"], [])
         self.assertEqual(data["count"], 0)
-        self.assertIn("mailto:roddy2020@protonmail.com", data["html"])
+        self.assertIn("mailto:support@roddy.world?subject=Unsubscribe%20from%20RODDY", data["html"])
+        self.assertIn("mailto:support@roddy.world?subject=Unsubscribe%20from%20RODDY", data["text"])
         self.assertIn("unsubscribe", data["text"])
 
     def test_revision_conflicts_leave_original_draft_intact_and_copy_works(self):

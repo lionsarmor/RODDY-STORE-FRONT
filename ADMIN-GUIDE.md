@@ -10,7 +10,8 @@ its posts separately if needed. Forum data saves directly on the droplet and
 does not require publishing the catalog. See [backend/FORUM.md](backend/FORUM.md).
 
 The private contact modal opens an email draft addressed to
-**roddy2020@protonmail.com** for issues, concerns, suggestions and collaborations.
+**support@roddy.world** for issues, concerns, suggestions and other help, or
+**sales@roddy.world** for sales inquiries, new-order inquiries and collaborations.
 Visitors review and send through their own email app, or copy the draft into
 webmail. Private messages do not appear on the public board or in store admin.
 

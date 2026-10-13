@@ -1,5 +1,6 @@
 <script setup>
 import {onMounted, reactive, ref, watch} from "vue";
+import {SUPPORT_EMAIL, SALES_EMAIL} from "../forum-api.js";
 import {commerceRequest} from "./commerce-api";
 const props = defineProps({endpoint: String, token: String, connected: Boolean});
 const topics = ref([]), selected = ref(null), replies = ref([]);
@@ -64,7 +65,7 @@ onMounted(() => {if (props.connected) run(load);});
 </script>
 <template>
   <section class="forum-admin">
-    <p class="help-copy">One public General board lives on the contact page. Post or reply as the verified RODDY owner, hide spam, close discussions and disable abusive handles. Hidden content stays available here for review; disabled handles lose their active sessions. Private messages go through visitors’ email apps to roddy2020@protonmail.com.</p>
+    <p class="help-copy">One public General board lives on the contact page. Post or reply as the verified RODDY owner, hide spam, close discussions and disable abusive handles. Hidden content stays available here for review; disabled handles lose their active sessions. Private messages go through visitors’ email apps to {{ SUPPORT_EMAIL }} for help, or {{ SALES_EMAIL }} for sales, new-order inquiries and collaborations.</p>
     <div class="admin-actions"><button class="button" :disabled="!connected || busy" @click="run(async () => {await load(); if(selected) await open(selected.id);})">Refresh forum</button><button class="button" :disabled="!connected || busy" @click="writing = !writing">{{writing ? 'Close draft' : 'Post as RODDY +'}}</button><a href="./#/contact" target="_blank" rel="noopener noreferrer" class="button">Open public board ↗</a></div>
     <p v-if="error" class="notice" role="alert">{{error}}</p><p v-if="status" class="notice" role="status">{{status}}</p>
     <form v-if="writing" class="form-grid forum-admin-compose" @submit.prevent="publishTopic"><label class="full">Topic title<input v-model="draft.title" maxlength="100" required /></label><label class="full">Public post<textarea v-model="draft.body" rows="6" maxlength="1800" required /></label><button class="button primary" :disabled="busy || !draft.title.trim() || !draft.body.trim()">Publish as RODDY</button></form>

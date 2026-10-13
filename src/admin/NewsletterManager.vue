@@ -1,5 +1,6 @@
 <script setup>
 import { computed, onBeforeUnmount, ref, watch } from 'vue';
+import { SUPPORT_EMAIL } from '../forum-api.js';
 import MediaEditor from './MediaEditor.vue';
 import { commerceRequest } from './commerce-api';
 import { uploadFile } from './api';
@@ -130,7 +131,7 @@ async function record() {
         <h2>How to send without sharing everyone's address</h2>
         <ol>
           <li><strong>Handle unsubscribe requests first.</strong> Check your inbox for “unsubscribe” replies and use the suppression control below before preparing any recipients.</li>
-          <li><strong>Save the edition and refresh recipients immediately before sending.</strong> Copy one batch into <strong>BCC</strong>. Put <strong>roddy2020@protonmail.com in To</strong>. Never paste the list into To or CC. This keeps customers' addresses private.</li>
+          <li><strong>Save the edition and refresh recipients immediately before sending.</strong> Copy one batch into <strong>BCC</strong>. Put <strong>{{ SUPPORT_EMAIL }} in To</strong>. Never paste the list into To or CC. This keeps customers' addresses private.</li>
           <li><strong>Copy the subject, then copy the formatted newsletter into the body.</strong> Check pictures, links, prices and the postal address. Email yourself a test first. Rich formatting can vary between email apps.</li>
           <li><strong>Send each batch once.</strong> Batches contain up to 50 subscribers, plus you in To. Check your account's current limits and wait if it limits sending. These are batches, not an unlimited sending allowance.</li>
           <li><strong>Record the edition only after every batch has been sent.</strong> The site cannot see your mailbox, detect delivery, or process replies automatically. Avoid sending an old export again.</li>
@@ -142,7 +143,7 @@ async function record() {
         <label>Public business mailing address or PO box<textarea v-model="postalAddress" rows="3" maxlength="500" placeholder="Business name, street or registered mailbox, city, state, postal code, country" /></label>
         <p class="help-copy">This address appears in every exported newsletter. Advertising emails need a valid postal address. If you do not want to use your home address, a registered PO box or commercial mailbox can work. You can collect opt-ins and save drafts now; sending exports unlock once you add your address.</p>
         <button class="button small" @click="act(async () => { await api('/settings', {postalAddress}); prepared = null; await load(); message = 'Footer saved.'; })">Save footer</button>
-        <p class="help-copy">Every email includes “reply with unsubscribe” and an email link to roddy2020@protonmail.com. Handle these requests here before the next mailing. <a href="https://www.ftc.gov/business-guidance/resources/can-spam-act-compliance-guide-business" target="_blank" rel="noopener noreferrer">FTC guidance ↗</a></p>
+        <p class="help-copy">Every email includes “reply with unsubscribe” and an email link to {{ SUPPORT_EMAIL }}. Handle these requests here before the next mailing. <a href="https://www.ftc.gov/business-guidance/resources/can-spam-act-compliance-guide-business" target="_blank" rel="noopener noreferrer">FTC guidance ↗</a></p>
       </section>
       <section class="admin-section">
         <h2>Subscribers</h2>
@@ -190,7 +191,7 @@ async function record() {
         <p v-if="!overview.settings.postalAddress" class="notice">Add your postal address in Newsletter footer to unlock sending exports. You can preview and save drafts now.</p>
         <template v-if="prepared">
           <p class="notice">{{ prepared.count }} active subscribers · {{ prepared.batches.length }} batches. Put yourself in To and paste recipients only into BCC. Review and send each batch once in your email account.</p>
-          <label>To (your address)<input readonly value="roddy2020@protonmail.com" /></label><button class="button small" @click="act(() => copy('roddy2020@protonmail.com'))">Copy To</button>
+          <label>To (your address)<input readonly :value="SUPPORT_EMAIL" /></label><button class="button small" @click="act(() => copy(SUPPORT_EMAIL))">Copy To</button>
           <label>Subject<input readonly :value="prepared.subject" /></label><button class="button small" @click="act(() => copy(prepared.subject))">Copy subject</button>
           <div v-for="(batch, i) in prepared.batches" :key="i" class="newsletter-block"><label>BCC batch {{ i + 1 }} / {{ prepared.batches.length }}<textarea readonly rows="4" :value="batch" /></label><button class="button small" @click="act(() => copy(batch))">Copy BCC batch {{ i + 1 }}</button></div>
           <p v-if="!prepared.count">No active subscribers yet. You can still copy the content and send yourself a test.</p>

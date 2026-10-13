@@ -5,6 +5,7 @@ import { useThemeStore } from "../stores/theme";
 import { useCatalogStore } from "../stores/catalog";
 import { useCartStore } from "../stores/cart";
 import { downloadDestination } from "../checkout-links";
+import { SUPPORT_EMAIL } from "../forum-api.js";
 useThemeStore();
 const catalog = useCatalogStore();
 const cart = useCartStore();
@@ -141,5 +142,6 @@ onMounted(verify);
         >Back to the catalog ↗</a
       >
     </div>
+    <p class="mt-6 text-sm leading-relaxed text-text-dim">Need help with your order? <a :href="`mailto:${SUPPORT_EMAIL}`" class="underline underline-offset-4">{{ SUPPORT_EMAIL }}</a></p>
   </main>
 </template>

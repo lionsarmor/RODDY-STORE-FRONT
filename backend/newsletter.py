@@ -12,7 +12,7 @@ from fastapi.responses import Response
 from .newsletter_mail import content_input, email_address, render, text
 
 CONSENT = "I want occasional RODDY email updates, new releases and offers. I can unsubscribe by replying to any newsletter."
-UNSUBSCRIBE = "mailto:roddy2020@protonmail.com?subject=Unsubscribe%20from%20RODDY"
+UNSUBSCRIBE = "mailto:support@roddy.world?subject=Unsubscribe%20from%20RODDY"
 
 
 def register_newsletter(app, connect, require_admin, rate_limit, origins):

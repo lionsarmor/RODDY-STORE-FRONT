@@ -1,7 +1,15 @@
-export const CONTACT_EMAIL = "roddy2020@protonmail.com";
+export const SUPPORT_EMAIL = "support@roddy.world";
+export const SALES_EMAIL = "sales@roddy.world";
+export const CONTACT_EMAIL = SUPPORT_EMAIL;
+
+export function contactRecipient(category) {
+  return ["Sales inquiry", "New order inquiry", "Collaboration"].includes(category)
+    ? SALES_EMAIL
+    : SUPPORT_EMAIL;
+}
 
 export function contactMailto(category, subject, name, body) {
-  return `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(`[RODDY / ${category}] ${subject.trim()}`)}&body=${encodeURIComponent(`${body.trim()}${name.trim() ? `\n\nFrom: ${name.trim()}` : ""}`)}`;
+  return `mailto:${contactRecipient(category)}?subject=${encodeURIComponent(`[RODDY / ${category}] ${subject.trim()}`)}&body=${encodeURIComponent(`${body.trim()}${name.trim() ? `\n\nFrom: ${name.trim()}` : ""}`)}`;
 }
 
 export async function forumRequest(endpoint, path, token = "", body) {

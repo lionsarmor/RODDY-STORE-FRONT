@@ -3,6 +3,7 @@ import { useThemeStore } from "../stores/theme";
 import RoddyLogo from "./RoddyLogo.vue";
 import RotatingTagline from "./RotatingTagline.vue";
 import { useCatalogStore } from '../stores/catalog';
+import { SUPPORT_EMAIL, SALES_EMAIL } from '../forum-api.js';
 
 const theme = useThemeStore();
 const catalog = useCatalogStore();
@@ -36,6 +37,8 @@ const catalog = useCatalogStore();
           <RouterLink to="/cart" class="mb-2 block font-mono text-sm hover:text-brand">Cart</RouterLink>
           <RouterLink to="/contact" class="mb-2 block font-mono text-sm hover:text-brand">Contact & community ↗</RouterLink>
           <RouterLink to="/newsletter" class="mb-2 block font-mono text-sm hover:text-brand">Newsletter</RouterLink>
+          <a :href="`mailto:${SUPPORT_EMAIL}`" class="mb-2 block font-mono text-xs hover:text-brand">{{ SUPPORT_EMAIL }}</a>
+          <a :href="`mailto:${SALES_EMAIL}`" class="mb-2 block font-mono text-xs hover:text-brand">{{ SALES_EMAIL }}</a>
           <span class="block font-mono text-sm">PLAY · BUILD · PROGRAM · KEEP</span>
         </div>
       </div>

@@ -40,8 +40,9 @@ from a Desk Commander Comms account. No email address is collected by the forum.
 
 ## Private contact
 
-The modal is addressed to **roddy2020@protonmail.com**, with Issue, Concern,
-Suggestion, Collaboration and Other categories. Subject/body/name are encoded
+The modal routes Sales inquiry, New order inquiry and Collaboration to
+**sales@roddy.world**. Issue, Concern, Suggestion and Other go to
+**support@roddy.world**. Subject/body/name are encoded
 into a `mailto:` draft. The button is labelled **Open email app**, and the page
 explains that the visitor must review and send it there. It does not claim an
 email was sent by the website. **Copy email draft** supports webmail/users without
