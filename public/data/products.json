@@ -101,6 +101,40 @@
   ],
   "products": [
     {
+      "id": "x16-keycaps",
+      "sku": "L-002",
+      "name": "X16 KEYCAPS",
+      "category": "labs",
+      "price": 99.99,
+      "stock": 0,
+      "active": true,
+      "featured": true,
+      "description": "RODDY X16 — 87-Key Retro Keycap Set\n\nGive your modern mechanical keyboard the soul of a classic computer.\n\nDesigned for Commander X16 enthusiasts, the RODDY X16 Keycap Set brings authentic retro-inspired styling to a modern 80% TKL keyboard. Featuring custom PETSCII legends, classic computing symbols, and a distinctive charcoal, cream, and blue color scheme, every key celebrates the golden age of home computing.\n\nFrom the dedicated RUN/STOP, RESTORE, and 40/80 DISPLAY keys to the custom X16 modifier and vibrant blue accents, this 87-key layout combines vintage character with modern keyboard convenience.\n\nClassic computing. Modern hardware. Pure nostalgia.\n\nDesigned for the AULA 87-key keyboard layout. Keyboard sold separately.",
+      "specs": {},
+      "images": [
+        "img/products/roddy-45a5596b-1884-43c3-9b40-5b4570366a82.jpg"
+      ],
+      "status": "coming-soon",
+      "type": "physical",
+      "coverImage": "img/products/roddy-45a5596b-1884-43c3-9b40-5b4570366a82.jpg",
+      "tags": [
+        "new-tag-2",
+        "new-tag-3"
+      ],
+      "trackStock": false,
+      "compareAtPrice": 0,
+      "shortDescription": "Bring classic computing to your modern keyboard with the RODDY X16 87-Key Keycap Set. Featuring custom PETSCII legends, iconic retro symbols, and a striking cre",
+      "story": "We love the Commander X16, but finding a modern keyboard that truly captures the spirit of classic home computing isn't easy. So we designed our own keycap set, bringing back the familiar PETSCII symbols, iconic function keys, and retro colors we grew up with. It's our way of celebrating the machines that inspired us while making the X16 experience feel a little more authentic.",
+      "documentationUrl": "",
+      "releaseNote": "**Coming Soon!** The RODDY X16 87-Key Keycap Set is currently being prepared for production. We're finalizing manufacturing and availability details. Stay tuned for release updates and ordering information at RODDY.world!",
+      "downloadUrl": "",
+      "githubUrl": "",
+      "officeShipping": {},
+      "supplier": null,
+      "merch": null,
+      "pricePending": true
+    },
+    {
       "id": "weather-commander-x16",
       "sku": "A-002",
       "name": "WEATHER COMMANDER",
