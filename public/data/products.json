@@ -107,8 +107,8 @@
       "category": "labs",
       "price": 99.99,
       "stock": 0,
-      "active": true,
-      "featured": true,
+      "active": false,
+      "featured": false,
       "description": "RODDY X16 — 87-Key Retro Keycap Set\n\nGive your modern mechanical keyboard the soul of a classic computer.\n\nDesigned for Commander X16 enthusiasts, the RODDY X16 Keycap Set brings authentic retro-inspired styling to a modern 80% TKL keyboard. Featuring custom PETSCII legends, classic computing symbols, and a distinctive charcoal, cream, and blue color scheme, every key celebrates the golden age of home computing.\n\nFrom the dedicated RUN/STOP, RESTORE, and 40/80 DISPLAY keys to the custom X16 modifier and vibrant blue accents, this 87-key layout combines vintage character with modern keyboard convenience.\n\nClassic computing. Modern hardware. Pure nostalgia.\n\nDesigned for the AULA 87-key keyboard layout. Keyboard sold separately.",
       "specs": {},
       "images": [
