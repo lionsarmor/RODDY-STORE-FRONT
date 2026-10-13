@@ -149,7 +149,8 @@
       "downloadUrl": "https://github.com/lionsarmor/WEATHER-COMMANDER/releases/latest/download/WEATHERCMD.zip",
       "githubUrl": "https://github.com/lionsarmor/WEATHER-COMMANDER",
       "pricePending": false,
-      "merch": null
+      "merch": null,
+      "officeShipping": {}
     },
     {
       "id": "shadow-over-space",
@@ -159,7 +160,7 @@
       "price": 0,
       "stock": 0,
       "active": true,
-      "featured": true,
+      "featured": false,
       "description": "Shoot. Dodge. Save The City. ",
       "specs": {
         "Title": "Shadow Over Space",
@@ -210,7 +211,8 @@
       "pricePending": false,
       "story": "",
       "documentationUrl": "",
-      "merch": null
+      "merch": null,
+      "officeShipping": {}
     },
     {
       "id": "desk-commander-cartridge",
@@ -270,7 +272,8 @@
       "githubUrl": "",
       "story": "",
       "documentationUrl": "",
-      "merch": null
+      "merch": null,
+      "officeShipping": {}
     },
     {
       "id": "desk-commander",
@@ -333,7 +336,8 @@
       "githubUrl": "",
       "story": "We created Desk Commander because we believe the Commander X16 deserves more than a command prompt. Inspired by the classic graphical desktops that made early personal computers so exciting, we wanted to bring that same sense of discovery, creativity, and accessibility to modern 8-bit computing. Desk Commander is our way of making the X16 feel like a complete personal computer again—not just a machine for running games, but a platform for exploring, creating, and getting things done. It's about pushing the boundaries of what 8-bit hardware can do while celebrating everything that made those early computers special.",
       "documentationUrl": "https://roddy.world/docs/desk-commander.html",
-      "merch": null
+      "merch": null,
+      "officeShipping": {}
     },
     {
       "id": "iknowwhatisaw",
@@ -383,7 +387,8 @@
       "story": "We created **I KNOW WHAT I SAW** because we love the creativity and simplicity of classic video games. We wanted to build something original that captures the mystery, imagination, and excitement of old-school gaming while proving that even tiny, affordable hardware like the ESP32 can deliver a fun experience. It's a celebration of independent development, creative experimentation, and the belief that great games are defined by their ideas, not their hardware requirements.",
       "documentationUrl": "",
       "pricePending": false,
-      "merch": null
+      "merch": null,
+      "officeShipping": {}
     },
     {
       "id": "keychain-kreatures",
@@ -392,7 +397,7 @@
       "category": "pocket",
       "price": 39,
       "stock": 0,
-      "featured": true,
+      "featured": false,
       "active": true,
       "description": "A tiny programmable creature computer. Display, six buttons, RGB, vibration and IR trading built into a keychain.",
       "specs": {
@@ -412,7 +417,7 @@
       "images": [],
       "type": "physical",
       "status": "coming-soon",
-      "trackStock": true,
+      "trackStock": false,
       "tags": [
         "esp32",
         "new-tag-3",
@@ -428,7 +433,8 @@
       "githubUrl": "",
       "story": "",
       "documentationUrl": "",
-      "merch": null
+      "merch": null,
+      "officeShipping": {}
     },
     {
       "id": "kestrel-computer",
@@ -455,7 +461,8 @@
       "githubUrl": "",
       "story": "",
       "documentationUrl": "",
-      "merch": null
+      "merch": null,
+      "officeShipping": {}
     },
     {
       "id": "desk-mat",
@@ -583,7 +590,8 @@
             "image": "https://images-api.printify.com/mockup/6acd8183b52496d26b0ccfc0/72580/16170/desk-mat.jpg?camera_label=front"
           }
         ]
-      }
+      },
+      "officeShipping": {}
     },
     {
       "id": "hoodie",
@@ -2818,7 +2826,8 @@
             "image": "https://images-api.printify.com/mockup/6acd11e339bbe64f4f00eabf/33419/98424/unisex-heavy-blend-hooded-sweatshirt.jpg?camera_label=front"
           }
         ]
-      }
+      },
+      "officeShipping": {}
     },
     {
       "id": "new-product",
@@ -2828,7 +2837,7 @@
       "price": 0,
       "stock": 0,
       "active": true,
-      "featured": true,
+      "featured": false,
       "description": "# LINK COMMANDER\n\n**Modern peripherals. Classic computers. One connection.**\n\nYour favorite retro computer deserves a modern keyboard and mouse.\n\n**LINK COMMANDER** is a retro peripheral interface designed to bridge the gap between modern input devices and classic computer hardware. Built for enthusiasts who love their vintage machines but appreciate the convenience of today's peripherals, LINK COMMANDER aims to make connecting your favorite keyboard and mouse easier than ever.\n\nNo need to hunt down aging keyboards, struggle with unreliable adapters, or sacrifice your preferred desktop setup just to enjoy classic computing.\n\n### Bridge Two Generations of Technology\n\nDesigned around a flexible peripheral interface, LINK COMMANDER brings together modern USB connectivity, legacy PS/2 interfaces, and support for retro-computer connections.\n\nWith two USB ports and two PS/2 ports, the device is being developed to accommodate a variety of input configurations, including support for compatible wireless receiver dongles.\n\nWhether you're restoring a vintage system, building a modern retro computer setup, or experimenting with new hardware, LINK COMMANDER is designed to help old and new technology work together.\n\n### Built for Retro Enthusiasts\n\nLINK COMMANDER is part of RODDY's growing collection of original hardware projects, developed with a simple philosophy: classic computers should remain useful, accessible, and enjoyable.\n\nWe're exploring compatibility with systems such as the Commander X16 and other retro platforms, with an emphasis on flexible connections, practical functionality, and a clean, compact design.\n\n### Planned Features\n\n- **2× USB-A ports** for compatible modern input devices and wireless receivers.\n- **2× PS/2 ports** for legacy keyboard and mouse connectivity.\n- **Retro-computer connectivity** through system-specific interfaces and adapters.\n- **Wireless peripheral support** for compatible 2.4 GHz receiver-based devices.\n- **Compact desktop design** that fits naturally alongside vintage hardware.\n- **Expandable compatibility** as development continues.\n\n### Modern Convenience. Retro Soul.\n\nWe love classic computers for their simplicity, personality, and the unique experience they offer. LINK COMMANDER is being built to preserve that experience while removing some of the frustrations of connecting modern peripherals.\n\nBecause enjoying yesterday's computers shouldn't mean giving up today's conveniences.\n\n**LINK COMMANDER — Connect the Generations.**\n\n*RODDY — Made for Makers.*\n\n### Release / Availability\n\n**Coming Soon — In Development**\n\nLINK COMMANDER is an original RODDY hardware project currently in development. Hardware specifications, supported systems, compatibility, and availability are subject to change as prototyping and testing continue.",
       "specs": {},
       "images": [],
@@ -2848,7 +2857,8 @@
       "downloadUrl": "",
       "githubUrl": "",
       "merch": null,
-      "pricePending": true
+      "pricePending": true,
+      "officeShipping": {}
     }
   ]
 }
