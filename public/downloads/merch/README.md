@@ -18,12 +18,21 @@ This file prepares the artwork; it does not create or order a Printify product.
 
 # RODDY desk-mat artwork
 
-- Upload: `roddy-deskmat-spoke-16x32.png`.
-- Vector master: `roddy-deskmat-spoke-16x32.svg`.
-- Raster: 9600 × 4800 pixels, RGB PNG, opaque, 300 PPI metadata.
-- Layout: large 16 × 32-inch mat from SPOKE Custom Products, selected from the
-  provider and size range supplied by the owner. The exact template bleed dimensions
-  still need checking in Printify before production.
+Separate layouts are provided for all three SPOKE Custom Products sizes. Use
+landscape orientation: the longer dimension is the artwork width.
+
+| Printify size | Upload PNG | Pixel dimensions at 300 PPI |
+| --- | --- | --- |
+| 12 × 18 inches | `roddy-deskmat-spoke-12x18.png` | 5400 × 3600 |
+| 12 × 22 inches | `roddy-deskmat-spoke-12x22.png` | 6600 × 3600 |
+| 16 × 32 inches | `roddy-deskmat-spoke-16x32.png` | 9600 × 4800 |
+
+Each PNG has a matching editable SVG master. PNGs are opaque RGB with 300 PPI
+metadata. The smaller layouts reposition the right-hand curves and original
+logo, preserving their proportions instead of cropping or stretching the wide
+layout. These are nominal product dimensions; exact template bleed dimensions
+still need checking in Printify before production.
+
 - Product reference: https://printify.com/app/products/488/generic-brand/desk-mat
 - Design reference: storefront `desk-mat` cover image,
   `public/img/products/roddy-8c017dc8-5866-4484-bfde-a0c61fa5c531.jpg`.
@@ -33,12 +42,21 @@ This file prepares the artwork; it does not create or order a Printify product.
 - No mockup perspective, desk objects, lighting gradients, stitching, crop marks,
   or rounded transparent corners are baked into the print image.
 
-The PNG was rendered directly from the SVG, not enlarged from the advertisement.
-In Printify, cover the entire print area and check the bleed/safe-area overlay.
-The edge motifs intentionally continue off the canvas; the logo is inset.
-If the chosen product template differs, export a matching canvas from the SVG
-instead of stretching the logo or assuming these nominal dimensions include bleed.
-This artwork has not been uploaded to or approved by Printify on the owner's behalf.
+The PNGs are rendered directly from SVG, not enlarged from the advertisement.
+A 16 × 32 file has a 2:1 aspect ratio, whereas 12 × 18 is 3:2; resizing one to
+fill the other crops details. Replace the old layer with the matching size file.
 
+In Printify, select each size and use **Make a specific design for…** to apply
+its matching artwork. Center the image horizontally and vertically, cover the
+entire print area, and check the bleed/safe-area overlay. Keep the logo inside
+the safe area; the decorative edge motifs intentionally continue off the canvas.
+If the template dimensions differ, adapt the SVG canvas rather than stretching
+the logo or assuming the nominal dimensions include bleed. Review each variant
+in Preview before saving.
+
+Printify template and variant design guide:
+https://help.printify.com/hc/en-us/articles/11240165642641-How-do-I-use-the-design-templates
+
+This artwork has not been uploaded to or approved by Printify on the owner's behalf.
 The earlier 31.5 × 15.5-inch provisional files remain available for existing links;
-use the SPOKE 16 × 32-inch version for the provider the owner selected.
+use the matching SPOKE size above for the provider the owner selected.

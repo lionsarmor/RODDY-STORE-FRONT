@@ -1270,8 +1270,12 @@ function loadPrintify(page = 1) {
               <pre class="setup-command">python3 /opt/roddy-store/backend/deploy/configure-printify.py</pre>
               <p class="help-copy">Hoodie artwork: the full RODDY logo in white with a red dot, on a transparent 3531 × 2352 px canvas. Select a black hoodie and upload this file to the front print area.</p>
               <p><a class="button small" href="./downloads/merch/roddy-hoodie-white-red-front.png" download="RODDY-hoodie-white-red-front.png">Download hoodie print PNG ↓</a></p>
-              <p class="help-copy">Desk-mat artwork follows the storefront ad: black, cream curves, red circle, and the original RODDY logo. This export is 9600 × 4800 px for the SPOKE 16 × 32-inch layout; check the selected Printify template and bleed before ordering.</p>
-              <p><a class="button small" href="./downloads/merch/roddy-deskmat-spoke-16x32.png" download="RODDY-deskmat-spoke-16x32.png">Download desk-mat print PNG ↓</a></p>
+              <p class="help-copy">Desk-mat artwork follows the storefront ad: black, cream curves, red circle, and the original RODDY logo. Choose the file matching your selected SPOKE mat size. Each layout keeps the logo and curves in proportion. Apply a separate design to each size in Printify, then check the template bleed and safe area before ordering.</p>
+              <div class="admin-actions">
+                <a class="button small" href="./downloads/merch/roddy-deskmat-spoke-12x18.png" download="RODDY-deskmat-spoke-12x18.png">Desk mat 12 × 18 inches PNG ↓</a>
+                <a class="button small" href="./downloads/merch/roddy-deskmat-spoke-12x22.png" download="RODDY-deskmat-spoke-12x22.png">Desk mat 12 × 22 inches PNG ↓</a>
+                <a class="button small" href="./downloads/merch/roddy-deskmat-spoke-16x32.png" download="RODDY-deskmat-spoke-16x32.png">Desk mat 16 × 32 inches PNG ↓</a>
+              </div>
               <div class="admin-actions">
                 <a class="button small" href="https://printify.com/" target="_blank" rel="noopener noreferrer">Open Printify ↗</a>
                 <a class="button small" href="https://help.printify.com/hc/en-us/articles/4483626447249-How-can-I-generate-an-API-token" target="_blank" rel="noopener noreferrer">Token setup guide ↗</a>
