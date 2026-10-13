@@ -603,7 +603,7 @@
       "trackStock": false,
       "type": "physical",
       "status": "available",
-      "featured": false,
+      "featured": true,
       "active": true,
       "tags": [],
       "pricePending": false,
