@@ -8,7 +8,7 @@ from unittest.mock import patch
 import zipfile
 
 from backend import test_commerce as commerce_tests
-from backend.keycaps import snapshot, packet, MARKS, label, PALETTE, PALETTE_DOCUMENT, validate_colors
+from backend.keycaps import snapshot, packet, MARKS, ARROWS, label, PALETTE, PALETTE_DOCUMENT, validate_colors
 
 
 class KeycapOrderTests(unittest.TestCase):
@@ -36,7 +36,7 @@ class KeycapOrderTests(unittest.TestCase):
         template_patch.start()
         self.addCleanup(template_patch.stop)
         self.profile = {'id':'x16-compatible','name':'X16 compatible','revision':'v06.1','templateId':'x16-v06-cherry-tkl',
-                        'marks':list(MARKS),'arrows':['small-black','bold-white']}
+                        'marks':list(MARKS),'arrows':list(ARROWS)}
         self.catalog['keycapProfiles'] = [self.profile]
         self.product = {'id':'custom-keys','name':'Custom keys','price':99.99,'type':'physical','active':True,
                         'status':'available','trackStock':False,'keycaps':{'profileId':'x16-compatible'},
@@ -71,7 +71,13 @@ class KeycapOrderTests(unittest.TestCase):
                     frozen=snapshot(self.catalog,self.product,design)
                     self.assertEqual(frozen['selection'],design)
                     self.assertEqual(frozen['json']['keys']['test-commander']['layers'],self.template['marks'][mark])
+                    source=self.template['arrows']['test-arrow'] if arrows.startswith('bold-') else self.template['base']['keys']['test-arrow']['layers']
+                    actual=frozen['json']['keys']['test-arrow']['layers']
+                    self.assertEqual([l['vectDef'] for l in actual],[l['vectDef'] for l in source])
+                    self.assertEqual({l['colorId'] for l in actual},{'GR002' if arrows.endswith('-white') else 'GR001'})
+                    self.assertIn(ARROWS[arrows],label(design))
                     self.assertIn(MARKS[mark],label(design))
+        self.assertEqual(json.loads((self.templates/'x16-v06-cherry-tkl.json').read_text()),self.template)
 
     def test_two_designs_share_shipping_group_and_paid_packet_has_both_jsons(self):
         self.items.append({'id':'custom-keys','qty':2,'design':{**self.design,'mark':'otter-x','arrows':'bold-white'}})

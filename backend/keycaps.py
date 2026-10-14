@@ -12,7 +12,8 @@ from fastapi import HTTPException
 
 TEMPLATES = Path(os.getenv('KEYCAP_TEMPLATES_DIR', '/var/lib/roddy-store/keycap-templates'))
 MARKS = {ident: option['label'] for ident, option in json.loads(Path(__file__).with_name('keycap_mark_options.json').read_text()).items() if option.get('enabled', True)}
-ARROWS = {'small-black': 'Small black arrows', 'bold-white': 'Bold white arrows'}
+ARROWS = {'small-black': 'Small black arrows', 'small-white': 'Small white arrows',
+          'bold-black': 'Bold black arrows', 'bold-white': 'Bold white arrows'}
 FIELDS = {'profileId', 'revision', 'alpha', 'modifiers', 'accents', 'mark', 'arrows', 'keyColors'}
 PALETTE_BYTES = Path(__file__).with_name('keycap_palette.json').read_bytes()
 PALETTE_DOCUMENT = json.loads(PALETTE_BYTES)
@@ -92,7 +93,9 @@ def snapshot(catalog, product, raw):
         if meta['sourceKey'] == 'COMMANDER':
             key['layers'] = copy.deepcopy(template['marks'][selection['mark']])
         if ident in template['arrows']:
-            key['layers'] = copy.deepcopy(template['arrows'][ident] if selection['arrows'] == 'bold-white' else template['base']['keys'][ident]['layers'])
+            key['layers'] = copy.deepcopy(template['arrows'][ident] if selection['arrows'].startswith('bold-') else template['base']['keys'][ident]['layers'])
+            for layer in key['layers']:
+                layer['colorId'] = 'GR002' if selection['arrows'].endswith('-white') else 'GR001'
     used_colors = validate_colors(out)
     encoded = json.dumps(out, sort_keys=True, separators=(',', ':')).encode()
     return {'profile': copy.deepcopy(profile), 'templateId': template_id, 'templateRevision': template['revision'],

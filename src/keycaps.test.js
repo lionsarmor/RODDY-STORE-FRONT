@@ -65,6 +65,22 @@ test('cart persists two designs separately and quantity/removal touches only the
   cart.setQty('x16-keycaps',3,'',b);cart.remove('x16-keycaps','',a);assert.equal(cart.items.length,1);assert.equal(cart.items[0].qty,3);assert.equal(cart.items[0].design.mark,'analog-x');
   assert.equal(JSON.parse(saved.get('roddy:cart'))[0].design.mark,'analog-x');
 });
+test('all four arrow choices preserve their size and use the selected stock ink',()=>{
+  const before=JSON.stringify(template);
+  assert.deepEqual(profile.arrows,Object.keys(ARROWS));
+  for(const arrows of profile.arrows){
+    const out=generatePreview(profile,{...defaultDesign(profile),arrows});
+    for(const source of template.keys.filter(k=>k.boldArrows)){
+      const actual=out.keys.find(k=>k.id===source.id).shapes;
+      assert.deepEqual(actual.map(s=>s.path),(arrows.startsWith('bold-')?source.boldArrows:source.shapes).map(s=>s.path));
+      const ink=arrows.endsWith('-white')?'GR002':'GR001';
+      assert.ok(actual.every(s=>s.paletteId===ink && s.fill===colorHex(ink)));
+    }
+  }
+  assert.equal(JSON.stringify(template),before);
+  assert.equal(template.keys.find(k=>k.id==='2').shapes[2].paletteId,'GN037');
+  assert.equal(template.keys.find(k=>k.id==='7').shapes[1].paletteId,'BL026');
+});
 test('profiles and revisions reject stale designs and invalid publishing settings',()=>{
   const stale={...defaultDesign(profile),revision:'old'};assert.ok(designError(stale,profile));
   assert.throws(()=>generatePreview(profile,{...defaultDesign(profile),mark:'plain-x'}));

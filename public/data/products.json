@@ -3001,7 +3001,7 @@
     {
       "id": "x16-compatible",
       "name": "X16 compatible",
-      "revision": "v06.4-yuzu",
+      "revision": "v06.5-arrows-swatches",
       "templateId": "x16-v06-cherry-tkl",
       "description": "V6 PETSCII artwork and number-row color swatches, with Yuzu palette colors. Set the main groups, then color individual keys to make the set your own.",
       "marks": [
@@ -3015,6 +3015,8 @@
       ],
       "arrows": [
         "small-black",
+        "small-white",
+        "bold-black",
         "bold-white"
       ],
       "defaults": {

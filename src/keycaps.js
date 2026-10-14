@@ -8,7 +8,11 @@ export const KEYCAP_PREVIEWS = {[x16.id]: x16};
 export const DISABLED_MARKS = Object.keys(markOptions).filter(id=>markOptions[id].enabled===false);
 export const MARKS = Object.fromEntries(Object.entries(markOptions).filter(([,option])=>option.enabled!==false).map(([id,option])=>[id,option.label]));
 export const MARK_DESCRIPTIONS = Object.fromEntries(Object.entries(markOptions).map(([id,option])=>[id,option.inspiration || '']));
-export const ARROWS = {'small-black':'Small black arrows','bold-white':'Bold white arrows'};
+export const ARROWS = {'small-black':'Small black arrows','small-white':'Small white arrows','bold-black':'Bold black arrows','bold-white':'Bold white arrows'};
+export function arrowShapes(key, style) {
+  const paletteId=style.endsWith('-white')?'GR002':'GR001';
+  return (style.startsWith('bold-')?key.boldArrows:key.shapes).map(s=>({...s,paletteId,fill:colorHex(paletteId)}));
+}
 export const DEFAULT_COLORS = {alpha:'GR002',modifiers:'GR009',accents:'BL003'};
 export const DEFAULT_SELECTION = {...DEFAULT_COLORS,mark:'roddy-r',arrows:'small-black',keyColors:{}};
 export const availableMarks = profile => (profile?.marks || Object.keys(MARKS)).filter(id=>MARKS[id]);
@@ -46,7 +50,7 @@ export function generatePreview(profile, selection) {
     const color=colorHex(paletteId);
     let shapes=key.shapes.map(s=>({...s,fill:s.inkRole==='auto'?colorHex(legendColorId(paletteId)):s.fill}));
     if(key.commander)shapes=template.marks[selection.mark];
-    if(key.boldArrows)shapes=selection.arrows==='bold-white'?key.boldArrows:key.shapes;
+    if(key.boldArrows)shapes=arrowShapes(key,selection.arrows);
     return {id:key.id,name:key.name,label:key.label,x:key.x,y:key.y,width:key.width,color,paletteId,custom:!!selection.keyColors[key.id],shapes};
   });
   return {width:template.width,height:template.height,keys};
