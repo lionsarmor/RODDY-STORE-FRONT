@@ -21,6 +21,8 @@ test('available products need final pricing and supported shipping destinations'
   const c=normalizeCatalog(structuredClone(data)),p=c.products.find(p=>p.active && p.status==='available');
   p.pricePending=true;assert.ok(validateCatalog(c).some(e=>e.includes('final price')));
   p.status='coming-soon';assert.ok(!validateCatalog(c).some(e=>e.includes('final price')));
+  p.pricePending=false;p.status='available';p.fulfillment='pending';assert.ok(validateCatalog(c).some(e=>e.includes('ready fulfillment')));
+  p.fulfillment='manual';assert.ok(!validateCatalog(c).some(e=>e.includes('ready fulfillment')));
   p.shippingCountries=['US','CA'];assert.ok(!validateCatalog(c).some(e=>e.includes('shipping destinations')));
   for(const countries of [[],['GB'],['US','US'],'US']){
     p.shippingCountries=countries;assert.ok(validateCatalog(c).some(e=>e.includes('shipping destinations')));

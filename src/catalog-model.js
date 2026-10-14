@@ -124,6 +124,7 @@ export function validateCatalog(data) {
     if (!["available", "coming-soon", "sold-out"].includes(p.status))
       errors.push(`${p.name}: invalid availability.`);
     if (p.active && p.status === 'available' && p.pricePending) errors.push(`${p.name}: set a final price before marking this product available, or choose Coming soon.`);
+    if (p.active && p.status === 'available' && (p.supplier?.fulfillment || p.fulfillment) === 'pending') errors.push(`${p.name}: choose a ready fulfillment mode before marking this product available.`);
     if (p.shippingCountries !== undefined && (!Array.isArray(p.shippingCountries) || !p.shippingCountries.length || p.shippingCountries.some(c => !['US','CA'].includes(c)) || new Set(p.shippingCountries).size !== p.shippingCountries.length)) errors.push(`${p.name}: choose supported shipping destinations.`);
     if (!["physical", "digital"].includes(p.type))
       errors.push(`${p.name}: invalid product type.`);
