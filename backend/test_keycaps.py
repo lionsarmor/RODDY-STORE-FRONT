@@ -20,6 +20,21 @@ class KeycapOrderTests(unittest.TestCase):
 
     def setUp(self):
         commerce_tests.MixedCheckoutTests.setUp(self)
+        self.templates = self.root/'test-keycap-templates'
+        self.templates.mkdir()
+        def layer(path, color='#0A0D12'):
+            return {'id':'test-layer','colorId':color,'x':0,'y':0,'vectDef':path,'vectScale':100,'vectViewbox':'0 0 1250 1000'}
+        keys = {'test-commander':{'colorId':'#7FAFD3','layers':[layer('M100 100H200V200H100Z')]},
+                'test-arrow':{'colorId':'#7FAFD3','layers':[layer('M150 100L200 200H100Z')]}}
+        self.template = {'id':'x16-v06-cherry-tkl','revision':'fixture-1','compatibility':'Synthetic test fixture; not a manufacturing design.',
+                         'base':{'name':'Test','keys':keys,'layoutKeys':[{'id':k} for k in keys]},
+                         'meta':{'test-commander':{'group':'accents','sourceKey':'COMMANDER'},'test-arrow':{'group':'accents','sourceKey':'UP'}},
+                         'marks':{name:[layer('M100 100H200V200H100Z')] for name in ['commander-x16','otter-x','roddy-x','roddy-r']},
+                         'arrows':{'test-arrow':[layer('M100 100H300V300H100Z','#FFFFFF')]}}
+        (self.templates/'x16-v06-cherry-tkl.json').write_text(json.dumps(self.template))
+        template_patch = patch('backend.keycaps.TEMPLATES', self.templates)
+        template_patch.start()
+        self.addCleanup(template_patch.stop)
         self.profile = {'id':'x16-compatible','name':'X16 compatible','revision':'v06.1','templateId':'x16-v06-cherry-tkl',
                         'marks':['commander-x16','otter-x','roddy-x','roddy-r'],'arrows':['small-black','bold-white']}
         self.catalog['keycapProfiles'] = [self.profile]
@@ -39,8 +54,8 @@ class KeycapOrderTests(unittest.TestCase):
         self.tick()
         return result.json()
 
-    def test_default_json_matches_validated_master_and_snapshots_are_independent(self):
-        template = json.loads((Path(__file__).parent/'keycap_templates/x16-v06-cherry-tkl.json').read_text())
+    def test_private_template_generates_frozen_order_snapshots(self):
+        template = self.template
         frozen = snapshot(self.catalog,self.product,self.design)
         self.assertTrue(frozen['json']['keys'] == template['base']['keys'])
         self.assertTrue(frozen['json']['layoutKeys'] == template['base']['layoutKeys'])

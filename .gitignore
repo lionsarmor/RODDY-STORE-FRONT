@@ -10,3 +10,6 @@ __pycache__/
 !.env.example
 # Local setup note contains the owner's GitHub credential.
 Here s the full setup.txt
+
+# Manufacturing recipes belong on the private droplet, not the public repo.
+backend/keycap_templates/*.json

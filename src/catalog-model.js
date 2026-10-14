@@ -1,4 +1,4 @@
-import { KEYCAP_TEMPLATES, MARKS, ARROWS, defaultDesign, designError } from './keycaps.js';
+import { KEYCAP_PREVIEWS, MARKS, ARROWS, defaultDesign, designError } from './keycaps.js';
 
 export const DEFAULT_TAGS = [
   { id: "esp32", label: "ESP32", color: "#b9e6f5" },
@@ -93,7 +93,7 @@ export function validateCatalog(data) {
     }
   }
   for (const profile of data.keycapProfiles || []) {
-    if (!KEYCAP_TEMPLATES[profile.templateId] || !/^[a-zA-Z0-9._-]{1,40}$/.test(profile.revision || '')) errors.push(`${profile.name}: choose a validated template and revision.`);
+    if (!KEYCAP_PREVIEWS[profile.templateId] || !/^[a-zA-Z0-9._-]{1,40}$/.test(profile.revision || '')) errors.push(`${profile.name}: choose a validated template and revision.`);
     if (!Array.isArray(profile.marks) || !profile.marks.length || profile.marks.some(id=>!MARKS[id]) || !Array.isArray(profile.arrows) || !profile.arrows.length || profile.arrows.some(id=>!ARROWS[id])) errors.push(`${profile.name}: choose supported symbols and arrows.`);
     if (designError(defaultDesign(profile),profile)) errors.push(`${profile.name}: check profile defaults.`);
   }

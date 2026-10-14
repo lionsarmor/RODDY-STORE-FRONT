@@ -1,6 +1,6 @@
 <script setup>
 import {computed} from 'vue';
-import {KEYCAP_TEMPLATES,MARKS,ARROWS,DEFAULT_SELECTION} from '../keycaps.js';
+import {KEYCAP_PREVIEWS,MARKS,ARROWS,DEFAULT_SELECTION} from '../keycaps.js';
 import {normalizeProduct} from '../catalog-model';
 const props=defineProps({catalog:Object,endpoint:String,token:String,connected:Boolean});
 const emit=defineEmits(['edit-product','open-orders']);
@@ -8,7 +8,7 @@ const profiles=computed(()=>props.catalog.keycapProfiles);
 function slug(name){return name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'') || 'keyboard';}
 function unique(base,list){let id=base,n=2;while(list.some(x=>x.id===id))id=base+'-'+n++;return id;}
 function addProfile(source=null){
-  const p=source?structuredClone(JSON.parse(JSON.stringify(source))):{name:'New keyboard set',revision:'1',templateId:Object.keys(KEYCAP_TEMPLATES)[0],description:'',marks:Object.keys(MARKS),arrows:Object.keys(ARROWS),defaults:{...DEFAULT_SELECTION}};
+  const p=source?structuredClone(JSON.parse(JSON.stringify(source))):{name:'New keyboard set',revision:'1',templateId:Object.keys(KEYCAP_PREVIEWS)[0],description:'',marks:Object.keys(MARKS),arrows:Object.keys(ARROWS),defaults:{...DEFAULT_SELECTION}};
   if(source)p.name+=' copy';p.id=unique(slug(p.name),profiles.value);profiles.value.push(p);
 }
 function productsFor(profile){return props.catalog.products.filter(p=>p.keycaps?.profileId===profile.id);}
@@ -25,8 +25,8 @@ function toggle(profile,field,id,checked){const list=profile[field];if(checked&&
     <p class="notice">Start with the validated v6 ANSI 87-key Cherry layout. Duplicate it for other color or symbol collections. A different physical layout needs its own validated template before it appears in this menu; renaming a profile does not change key sizes or fit.</p>
     <article v-for="profile in profiles" :key="profile.id" class="profile-editor">
       <div class="field-heading"><h3>{{profile.name}}</h3><button class="button small" @click="addProfile(profile)">Duplicate profile</button></div>
-      <div class="form-grid"><label>Profile name<input v-model="profile.name" maxlength="120" /></label><label>Stable profile ID<input :value="profile.id" readonly /></label><label>Design revision<input v-model="profile.revision" maxlength="40" /><small>Change this when updating artwork or available choices. Saved carts must refresh; paid orders retain their original files.</small></label><label>Physical template<select v-model="profile.templateId"><option v-for="template in KEYCAP_TEMPLATES" :key="template.id" :value="template.id">{{template.name}}</option></select></label><label class="full">Profile description<textarea v-model="profile.description" rows="2" /></label></div>
-      <p class="help-copy">{{KEYCAP_TEMPLATES[profile.templateId]?.compatibility}}</p>
+      <div class="form-grid"><label>Profile name<input v-model="profile.name" maxlength="120" /></label><label>Stable profile ID<input :value="profile.id" readonly /></label><label>Design revision<input v-model="profile.revision" maxlength="40" /><small>Change this when updating artwork or available choices. Saved carts must refresh; paid orders retain their original files.</small></label><label>Physical template<select v-model="profile.templateId"><option v-for="template in KEYCAP_PREVIEWS" :key="template.id" :value="template.id">{{template.name}}</option></select></label><label class="full">Profile description<textarea v-model="profile.description" rows="2" /></label></div>
+      <p class="help-copy">{{KEYCAP_PREVIEWS[profile.templateId]?.compatibility}}</p>
       <div class="form-grid"><fieldset><legend>Available Commander symbols</legend><label v-for="(name,id) in MARKS" :key="id" class="check"><input type="checkbox" :checked="profile.marks.includes(id)" @change="toggle(profile,'marks',id,$event.target.checked)" />{{name}}</label></fieldset><fieldset><legend>Available arrows</legend><label v-for="(name,id) in ARROWS" :key="id" class="check"><input type="checkbox" :checked="profile.arrows.includes(id)" @change="toggle(profile,'arrows',id,$event.target.checked)" />{{name}}</label></fieldset></div>
       <h4>Starting design</h4><div class="form-grid"><label v-for="[id,name] in [['alpha','Main keys'],['modifiers','Modifiers'],['accents','Accent keys']]" :key="id">{{name}}<input v-model="profile.defaults[id]" maxlength="7" @change="profile.defaults[id]=profile.defaults[id].toUpperCase()" /></label><label>Default symbol<select v-model="profile.defaults.mark"><option v-for="id in profile.marks" :key="id" :value="id">{{MARKS[id]}}</option></select></label><label>Default arrows<select v-model="profile.defaults.arrows"><option v-for="id in profile.arrows" :key="id" :value="id">{{ARROWS[id]}}</option></select></label></div>
       <div class="admin-actions"><button class="button small" @click="createProduct(profile)">Create product page for this profile +</button><button v-for="product in productsFor(profile)" :key="product.id" class="button small" @click="$emit('edit-product',product)">Edit {{product.name}}</button><button v-if="!productsFor(profile).length" class="text-button" @click="catalog.keycapProfiles=catalog.keycapProfiles.filter(p=>p!==profile)">Remove unused profile</button></div>

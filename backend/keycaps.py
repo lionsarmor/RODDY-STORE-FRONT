@@ -3,13 +3,14 @@ import copy
 import hashlib
 import io
 import json
+import os
 from pathlib import Path
 import re
 import zipfile
 
 from fastapi import HTTPException
 
-TEMPLATES = Path(__file__).parent / 'keycap_templates'
+TEMPLATES = Path(os.getenv('KEYCAP_TEMPLATES_DIR', '/var/lib/roddy-store/keycap-templates'))
 MARKS = {'commander-x16': 'Commander X16 butterfly', 'otter-x': 'OtterX X', 'roddy-x': 'RODDY flight X', 'roddy-r': 'RODDY R + dot'}
 ARROWS = {'small-black': 'Small black arrows', 'bold-white': 'Bold white arrows'}
 FIELDS = {'profileId', 'revision', 'alpha', 'modifiers', 'accents', 'mark', 'arrows'}

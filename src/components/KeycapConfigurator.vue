@@ -1,6 +1,6 @@
 <script setup>
 import {computed,ref,watch} from 'vue';
-import {ARROWS,MARKS,KEYCAP_TEMPLATES,DEFAULT_COLORS,defaultDesign,designError,generateDesign,downloadJson} from '../keycaps';
+import {ARROWS,MARKS,KEYCAP_PREVIEWS,DEFAULT_COLORS,defaultDesign,designError,generatePreview} from '../keycaps';
 import KeycapPreview from './KeycapPreview.vue';
 const props=defineProps({profile:Object,profiles:Array,products:Array});
 const emit=defineEmits(['change','save']);
@@ -8,8 +8,8 @@ const selection=ref(null);
 watch(()=>props.profile,p=>{selection.value=p?defaultDesign(p):null;},{immediate:true});
 watch(selection,d=>emit('change',d?{...d}:null),{deep:true,immediate:true});
 const error=computed(()=>designError(selection.value,props.profile));
-const design=computed(()=>error.value?null:generateDesign(props.profile,selection.value));
-const template=computed(()=>KEYCAP_TEMPLATES[props.profile?.templateId]);
+const design=computed(()=>error.value?null:generatePreview(props.profile,selection.value));
+const template=computed(()=>KEYCAP_PREVIEWS[props.profile?.templateId]);
 const colorFields=[['alpha','Main keys'],['modifiers','Modifiers'],['accents','Accent keys']];
 const presets=[{name:'V6 original',...DEFAULT_COLORS},{name:'Night flight',alpha:'#DCE4ED',modifiers:'#242A36',accents:'#C32D28'},{name:'Terminal',alpha:'#CFDBCD',modifiers:'#303E36',accents:'#83B697'},{name:'Signal',alpha:'#F5EEDB',modifiers:'#454251',accents:'#E6B24C'}];
 const siblings=computed(()=>props.products?.filter(p=>p.active&&p.keycaps&&p.keycaps.profileId!==props.profile?.id)||[]);
@@ -26,12 +26,12 @@ function preset(p){for(const [k] of colorFields)selection.value[k]=p[k];}
           <fieldset><legend>01 / Set the palette</legend><div class="preset-list"><button v-for="p in presets" :key="p.name" type="button" @click="preset(p)"><span class="preset-swatches"><i :style="{background:p.alpha}" /><i :style="{background:p.modifiers}" /><i :style="{background:p.accents}" /></span>{{p.name}}</button></div>
             <label v-for="[id,label] in colorFields" :key="id" class="color-choice"><span>{{label}}<small>{{selection[id]}}</small></span><input v-model="selection[id]" type="color" :aria-label="label" @input="selection[id]=selection[id].toUpperCase()" /></label>
           </fieldset>
-          <fieldset><legend>02 / Choose your Commander key</legend><div class="symbol-list"><button v-for="id in profile.marks || Object.keys(MARKS)" :key="id" :aria-pressed="selection.mark===id" @click="selection.mark=id"><svg viewBox="0 0 1250 1000" aria-hidden="true"><rect width="1250" height="1000" rx="90" :fill="selection.accents" /><path v-for="l in template.marks[id]" :key="l.id" :d="l.vectDef" :fill="l.colorId" /></svg><span>{{MARKS[id]}}</span></button></div></fieldset>
+          <fieldset><legend>02 / Choose your Commander key</legend><div class="symbol-list"><button v-for="id in profile.marks || Object.keys(MARKS)" :key="id" :aria-pressed="selection.mark===id" @click="selection.mark=id"><svg viewBox="0 0 1250 1000" aria-hidden="true"><rect width="1250" height="1000" rx="90" :fill="selection.accents" /><path v-for="l in template.marks[id]" :key="l.path" :d="l.path" :fill="l.fill" /></svg><span>{{MARKS[id]}}</span></button></div></fieldset>
           <fieldset><legend>03 / Pick your arrows</legend><div class="arrow-list"><button v-for="id in profile.arrows || Object.keys(ARROWS)" :key="id" :aria-pressed="selection.arrows===id" @click="selection.arrows=id"><span :class="id" aria-hidden="true">↑</span>{{ARROWS[id]}}</button></div></fieldset>
-          <div class="studio-actions"><button class="button primary" :disabled="!!error" @click="$emit('save')">Save design to cart +</button><button class="text-button" :disabled="!!error" @click="downloadJson(design,profile.id+'-yuzu.json')">Download design JSON ↓</button><button class="text-button" @click="selection=defaultDesign(profile)">Reset to profile defaults</button></div>
+          <div class="studio-actions"><button class="button primary" :disabled="!!error" @click="$emit('save')">Save design to cart +</button><button class="text-button" @click="selection=defaultDesign(profile)">Reset to profile defaults</button></div>
           <p v-if="error" role="alert" class="notice">{{error}}</p>
         </div>
-        <div class="studio-proof"><div class="preview-scroll"><KeycapPreview v-if="design" :design="design" /></div><p class="proof-caption">LIVE DESIGN PREVIEW · {{template.base.layoutKeys.length}} KEYS · {{template.base.keycapProfileId.toUpperCase()}} PROFILE</p><p>{{template.compatibility}}</p><p class="proof-note">Colors are a screen preview. Number-row swatches and PETSCII artwork stay fixed. Check the final manufacturing proof before production.</p><p v-if="selection.arrows==='small-black'" class="proof-note">Small arrows and the Commander symbol use dark ink. Choose an accent color with enough contrast.</p><p class="studio-process">Choose a design → pay when ordering opens → RODDY reviews and submits your set to the maker. Keyboard sold separately.</p></div>
+        <div class="studio-proof"><div class="preview-scroll"><KeycapPreview v-if="design" :design="design" /></div><p class="proof-caption">LIVE DESIGN PREVIEW · {{template.keys.length}} KEYS · {{template.profileName.toUpperCase()}} PROFILE</p><p>{{template.compatibility}}</p><p class="proof-note">Colors are a screen preview. Number-row swatches and PETSCII artwork stay fixed. Check the final manufacturing proof before production.</p><p v-if="selection.arrows==='small-black'" class="proof-note">Small arrows and the Commander symbol use dark ink. Choose an accent color with enough contrast.</p><p class="studio-process">Choose a design → pay when ordering opens → RODDY reviews and submits your set to the maker. Keyboard sold separately.</p></div>
       </div>
       <nav v-if="siblings.length" class="profile-links" aria-label="Other keyboard sets"><strong>Explore other keyboard profiles</strong><RouterLink v-for="p in siblings" :key="p.id" :to="'/product/'+p.id">{{p.name}} ↗</RouterLink></nav>
     </template>

@@ -69,15 +69,20 @@ No deletions or automatic maker submissions are performed.
 
 Only the validated ANSI 87-key Cherry template ships initially. A profile name
 cannot change key sizes, stems or row sculpt. To support a genuinely different
-keyboard, add a reviewed recipe to `backend/keycap_templates/<template-id>.json`
-and import it into `KEYCAP_TEMPLATES` in `src/keycaps.js`. It contains:
+keyboard, install its reviewed manufacturing recipe privately at
+`/var/lib/roddy-store/keycap-templates/<template-id>.json` (or
+`KEYCAP_TEMPLATES_DIR`), owned by `roddystore`, with directory mode 700 and file
+mode 600. Do not commit manufacturing recipes to this public repository. Register
+separate display geometry in `src/keycap-previews/` and `KEYCAP_PREVIEWS` in
+`src/keycaps.js`. Display assets contain colors and drawing paths, without Yuzu
+layout/template mappings or an export function. The private recipe contains:
 
 - `base`: an actual Yuzu export with layout, sizes, rows, homing keys, templates
   and embedded printable vector layers; never remote font/vector dependencies.
 - `meta`: every layout key mapped to source key, `alpha`/`modifiers`/`accents` color
   group and the actual supplier printable mask.
 - `marks`: each supported Commander replacement, already transformed into the
-  correct key canvas coordinates; the UI and server use the same paths.
+  correct key canvas coordinates; the preview uses separate display shapes.
 - `arrows`: bold white replacements indexed by the four arrow key IDs.
 - `id`, `revision`, `name`, `compatibility` and source checksum.
 
@@ -88,8 +93,9 @@ dark; colored swatches stay fixed. If a new recipe uses these values for fixed a
 extend the layer semantic metadata/generator rather than recoloring that art.
 
 The initial source is `x16-keycaps/brand/v06/yuzu/RODDY_X16_v06_Yuzu.json`,
-previously round-tripped through Yuzu. Default key colors and every vector layer
-are tested against that frozen base. The recipe includes exact Commander-key v6
+previously round-tripped through Yuzu. The original private recipe and its v6 colors/vector layers remain unchanged.
+Frontend checks verify preview choices; backend CI uses synthetic geometry so
+production manufacturing files never enter public test artifacts. The recipe includes exact Commander-key v6
 artwork, the published OtterX PCB X, original RODDY flight X and borderless R+dot.
 OtterX source: Joseph Burks / RetroRemake, revision
 `6a03c72046c8cc3bded9b9b60a628c666e390733`,
@@ -113,3 +119,7 @@ All admin endpoints require the existing verified GitHub-owner bearer token.
 Run `npm test`, `npm run test:backend` and `npm run build`. Never run tests against
 the production database. Product checkout remains gated by its availability,
 final price, physical-checkout configuration and destination shipping rate.
+
+Customer JSON export is disabled. Manufacturing packet downloads require owner
+authentication and a paid keycap order. The public preview necessarily displays
+the artwork, and older published assets/repository revisions cannot be recalled.
