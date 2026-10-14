@@ -10,7 +10,7 @@
 const CATALOG_OWNER = "lionsarmor";
 const CATALOG_REPO = "RODDY-STORE-FRONT";
 const CATALOG_BRANCH = "main";
-const CATALOG_RAW_BASE = `https://raw.githubusercontent.com/${CATALOG_OWNER}/${CATALOG_REPO}/${CATALOG_BRANCH}/public/`;
+const CATALOG_RAW_BASE = `https://raw.githubusercontent.com/${CATALOG_OWNER}/${CATALOG_REPO}/refs/heads/${CATALOG_BRANCH}/public/`;
 
 export const CATALOG_URL = `${CATALOG_RAW_BASE}data/products.json`;
 

@@ -34,6 +34,8 @@ const shipping = computed(() =>
   physical.value ? estimateShipping(items.value, destination.value) : 0,
 );
 function itemError(item) {
+  if (item.product.type === 'physical' && item.product.shippingCountries?.length && !item.product.shippingCountries.includes(destination.value)) return 'This item does not ship to the selected country. Choose another destination or remove it.';
+  if (["soon", "out"].includes(stockState(item.product)) || item.product.pricePending) return 'This item is not available to buy.';
   if (item.product.keycaps) {
     const error = designError(item.design, profileFor(catalog, item.product));
     if (error) return error;

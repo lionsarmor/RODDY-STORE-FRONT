@@ -1,5 +1,10 @@
 <script setup>
 const props = defineProps({product: Object});
+function destination(country, enabled) {
+  const countries = new Set(props.product.shippingCountries || ['US','CA']);
+  if (enabled) countries.add(country); else countries.delete(country);
+  props.product.shippingCountries = [...countries];
+}
 function toggle(country, enabled) {
   props.product.officeShipping ||= {};
   if (enabled) props.product.officeShipping[country] = {firstItem: 0, additionalItem: 0};
@@ -8,6 +13,12 @@ function toggle(country, enabled) {
 </script>
 <template>
   <section>
+    <template v-if="product.supplier?.provider === 'aliexpress' && product.supplier.fulfillment === 'manual'">
+      <h3>Shipping destinations</h3>
+      <p class="help-copy">Offer only countries verified for this exact listing, seller and variant. Shipping is quoted live before payment; you place the paid order manually from Orders.</p>
+      <label v-for="country in ['US','CA']" :key="country" class="check"><input type="checkbox" :checked="(product.shippingCountries || ['US','CA']).includes(country)" @change="destination(country,$event.target.checked)" />{{country === 'US' ? 'United States' : 'Canada'}}</label>
+    </template>
+    <template v-else>
     <h3>Ships from your office</h3>
     <p class="help-copy">Enable each destination only when its rates are ready. Rates are in USD and charged per product: first item plus each additional item. Different office products' shipping charges add together. Leave a country off to prevent orders to that destination.</p>
     <div v-for="country in ['US','CA']" :key="country" class="mb-6">
@@ -18,5 +29,6 @@ function toggle(country, enabled) {
       </div>
     </div>
     <p class="help-copy">Publish shipping changes with the catalog. Use Orders → Office inventory to set actual on-hand stock; the backend reserves it during checkout and deducts it after confirmed payment. Set availability to “Available” only when the product is ready to ship.</p>
+    </template>
   </section>
 </template>

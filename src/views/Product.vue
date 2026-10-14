@@ -304,6 +304,7 @@ async function buyNow() {
                 : stockLabel(product)
           }}
         </p>
+        <p v-if="product.type === 'physical' && product.shippingCountries?.length" class="release-note">Ships to {{ product.shippingCountries.map(c => c === 'US' ? 'the United States' : c === 'CA' ? 'Canada' : c).join(' and ') }}.</p>
         <div v-if="purchasable" class="purchase-actions">
           <a
             v-if="freeDownload"

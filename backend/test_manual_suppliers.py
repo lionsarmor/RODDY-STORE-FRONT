@@ -77,3 +77,13 @@ class ManualSupplierOrderTests(unittest.TestCase):
         q=self.quote();self.assertEqual(q.status_code,200,q.text);result=self.checkout(q.json()).json();self.provider.is_paid=True;self.tick()
         self.assertEqual(self.app.state.commerce.fulfillments(result['sessionId'])[0]['kind'],'mouser')
         self.assertEqual(self.app.state.commerce.fulfillments(result['sessionId'])[0]['state'],'ready-to-order')
+
+    def test_destination_limits_reject_unsupported_checkout_before_payment(self):
+        self.product['shippingCountries']=['US']
+        ca={**base.ADDRESS,'country':'CA','region':'ON','zip':'M5V3L9'}
+        self.assertEqual(self.quote(address=ca).status_code,409)
+        self.assertEqual(self.quotes.calls,0)
+        q=self.quote();self.assertEqual(q.status_code,200,q.text)
+        self.product['shippingCountries']=['CA']
+        result=self.checkout(q.json());self.assertEqual(result.status_code,409)
+        self.assertEqual(self.provider.created,[])

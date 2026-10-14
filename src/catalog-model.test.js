@@ -17,6 +17,15 @@ test("published catalog is valid without requiring obsolete starter content", ()
   // should not break the build's tests against an old six-product seed.
   assert.equal(c.products.length, data.products.length);
 });
+test('available products need final pricing and supported shipping destinations',()=>{
+  const c=normalizeCatalog(structuredClone(data)),p=c.products.find(p=>p.active && p.status==='available');
+  p.pricePending=true;assert.ok(validateCatalog(c).some(e=>e.includes('final price')));
+  p.status='coming-soon';assert.ok(!validateCatalog(c).some(e=>e.includes('final price')));
+  p.shippingCountries=['US','CA'];assert.ok(!validateCatalog(c).some(e=>e.includes('shipping destinations')));
+  for(const countries of [[],['GB'],['US','US'],'US']){
+    p.shippingCountries=countries;assert.ok(validateCatalog(c).some(e=>e.includes('shipping destinations')));
+  }
+});
 test("legacy images migrate and explicit cover stays separate from the gallery", () => {
   assert.deepEqual(normalizeProduct({ image: "old.jpg" }).images, ["old.jpg"]);
   const p = normalizeProduct({
