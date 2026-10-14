@@ -10,7 +10,7 @@ const emit=defineEmits(['select-key']);
       <title>{{key.name || key.label}}</title>
       <rect x="32" y="32" :width="key.width" height="936" rx="95" :fill="key.color" :stroke="selectedKeys.includes(key.id)?'#F06434':'#00000055'" :stroke-width="selectedKeys.includes(key.id)?65:24" />
       <path v-for="(shape,i) in key.shapes" :key="i" :d="shape.path" :fill="shape.fill" />
-      <circle v-if="key.custom" :cx="key.width-48" cy="866" r="28" fill="#F06434" stroke="#181c24" stroke-width="12" aria-hidden="true"/>
+      <circle v-if="interactive&&key.custom" :cx="key.width-48" cy="866" r="28" fill="#F06434" stroke="#181c24" stroke-width="12" aria-hidden="true"/>
     </g>
   </svg>
 </template>
