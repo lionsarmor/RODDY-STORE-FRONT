@@ -2910,7 +2910,9 @@
         "img/products/mister/mister-sdram-128mb-purple-preview-v2.png"
       ],
       "coverImage": "img/products/mister/mister-sdram-128mb-purple-preview-v2.png",
-      "tags": [],
+      "tags": [
+        "new-tag-5"
+      ],
       "specs": {
         "Memory": "128MB SDRAM",
         "Board revision": "XS-DS v3.0",
@@ -2928,7 +2930,8 @@
       "githubUrl": "https://github.com/MiSTer-devel/Hardware_MiSTer/tree/420f4103eaa1d5a1e9a72f50949120687c043754",
       "fulfillment": "pending",
       "keycaps": null,
-      "merch": null
+      "merch": null,
+      "fulfillmentRef": ""
     },
     {
       "id": "mister-usb-hub",
@@ -2949,7 +2952,9 @@
         "img/products/mister/mister-usb-hub-purple-preview-v2.png"
       ],
       "coverImage": "img/products/mister/mister-usb-hub-purple-preview-v2.png",
-      "tags": [],
+      "tags": [
+        "new-tag-5"
+      ],
       "specs": {
         "Data ports": "7 USB ports",
         "Board revision": "v2.1",
@@ -2967,7 +2972,8 @@
       "githubUrl": "https://github.com/MiSTer-devel/Hardware_MiSTer/tree/83193975fbaad953546d5e8d4a07a034f329ac32",
       "fulfillment": "pending",
       "keycaps": null,
-      "merch": null
+      "merch": null,
+      "fulfillmentRef": ""
     },
     {
       "id": "mister-analog-io",
@@ -2988,7 +2994,9 @@
         "img/products/mister/mister-analog-io-purple-preview-v2.png"
       ],
       "coverImage": "img/products/mister/mister-analog-io-purple-preview-v2.png",
-      "tags": [],
+      "tags": [
+        "new-tag-5"
+      ],
       "specs": {
         "Board revision": "Analog I/O v6.1",
         "Video connection": "VGA",
@@ -3006,7 +3014,8 @@
       "githubUrl": "https://github.com/MiSTer-devel/Hardware_MiSTer/tree/499b4ac6eedeeeeb69fe85b2595360c1eb0174a1",
       "fulfillment": "pending",
       "keycaps": null,
-      "merch": null
+      "merch": null,
+      "fulfillmentRef": ""
     },
     {
       "id": "mister-rtc",
@@ -3027,7 +3036,9 @@
         "img/products/mister/mister-rtc-purple-preview-v2.png"
       ],
       "coverImage": "img/products/mister/mister-rtc-purple-preview-v2.png",
-      "tags": [],
+      "tags": [
+        "new-tag-5"
+      ],
       "specs": {
         "Board revision": "v1.4",
         "Platform": "DE10-Nano MiSTer",
@@ -3044,7 +3055,8 @@
       "githubUrl": "https://github.com/MiSTer-devel/Hardware_MiSTer/tree/d310b108119d5e37f1969c9b0370c17d5517b0ed",
       "fulfillment": "pending",
       "keycaps": null,
-      "merch": null
+      "merch": null,
+      "fulfillmentRef": ""
     },
     {
       "id": "mister-usb-bridge",
@@ -3065,7 +3077,9 @@
         "img/products/mister/mister-usb-bridge-purple-preview-v2.png"
       ],
       "coverImage": "img/products/mister/mister-usb-bridge-purple-preview-v2.png",
-      "tags": [],
+      "tags": [
+        "new-tag-5"
+      ],
       "specs": {
         "Board revision": "v1.0",
         "Platform": "DE10-Nano MiSTer",
@@ -3082,7 +3096,8 @@
       "githubUrl": "https://github.com/MiSTer-devel/Hardware_MiSTer/tree/44047299354326ee638e150cc9b998118b2326cf",
       "fulfillment": "pending",
       "keycaps": null,
-      "merch": null
+      "merch": null,
+      "fulfillmentRef": ""
     },
     {
       "id": "mister-classic-case",
@@ -3101,7 +3116,9 @@
       "shortDescription": "A black metal enclosure for the classic DE10-Nano stack.",
       "images": [],
       "coverImage": "",
-      "tags": [],
+      "tags": [
+        "new-tag-5"
+      ],
       "specs": {
         "Color": "Black",
         "Material": "Metal",
