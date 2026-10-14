@@ -1,0 +1,135 @@
+{
+  "revision": "v06.11-audit22",
+  "auditRevision": 22,
+  "auditSha256": "31c9bbe043178e76f480212fa042fe52f5b479f6550ffe2aa24f0e861a1035a5",
+  "swatches": [
+    {
+      "keyId": "1",
+      "position": "left",
+      "label": "BLACK",
+      "referenceHex": "#000000",
+      "paletteId": "GR001",
+      "hex": "#262626"
+    },
+    {
+      "keyId": "1",
+      "position": "right",
+      "label": "ORANGE",
+      "referenceHex": "#8B5429",
+      "paletteId": "OG010",
+      "hex": "#CA8455"
+    },
+    {
+      "keyId": "2",
+      "position": "left",
+      "label": "WHITE",
+      "referenceHex": "#FFFFFF",
+      "paletteId": "GR002",
+      "hex": "#FAF7F0"
+    },
+    {
+      "keyId": "2",
+      "position": "right",
+      "label": "BROWN",
+      "referenceHex": "#574200",
+      "paletteId": "BN046",
+      "hex": "#8C6954"
+    },
+    {
+      "keyId": "3",
+      "position": "left",
+      "label": "RED",
+      "referenceHex": "#883932",
+      "paletteId": "RD004",
+      "hex": "#C8393A"
+    },
+    {
+      "keyId": "3",
+      "position": "right",
+      "label": "LIGHT RED",
+      "referenceHex": "#B86962",
+      "paletteId": "PK020",
+      "hex": "#C46373"
+    },
+    {
+      "keyId": "4",
+      "position": "left",
+      "label": "CYAN",
+      "referenceHex": "#67B6BD",
+      "paletteId": "BL017",
+      "hex": "#68A8BC"
+    },
+    {
+      "keyId": "4",
+      "position": "right",
+      "label": "GRAY 1",
+      "referenceHex": "#505050",
+      "paletteId": "GR009",
+      "hex": "#4F5355"
+    },
+    {
+      "keyId": "5",
+      "position": "left",
+      "label": "PURPLE",
+      "referenceHex": "#8B3F96",
+      "paletteId": "PL002",
+      "hex": "#7B4080"
+    },
+    {
+      "keyId": "5",
+      "position": "right",
+      "label": "GRAY 2",
+      "referenceHex": "#787878",
+      "paletteId": "GR022",
+      "hex": "#737071"
+    },
+    {
+      "keyId": "6",
+      "position": "left",
+      "label": "GREEN",
+      "referenceHex": "#55A049",
+      "paletteId": "GN023",
+      "hex": "#4B9E61"
+    },
+    {
+      "keyId": "6",
+      "position": "right",
+      "label": "LIGHT GREEN",
+      "referenceHex": "#94E089",
+      "paletteId": "GN027",
+      "hex": "#A2D583"
+    },
+    {
+      "keyId": "7",
+      "position": "left",
+      "label": "BLUE",
+      "referenceHex": "#40318D",
+      "paletteId": "BL026",
+      "hex": "#2E4783"
+    },
+    {
+      "keyId": "7",
+      "position": "right",
+      "label": "LIGHT BLUE",
+      "referenceHex": "#7869C4",
+      "paletteId": "PL031",
+      "hex": "#767BCA"
+    },
+    {
+      "keyId": "8",
+      "position": "left",
+      "label": "YELLOW",
+      "referenceHex": "#BFCE72",
+      "paletteId": "GN043",
+      "hex": "#CCC765"
+    },
+    {
+      "keyId": "8",
+      "position": "right",
+      "label": "GRAY 3",
+      "referenceHex": "#9F9F9F",
+      "paletteId": "GR019",
+      "hex": "#A79F9A"
+    }
+  ]
+}

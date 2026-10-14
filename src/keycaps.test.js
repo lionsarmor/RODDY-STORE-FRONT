@@ -9,9 +9,27 @@ import {cartLineKey} from './merch.js';
 import {reactive} from 'vue';
 import {PALETTE,colorHex,legendColorId} from './keycap-palette.js';
 const catalog=normalizeCatalog(JSON.parse(readFileSync(new URL('../public/data/products.json',import.meta.url))));
-const profile=catalog.keycapProfiles[0];const template=KEYCAP_PREVIEWS[profile.templateId];
-test('both profiles offer a genuinely blank Commander key and a stock-color X16 rainbow',()=>{
-  for(const p of catalog.keycapProfiles){
+// Exercise supported artwork independently of the owner's live visibility toggles.
+const profile={...catalog.keycapProfiles[0],marks:Object.keys(MARKS)};const template=KEYCAP_PREVIEWS[profile.templateId];
+test('X16 number-row swatches match the approved color audit in every preview',()=>{
+  const audit=JSON.parse(readFileSync(new URL('./keycap-artwork/x16-number-row-colors.json',import.meta.url)));
+  assert.equal(profile.revision,audit.revision);assert.equal(template.revision,audit.revision);
+  assert.equal(audit.swatches.length,16);
+  const expected={'1':['GR001','OG010'],'2':['GR002','BN046'],'3':['RD004','PK020'],'4':['BL017','GR009'],
+    '5':['PL002','GR022'],'6':['GN023','GN027'],'7':['BL026','PL031'],'8':['GN043','GR019']};
+  for(const design of [defaultDesign(profile),{...defaultDesign(profile),alpha:'GR001',keyColors:{'3':'BL003'}}]){
+    const preview=generatePreview(profile,design);
+    for(const swatch of audit.swatches){
+      const side=swatch.position==='left'?0:1,shape=preview.keys.find(k=>k.id===swatch.keyId).shapes[side+1];
+      assert.equal(swatch.paletteId,expected[swatch.keyId][side]);
+      assert.equal(shape.paletteId,swatch.paletteId);assert.equal(shape.fill,swatch.hex);
+      assert.equal(shape.fill,colorHex(swatch.paletteId));
+    }
+  }
+});
+test('both profiles support a genuinely blank Commander key and a stock-color X16 rainbow',()=>{
+  for(const saved of catalog.keycapProfiles){
+    const p={...saved,marks:Object.keys(MARKS)};
     const base=defaultDesign(p),blank={...base,mark:'blank'},rainbow={...base,mark:'commander-x16-rainbow'};
     assert.ok(availableMarks(p).includes(blank.mark));assert.ok(availableMarks(p).includes(rainbow.mark));
     const original=generatePreview(p,base),clear=generatePreview(p,blank),colored=generatePreview(p,rainbow);
@@ -103,7 +121,7 @@ test('all four arrow choices preserve their size and use the selected stock ink'
     }
   }
   assert.equal(JSON.stringify(template),before);
-  assert.equal(template.keys.find(k=>k.id==='2').shapes[2].paletteId,'GN037');
+  assert.equal(template.keys.find(k=>k.id==='2').shapes[2].paletteId,'BN046');
   assert.equal(template.keys.find(k=>k.id==='7').shapes[1].paletteId,'BL026');
 });
 test('profiles and revisions reject stale designs and invalid publishing settings',()=>{
