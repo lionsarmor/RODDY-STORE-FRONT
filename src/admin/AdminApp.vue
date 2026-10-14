@@ -64,6 +64,7 @@ const form = reactive({
 });
 const connected = ref(false);
 const ordersRefresh = ref(0);
+const orderInbox = ref(0);
 const showConnection = ref(false);
 const catalog = ref(null);
 const sha = ref(null);
@@ -599,7 +600,7 @@ function syncPrintify(source, targetId) {
             >{{ t.label
             }}<span v-if="t.id === 'products'" class="nav-count">{{
               catalog?.products.length || 0
-            }}</span>
+            }}</span><span v-if="t.id === 'orders' && connected && orderInbox" class="nav-count">{{orderInbox}}</span>
           </button>
         </nav>
         <div class="sidebar-bottom">
@@ -736,7 +737,7 @@ function syncPrintify(source, targetId) {
             <li v-for="issue in issues" :key="issue">{{ issue }}</li>
           </ul>
         </details>
-        <SaleNotifications v-if="catalog" :endpoint="catalog.settings.checkoutEndpoint" :token="form.token" :connected="connected" @open-orders="tab='orders'" @new-sale="ordersRefresh++" />
+        <SaleNotifications v-if="catalog" :visible="tab==='orders'" :endpoint="catalog.settings.checkoutEndpoint" :token="form.token" :connected="connected" @open-orders="tab='orders'" @new-sale="ordersRefresh++" @queue-update="orderInbox=$event" />
         <fieldset v-if="catalog" :disabled="saving || !!mergeReview" class="admin-workspace">
           <template v-if="tab === 'overview'">
             <div class="admin-welcome">

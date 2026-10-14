@@ -1,5 +1,6 @@
 from pathlib import Path
 import json,html
+from twin_ribbon import SHAPES
 PROJECT=Path(__file__).resolve().parents[1]
 ROOT=PROJECT/'src/keycap-artwork/retro-x'
 ROOT.mkdir(parents=True,exist_ok=True)
@@ -54,10 +55,8 @@ red=[{'path':path(red_outer),'fill':'#D92332'},
 # Eight fully outlined horizontal bars, with broad slab terminals.
 mainframe=[[3,4],[26,4],[26,10],[22,10],[32,24],[42,10],[38,10],[38,4],[61,4],[61,10],[56,10],[40,31],[57,52],[61,52],[61,58],[38,58],[38,52],[43,52],[32,38],[21,52],[26,52],[26,58],[3,58],[3,52],[7,52],[24,31],[8,10],[3,10]]
 striped=[{'path':''.join(path(band(mainframe,4+i*7,8.4+i*7)) for i in range(8)),'fill':'#244D96'}]
-# Opposed red and blue ribbons; the opposing colors weave across the waist.
-pb=[{'path':'M5 5H22L40 32L22 59H5L23 32Z','fill':'#244C94'},
-    {'path':'M59 5H42L24 32L42 59H59L41 32Z','fill':'#D82C3D'},
-    {'path':path([[24,32],[29.3,24],[40,32],[34.7,40]]),'fill':'#244C94'}]
+# Two continuous ribbons, with a small underfold at their single crossing.
+pb=[{k:s[k] for k in ['path','fill']} for s in SHAPES]
 marks={
  'rainbow-x':{'label':'Rainbow X','inspiration':'Macintosh inspired','shapes':smooth},
  'pixel-rainbow-x':{'label':'Pixel rainbow X','inspiration':'Macintosh inspired · pixel variant','shapes':pixel},
@@ -65,7 +64,10 @@ marks={
  'ibm-x':{'label':'Mainframe X','inspiration':'IBM inspired · eight bars','shapes':striped},
  'packard-bell-x':{'label':'Twin ribbon X','inspiration':'Packard Bell inspired','shapes':pb},
 }
-(PROJECT/'src/keycap-artwork/retro-x-marks.json').write_text(json.dumps(marks,indent=2)+'\n')
+source=PROJECT/'src/keycap-artwork/retro-x-marks.json'
+existing=json.loads(source.read_text()) if source.exists() else {}
+existing.update(marks)
+source.write_text(json.dumps(existing,indent=2,ensure_ascii=False)+'\n')
 for ident,m in marks.items():
  art=''.join(f'<path d="{s["path"]}" fill="{s["fill"]}"/>' for s in m['shapes'])
  (ROOT/(ident+'.svg')).write_text(f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><title>RODDY {html.escape(m["label"])} — {html.escape(m["inspiration"])}</title>{art}</svg>\n')

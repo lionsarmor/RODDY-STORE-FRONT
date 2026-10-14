@@ -64,6 +64,13 @@ class KeycapOrderTests(unittest.TestCase):
         self.profile['name'] = 'Changed later'
         self.assertEqual(frozen['profile']['name'],'X16 compatible')
 
+    def test_updated_artwork_requires_matching_catalog_revision_before_checkout(self):
+        self.template['catalogRevision']='new-artwork'
+        (self.templates/'x16-v06-cherry-tkl.json').write_text(json.dumps(self.template))
+        self.assertEqual(self.quote().status_code,409)
+        self.profile['revision']='new-artwork';self.items[0]['design']['revision']='new-artwork'
+        self.assertEqual(self.quote().status_code,200)
+
     def test_blank_commander_survives_paid_order_packet_and_later_catalog_changes(self):
         self.items[0]['design']['mark']='blank'
         self.items[0]['design']['keyColors']={'commander':'RD003'}

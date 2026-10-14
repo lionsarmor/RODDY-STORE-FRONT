@@ -425,6 +425,7 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
                          "address":json.loads(row["address"]) if row["address"] else None,
                          "items":[{"id":i["id"],"name":i["name"],"qty":i.get("qty",1),"kind":i.get("kind","digital"),"label":i.get("label",""),"unitPrice":i["cents"],**({"supplier":i["supplier"],"procurement":i["procurement"]} if i.get("kind") in {"aliexpress","mouser"} else {})} for i in json.loads(row["items"])],
                          "expenses":commerce.records.expenses(row['session']),
+                         "messages":commerce.records.messages(row['session']),"messageContext":commerce.records.message_context(row),
                          "orderPacket":order_packets.info(row["session"]),"fulfillments":commerce.fulfillments(row["session"])})
         return {"data":data,**page,"summary":commerce.records.dashboard(start,end,search)}
 
@@ -470,6 +471,11 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
         else:raise HTTPException(400,'Choose download, ordered or pending.')
         return {'saved':True}
 
+    @app.post('/admin/orders/{reference}/messages')
+    def customer_message(reference: str, request: Request, body: dict):
+        require_admin(request)
+        return commerce.records.record_message(reference,body)
+
     @app.post("/admin/orders/{reference}/expenses")
     def supplier_expense(reference: str, request: Request, body: dict):
         require_admin(request)
@@ -483,8 +489,9 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
         with connect() as db:
             latest = db.execute("SELECT COALESCE(MAX(id),0) FROM sale_events").fetchone()[0]
             pending = db.execute("SELECT COUNT(*) FROM fulfillments f JOIN orders o ON o.session=f.session WHERE o.paid=1 AND f.kind='keycaps' AND f.state='awaiting-submission'").fetchone()[0]
+            pending_orders = db.execute("SELECT COUNT(*) FROM orders o WHERE o.paid=1 AND EXISTS(SELECT 1 FROM fulfillments f WHERE f.session=o.session AND f.state IN ('awaiting-submission','ready-to-order','ready-to-ship'))").fetchone()[0]
             rows = db.execute("SELECT e.id event_id,e.confirmed,o.* FROM sale_events e JOIN orders o ON o.session=e.session WHERE e.id>? AND o.paid=1 ORDER BY e.id LIMIT 20", (after,)).fetchall() if after is not None else []
-        return {"cursor": rows[-1]["event_id"] if rows else latest, "pendingKeycaps": pending,
+        return {"cursor": rows[-1]["event_id"] if rows else latest, "pendingKeycaps": pending,"pendingOrders":pending_orders,
                 "sales": [{"eventId": row["event_id"], "id": row["request_id"], "amountCents": row["amount"], "confirmed": row["confirmed"],
                            "items": [{"name":i["name"],"qty":i.get("qty",1)} for i in json.loads(row["items"])]} for row in rows]}
 

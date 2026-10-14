@@ -79,6 +79,8 @@ def snapshot(catalog, product, raw):
         template = json.loads(template_bytes)
     except (OSError, ValueError):
         raise HTTPException(409, 'This keyboard template is unavailable.') from None
+    if template.get('catalogRevision',profile['revision']) != profile['revision']:
+        raise HTTPException(409,'This keyboard artwork changed. Refresh the product page and review your design.')
     if template.get('paletteVersion') != PALETTE_DOCUMENT['version']:
         raise HTTPException(409, 'This keyboard template needs its palette update.')
     if selection['numberRow'] not in template.get('numberRows', ['swatches','text'] if template.get('numberRowText') else ['plain']):

@@ -2885,7 +2885,7 @@
     {
       "id": "x16-compatible",
       "name": "X16 compatible",
-      "revision": "v06.7-even-labels",
+      "revision": "v06.10-twin-ribbon",
       "templateId": "x16-v06-cherry-tkl",
       "description": "Choose your colors and symbols. Make your keyboard yours.",
       "marks": [
@@ -2923,7 +2923,7 @@
     {
       "id": "standard-ansi87",
       "name": "Standard ANSI 87",
-      "revision": "standard-v1",
+      "revision": "standard-v1.2-twin-ribbon",
       "templateId": "standard-cherry-tkl",
       "description": "Classic legends, custom colors. Build your everyday keyboard.",
       "marks": [

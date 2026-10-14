@@ -45,6 +45,12 @@ class OrderRecords:
               amount INTEGER NOT NULL, currency TEXT NOT NULL, note TEXT NOT NULL
             );
             CREATE INDEX IF NOT EXISTS order_created ON orders(created DESC,request_id DESC);
+            CREATE TABLE IF NOT EXISTS order_messages (
+              id TEXT PRIMARY KEY, session TEXT NOT NULL REFERENCES orders(session),
+              created INTEGER NOT NULL, recipient TEXT NOT NULL, subject TEXT NOT NULL,
+              body TEXT NOT NULL, context TEXT NOT NULL, digest TEXT NOT NULL,
+              UNIQUE(session,digest)
+            );
             ''')
 
     def record(self, order, report):
@@ -148,6 +154,48 @@ class OrderRecords:
 
     def expenses(self, session):
         with self.connect() as db:return [dict(r) for r in db.execute('SELECT id,incurred,supplier,reference,amount,currency,note FROM supplier_expenses WHERE session=? ORDER BY created',(session,))]
+
+    def message_context(self, order):
+        # Bind an owner's sent confirmation to the customer-facing shipment data.
+        # Supplier references, costs and manufacturing files never enter emails.
+        with self.connect() as db:
+            rows=db.execute('SELECT kind,state,shipments FROM fulfillments WHERE session=? ORDER BY kind',(order['session'],)).fetchall()
+        items=json.loads(order['items'])
+        value={'address':json.loads(order['address']) if order['address'] else None,
+               'items':[{k:i.get(k) for k in ['name','qty','kind']} for i in items],
+               'fulfillments':[{'kind':row['kind'],'dispatched':row['state'] in ['shipped','delivered','canceled'],
+                                'shipments':[{k:s.get(k,'') for k in ['carrier','number','url']} for s in json.loads(row['shipments'])]} for row in rows]}
+        return hashlib.sha256(json.dumps(value,sort_keys=True,separators=(',',':')).encode()).hexdigest()
+
+    def messages(self, session):
+        with self.connect() as db:
+            return [dict(row) for row in db.execute('SELECT id,created,recipient,subject,body,context FROM order_messages WHERE session=? ORDER BY created DESC,id DESC',(session,))]
+
+    def record_message(self, reference, body):
+        if body.get('confirmedSent') is not True:
+            raise HTTPException(400,'Mark this only after you have sent the message from your email account.')
+        subject,content=body.get('subject'),body.get('body')
+        if (not isinstance(subject,str) or not subject.strip() or len(subject)>200 or any(ord(c)<32 for c in subject)
+                or not isinstance(content,str) or not content.strip() or len(content)>20000
+                or any(ord(c)<32 and c not in '\n\r\t' for c in content)):
+            raise HTTPException(400,'Enter a subject and message within the displayed limits.')
+        with self.connect() as db:
+            db.execute('BEGIN IMMEDIATE')
+            row=db.execute('SELECT * FROM orders WHERE request_id=?',(reference,)).fetchone()
+            if not row:raise HTTPException(404,'Order not found.')
+            order=dict(row)
+            if not order['paid'] or self.summary(order)['status']!='paid':raise HTTPException(409,'Only confirmed paid orders can be marked contacted here.')
+            address=json.loads(order['address']) if order['address'] else {}
+            recipient=address.get('email','')
+            if not re.fullmatch(r'[^\s@]+@[^\s@]+\.[^\s@]+',recipient):raise HTTPException(409,'This order has no valid customer email address.')
+            context=self.message_context(order)
+            if body.get('context')!=context:raise HTTPException(409,'The delivery details changed. Reopen the thank-you draft and check the latest tracking before recording it.')
+            digest=hashlib.sha256(json.dumps([recipient,subject.strip(),content.strip(),context],ensure_ascii=False).encode()).hexdigest()
+            ident=str(uuid4())
+            db.execute('INSERT OR IGNORE INTO order_messages VALUES(?,?,?,?,?,?,?,?)',
+                (ident,order['session'],int(time.time()),recipient,subject.strip(),content.strip(),context,digest))
+            ident=db.execute('SELECT id FROM order_messages WHERE session=? AND digest=?',(order['session'],digest)).fetchone()[0]
+        return {'saved':True,'id':ident}
 
     def export(self, kind='orders', **filters):
         if kind not in {'orders','items','expenses','payments'}:raise HTTPException(400,'Choose an export type.')
