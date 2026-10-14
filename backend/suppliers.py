@@ -34,9 +34,12 @@ def write_connections(path, data):
     path = Path(path)
     temporary = None
     try:
+        owner = path.stat() if path.exists() else path.parent.stat()
         descriptor, temporary = tempfile.mkstemp(prefix='.suppliers-', dir=path.parent)
         with os.fdopen(descriptor, 'w') as output:
             os.fchmod(output.fileno(), 0o600)
+            # Maintenance helpers may run as root; retain the service's access.
+            os.fchown(output.fileno(), owner.st_uid, owner.st_gid)
             json.dump(data, output)
             output.flush()
             os.fsync(output.fileno())

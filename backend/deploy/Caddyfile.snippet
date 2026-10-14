@@ -3,13 +3,13 @@
 store-api.143-244-168-180.sslip.io {
     handle /admin/pcb/projects/*/files/* {
         request_body {
-            max_size 20MB
+            max_size 20971520
         }
         reverse_proxy 127.0.0.1:8091
     }
     handle {
         request_body {
-            max_size 256KB
+            max_size 262144
         }
         reverse_proxy 127.0.0.1:8091
     }

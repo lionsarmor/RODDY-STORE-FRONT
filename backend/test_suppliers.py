@@ -48,6 +48,17 @@ class SupplierTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200, response.text)
         return response
 
+    def test_connection_updates_preserve_private_file_ownership(self):
+        from backend.suppliers import write_connections
+        path=self.root/'suppliers.json'
+        parent=path.parent.stat()
+        with patch('backend.suppliers.os.fchown',wraps=__import__('os').fchown) as chown:
+            write_connections(path,{'mouser':{'searchKey':'test-only'}})
+            self.assertEqual(chown.call_args.args[1:],(parent.st_uid,parent.st_gid))
+            previous=path.stat();write_connections(path,{'mouser':{'searchKey':'replacement-test-only'}})
+            self.assertEqual(chown.call_args.args[1:],(previous.st_uid,previous.st_gid))
+        self.assertEqual(path.stat().st_mode&0o777,0o600)
+
     def search(self, provider='mouser', query='FPGA', page=1):
         return self.admin('POST', '/search', {'provider': provider, 'query': query, 'page': page, 'country': 'CA'})
 
