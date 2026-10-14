@@ -2842,9 +2842,9 @@
     },
     {
       "id": "aula-f87-pro",
-      "sku": "RODDY-F87-PRO",
+      "sku": "C-019",
       "name": "AULA F87 PRO",
-      "category": "labs",
+      "category": "computers",
       "type": "physical",
       "status": "available",
       "active": true,
@@ -2861,7 +2861,9 @@
         "img/products/roddy-7b817797-d599-40e5-a10b-0b5c32e023ad.jpg"
       ],
       "coverImage": "img/products/roddy-93862dd8-01d0-422e-8821-f25733c924a4.jpg",
-      "tags": [],
+      "tags": [
+        "new-tag-3"
+      ],
       "specs": {
         "Variant": "Blue-Black-White / Gray Switch"
       },
