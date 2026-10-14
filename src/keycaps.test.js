@@ -10,22 +10,21 @@ import {reactive} from 'vue';
 import {PALETTE,colorHex,legendColorId} from './keycap-palette.js';
 const catalog=normalizeCatalog(JSON.parse(readFileSync(new URL('../public/data/products.json',import.meta.url))));
 const profile=catalog.keycapProfiles[0];const template=KEYCAP_PREVIEWS[profile.templateId];
-test('disabled X16 artwork stays unavailable even in an old catalog or saved design',()=>{
-  const old={...profile,marks:[...profile.marks,'commander-x16'],defaults:{...profile.defaults,mark:'commander-x16'}};
-  assert.equal(defaultDesign(old).mark,'roddy-r');
-  assert.ok(!availableMarks(old).includes('commander-x16'));
-  assert.ok(!MARKS['commander-x16']);
-  assert.ok(MARKS['otter-x']);
-  assert.throws(()=>generatePreview(old,{...defaultDesign(old),mark:'commander-x16'}));
-  const restored=normalizeCatalog({...catalog,keycapProfiles:[old]});
-  assert.equal(restored.keycapProfiles[0].defaults.mark,'roddy-r');
-  assert.ok(!restored.keycapProfiles[0].marks.includes('commander-x16'));
-  assert.deepEqual(validateCatalog(restored),[]);
+test('restored X16 butterfly is selectable and profile checkboxes can hide it',()=>{
+  assert.ok(MARKS['commander-x16']);
+  const selected={...defaultDesign(profile),mark:'commander-x16'};
+  assert.deepEqual(generatePreview(profile,selected).keys.find(k=>k.id==='commander').shapes,template.marks['commander-x16']);
+  const hidden={...profile,marks:profile.marks.filter(id=>id!=='commander-x16'),defaults:{...profile.defaults,mark:'commander-x16'}};
+  assert.equal(defaultDesign(hidden).mark,'roddy-r');
+  assert.ok(!availableMarks(hidden).includes('commander-x16'));
+  assert.ok(designError(selected,hidden));
+  assert.ok(normalizeCatalog({...catalog,keycapProfiles:[profile]}).keycapProfiles[0].marks.includes('commander-x16'));
   for(const mark of ['roddy-x','pixel-rainbow-x']){
     const stale={...profile,marks:[...profile.marks,mark],defaults:{...profile.defaults,mark}};
     assert.equal(defaultDesign(stale).mark,'roddy-r');
     assert.ok(!availableMarks(stale).includes(mark));
     assert.throws(()=>generatePreview(stale,{...defaultDesign(stale),mark}));
+    assert.ok(!normalizeCatalog({...catalog,keycapProfiles:[stale]}).keycapProfiles[0].marks.includes(mark));
   }
 });
 test('Delete uses outlined navigation lettering and Analog X is available in the preview',()=>{
@@ -35,7 +34,7 @@ test('Delete uses outlined navigation lettering and Analog X is available in the
   assert.ok(!out.keys.some(k=>k.label==='del'));
   assert.equal(out.keys.find((k,i)=>template.keys[i].commander).shapes.length,6);
 });
-test('customer preview retains all 87 v6 key appearances without Yuzu manufacturing fields',()=>{
+test('customer preview retains all 87 v6 key appearances without manufacturing fields',()=>{
   const out=generatePreview(profile,defaultDesign(profile));
   assert.equal(out.keys.length,87);
   assert.equal(out.keys.find(k=>k.label==='esc').color,colorHex('BL003'));
@@ -117,4 +116,25 @@ test('reactive catalog defaults produce an independent per-key selection',()=>{
   const source=reactive({...profile,defaults:{...profile.defaults,keyColors:{esc:'RD003'}}});
   const design=defaultDesign(source);design.keyColors.esc='OG001';
   assert.equal(source.defaults.keyColors.esc,'RD003');
+});
+
+test('number-row text replaces boxes, adapts to individual key colors and creates distinct cart designs',()=>{
+  const base=defaultDesign(profile),text={...base,numberRow:'text',keyColors:{'1':'GR001'}};
+  const before=JSON.stringify(template);const out=generatePreview(profile,text);
+  for(const key of out.keys){
+    const source=template.keys.find(k=>k.id===key.id);
+    if(source.numberRowText){
+      assert.deepEqual(key.shapes.map(s=>s.path),source.numberRowText.map(s=>s.path));
+      assert.ok(key.shapes.every(s=>s.fill===colorHex(legendColorId(key.paletteId))));
+      assert.ok(!key.shapes.some(s=>source.shapes.slice(1).some(box=>box.path===s.path)));
+    }else assert.deepEqual(key.shapes,generatePreview(profile,base).keys.find(k=>k.id===key.id).shapes);
+  }
+  assert.equal(out.keys.filter(k=>template.keys.find(s=>s.id===k.id).numberRowText).length,8);
+  assert.equal(JSON.stringify(template),before);
+  assert.notEqual(designKey(base),designKey({...base,numberRow:'text'}));
+  assert.ok(designError({...base,numberRow:'unknown'},profile));
+  assert.ok(designError(text,{...profile,numberRows:['swatches']}));
+  const saved=new Map();globalThis.localStorage={getItem:k=>saved.get(k),setItem:(k,v)=>saved.set(k,v)};
+  setActivePinia(createPinia());const cart=useCartStore();cart.clear();cart.add('x16-keycaps',1,99,'',base);cart.add('x16-keycaps',1,99,'',text);
+  assert.equal(cart.items.length,2);assert.equal(JSON.parse(saved.get('roddy:cart'))[1].design.numberRow,'text');
 });

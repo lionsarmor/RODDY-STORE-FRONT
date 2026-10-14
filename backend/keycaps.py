@@ -14,7 +14,8 @@ TEMPLATES = Path(os.getenv('KEYCAP_TEMPLATES_DIR', '/var/lib/roddy-store/keycap-
 MARKS = {ident: option['label'] for ident, option in json.loads(Path(__file__).with_name('keycap_mark_options.json').read_text()).items() if option.get('enabled', True)}
 ARROWS = {'small-black': 'Small black arrows', 'small-white': 'Small white arrows',
           'bold-black': 'Bold black arrows', 'bold-white': 'Bold white arrows'}
-FIELDS = {'profileId', 'revision', 'alpha', 'modifiers', 'accents', 'mark', 'arrows', 'keyColors'}
+NUMBER_ROWS = {'swatches': 'Colored boxes', 'text': 'Color names'}
+FIELDS = {'profileId', 'revision', 'alpha', 'modifiers', 'accents', 'mark', 'arrows', 'numberRow', 'keyColors'}
 PALETTE_BYTES = Path(__file__).with_name('keycap_palette.json').read_bytes()
 PALETTE_DOCUMENT = json.loads(PALETTE_BYTES)
 PALETTE = {color['id']: color for color in PALETTE_DOCUMENT['colors']}
@@ -26,13 +27,13 @@ def selection_input(raw):
     if (any(raw[k] not in PALETTE for k in ['alpha', 'modifiers', 'accents'])
             or not re.fullmatch(r'[a-z0-9][a-z0-9-]{0,100}', raw['profileId'])
             or not re.fullmatch(r'[a-zA-Z0-9._-]{1,40}', raw['revision'])
-            or raw['mark'] not in MARKS or raw['arrows'] not in ARROWS):
-        raise HTTPException(400, 'Invalid keycap color, symbol or arrow style.')
+            or raw['mark'] not in MARKS or raw['arrows'] not in ARROWS or raw['numberRow'] not in NUMBER_ROWS):
+        raise HTTPException(400, 'Invalid keycap color, symbol, arrow or number-row style.')
     overrides = raw['keyColors']
     if (not isinstance(overrides, dict) or len(overrides) > 256
             or any(not isinstance(k, str) or not re.fullmatch(r'[a-z0-9][a-z0-9-]{0,39}', k)
                    or not isinstance(v, str) or v not in PALETTE for k, v in overrides.items())):
-        raise HTTPException(400, 'Choose Yuzu palette colors for your individual keys.')
+        raise HTTPException(400, 'Choose available palette colors for your individual keys.')
     return {**{k: raw[k] for k in sorted(FIELDS - {'keyColors'})}, 'keyColors': dict(sorted(overrides.items()))}
 
 
@@ -50,7 +51,7 @@ def validate_colors(value):
             for key, child in node.items():
                 if key == 'colorId':
                     if not isinstance(child, str) or child not in PALETTE:
-                        raise HTTPException(409, 'This keyboard artwork needs a Yuzu palette update.')
+                        raise HTTPException(409, 'This keyboard artwork needs a palette update.')
                     used.add(child)
                 else:
                     visit(child)
@@ -67,7 +68,8 @@ def snapshot(catalog, product, raw):
     profile = next((p for p in profiles if p.get('id') == product['keycaps'].get('profileId')), None)
     if (not profile or selection['profileId'] != profile['id'] or selection['revision'] != profile.get('revision')
             or selection['mark'] not in profile.get('marks', MARKS)
-            or selection['arrows'] not in profile.get('arrows', ARROWS)):
+            or selection['arrows'] not in profile.get('arrows', ARROWS)
+            or selection['numberRow'] not in profile.get('numberRows', NUMBER_ROWS)):
         raise HTTPException(409, 'This keyboard profile changed. Refresh your design on the product page.')
     template_id = profile.get('templateId', '')
     if not re.fullmatch(r'[a-z0-9][a-z0-9-]{0,100}', template_id):
@@ -78,16 +80,23 @@ def snapshot(catalog, product, raw):
     except (OSError, ValueError):
         raise HTTPException(409, 'This keyboard template is unavailable.') from None
     if template.get('paletteVersion') != PALETTE_DOCUMENT['version']:
-        raise HTTPException(409, 'This keyboard template needs its Yuzu palette update.')
+        raise HTTPException(409, 'This keyboard template needs its palette update.')
+    if selection['numberRow'] == 'text' and not template.get('numberRowText'):
+        raise HTTPException(409, 'This keyboard template does not have color-name labels.')
     key_ids = {meta['keyId'] for meta in template['meta'].values()}
     if any(key not in key_ids for key in selection['keyColors']):
         raise HTTPException(400, 'An individual key does not belong to this keyboard profile.')
     out = copy.deepcopy(template['base'])
-    out['name'] = f"RODDY {profile['name']} {selection['mark']} {selection['arrows']}"
+    out['name'] = f"RODDY {profile['name']} {selection['mark']} {selection['arrows']} {selection['numberRow']}"
     for ident, key in out['keys'].items():
         meta = template['meta'][ident]
         color = selection['keyColors'].get(meta['keyId'], selection[meta['group']])
         key['colorId'] = color
+        if selection['numberRow'] == 'text' and ident in template['numberRowText']:
+            key['layers'] = copy.deepcopy(template['numberRowText'][ident])
+            for layer in key['layers']:
+                layer['colorId'] = 'GR002' if dark(PALETTE[color]['hex']) else 'GR001'
+            continue
         for index in meta.get('autoLegendLayers', []):
             key['layers'][index]['colorId'] = 'GR002' if dark(PALETTE[color]['hex']) else 'GR001'
         if meta['sourceKey'] == 'COMMANDER':
@@ -108,7 +117,8 @@ def snapshot(catalog, product, raw):
 def label(selection):
     count = len(selection.get('keyColors', {}))
     return (' / '.join(selection[k] for k in ['alpha', 'modifiers', 'accents']) + ' · ' + MARKS[selection['mark']]
-            + ' · ' + ARROWS[selection['arrows']] + (f' · {count} individual key colors' if count else ''))
+            + ' · ' + ARROWS[selection['arrows']] + ' · ' + NUMBER_ROWS[selection.get('numberRow', 'swatches')]
+            + (f' · {count} individual key colors' if count else ''))
 
 
 def packet(order):

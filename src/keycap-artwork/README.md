@@ -13,3 +13,5 @@ Regenerate it and the SVGs with `python3 scripts/build-retro-x-artwork.py`.
 The public storefront uses normalized preview shapes only. Supplier-specific
 manufacturing layers are installed privately on the droplet; they are not
 committed or exposed through customer downloads.
+
+`number-row-labels.json` contains outlined original v6 color-name labels and the preserved top number/shifted-symbol paths, without lower box frames. Rebuild with `scripts/build-number-row-labels.py` (fontTools and Liberation Sans Narrow Bold). Labels use a 1 mm cap height, 0.28 mm line spacing and a maximum 3.5 mm width per column. The display preview and private template use the same paths.

@@ -14,4 +14,8 @@ The number-row olive swatch (2, right) uses GN037 / 575U (#6F7A61), and dark blu
 
 All manufacturing recipes stay on the droplet. Customers receive display geometry and their selection; only authenticated owner order downloads contain Yuzu manufacturing files. The quote and checkout body limit is 256 KiB to accommodate multi-design carts with individual colors.
 
-Validation for this change includes paid-order packet tests, all 321 colors across 29 complete layout cases compared against the frontend, and an exact JSON import/export round trip through the current Yuzu editor. Yuzu's own print-eligibility function returned no problems. The read-only editor check blocked all non-GET/HEAD network requests and did not save an account design or submit an order.
+Validation for this change includes paid-order packet tests, all 321 colors across 65 complete layout cases compared against the frontend, and an exact JSON import/export round trip through the current Yuzu editor. Yuzu's own print-eligibility function returned no problems. The read-only editor check blocked all non-GET/HEAD network requests and did not save an account design or submit an order.
+
+Number-row legends offer `swatches` or `text`. The text variant replaces both color fills and frames beneath 1–8 with the original v6 color names, keeps top number/shifted-symbol paths, and adjusts every text layer to the key color. The choice is validated against profile `numberRows`, participates in cart identity and is frozen into the paid packet. The restored Commander X16 butterfly follows the profile `marks` allowlist; it can be unchecked in the admin. R + dot remains the starting design. Retired flight and pixel marks stay disabled.
+
+Customer and admin copy use RODDY branding and generic maker terminology. Supplier recipes and format-specific references stay in private fulfillment files.

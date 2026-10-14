@@ -1,5 +1,5 @@
 import {catalogColorId} from './keycap-palette.js';
-import { KEYCAP_PREVIEWS, MARKS, DISABLED_MARKS, ARROWS, defaultDesign, designError } from './keycaps.js';
+import { KEYCAP_PREVIEWS, MARKS, DISABLED_MARKS, ARROWS, NUMBER_ROWS, defaultDesign, designError } from './keycaps.js';
 
 export const DEFAULT_TAGS = [
   { id: "esp32", label: "ESP32", color: "#b9e6f5" },
@@ -59,7 +59,7 @@ export function normalizeCatalog(data) {
     ...data,
     schemaVersion: 2,
     keycapProfiles: Array.isArray(data.keycapProfiles) ? data.keycapProfiles.map(profile=>{
-      const clean={...profile,marks:profile.marks?.filter(id=>!DISABLED_MARKS.includes(id)),defaults:{...profile.defaults,keyColors:profile.defaults?.keyColors || {}}};
+      const clean={...profile,numberRows:profile.numberRows || Object.keys(NUMBER_ROWS),marks:profile.marks?.filter(id=>!DISABLED_MARKS.includes(id)),defaults:{numberRow:'swatches',...profile.defaults,keyColors:profile.defaults?.keyColors || {}}};
       for(const group of ['alpha','modifiers','accents'])clean.defaults[group]=catalogColorId(clean.defaults[group]);
       if(DISABLED_MARKS.includes(clean.defaults?.mark))clean.defaults={...clean.defaults,mark:defaultDesign(clean).mark};
       return clean;
@@ -101,6 +101,7 @@ export function validateCatalog(data) {
   for (const profile of data.keycapProfiles || []) {
     if (!KEYCAP_PREVIEWS[profile.templateId] || !/^[a-zA-Z0-9._-]{1,40}$/.test(profile.revision || '')) errors.push(`${profile.name}: choose a validated template and revision.`);
     if (!Array.isArray(profile.marks) || !profile.marks.length || profile.marks.some(id=>!MARKS[id]) || !Array.isArray(profile.arrows) || !profile.arrows.length || profile.arrows.some(id=>!ARROWS[id])) errors.push(`${profile.name}: choose supported symbols and arrows.`);
+    if (!Array.isArray(profile.numberRows) || !profile.numberRows.length || profile.numberRows.some(id=>!NUMBER_ROWS[id])) errors.push(`${profile.name}: choose supported number-row legends.`);
     if (designError(defaultDesign(profile),profile)) errors.push(`${profile.name}: check profile defaults.`);
   }
   for (const p of data.products) {

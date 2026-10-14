@@ -8,7 +8,7 @@ from unittest.mock import patch
 import zipfile
 
 from backend import test_commerce as commerce_tests
-from backend.keycaps import snapshot, packet, MARKS, ARROWS, label, PALETTE, PALETTE_DOCUMENT, validate_colors
+from backend.keycaps import snapshot, packet, MARKS, ARROWS, NUMBER_ROWS, label, PALETTE, PALETTE_DOCUMENT, validate_colors
 
 
 class KeycapOrderTests(unittest.TestCase):
@@ -25,10 +25,12 @@ class KeycapOrderTests(unittest.TestCase):
         def layer(path, color='GR001'):
             return {'id':'test-layer','colorId':color,'x':0,'y':0,'vectDef':path,'vectScale':100,'vectViewbox':'0 0 1250 1000'}
         keys = {'test-commander':{'colorId':'BL003','layers':[layer('M100 100H200V200H100Z')]},
-                'test-arrow':{'colorId':'BL003','layers':[layer('M150 100L200 200H100Z')]}}
+                'test-arrow':{'colorId':'BL003','layers':[layer('M150 100L200 200H100Z')]},
+                'test-number':{'colorId':'GR002','layers':[layer('M100 100H150V250H100Z'),layer('M100 400H200V500H100Z','OG019')]}}
         self.template = {'id':'x16-v06-cherry-tkl','revision':'fixture-1','compatibility':'Synthetic test fixture; not a manufacturing design.',
                          'base':{'name':'Test','keys':keys,'layoutKeys':[{'id':k} for k in keys]},
-                         'meta':{'test-commander':{'group':'accents','sourceKey':'COMMANDER','keyId':'commander','autoLegendLayers':[]},'test-arrow':{'group':'accents','sourceKey':'UP','keyId':'up','autoLegendLayers':[]}},
+                         'meta':{'test-commander':{'group':'accents','sourceKey':'COMMANDER','keyId':'commander','autoLegendLayers':[]},'test-arrow':{'group':'accents','sourceKey':'UP','keyId':'up','autoLegendLayers':[]},'test-number':{'group':'alpha','sourceKey':'1','keyId':'1','autoLegendLayers':[0]}},
+                         'numberRowText':{'test-number':[layer('M100 100H150V250H100Z'),layer('M100 400H300V450H100Z')]},
                          'marks':{name:[layer('M100 100H200V200H100Z')] for name in MARKS},
                          'paletteVersion':PALETTE_DOCUMENT['version'], 'arrows':{'test-arrow':[layer('M100 100H300V300H100Z','GR002')]}}
         (self.templates/'x16-v06-cherry-tkl.json').write_text(json.dumps(self.template))
@@ -36,14 +38,14 @@ class KeycapOrderTests(unittest.TestCase):
         template_patch.start()
         self.addCleanup(template_patch.stop)
         self.profile = {'id':'x16-compatible','name':'X16 compatible','revision':'v06.1','templateId':'x16-v06-cherry-tkl',
-                        'marks':list(MARKS),'arrows':list(ARROWS)}
+                        'marks':list(MARKS),'arrows':list(ARROWS),'numberRows':list(NUMBER_ROWS)}
         self.catalog['keycapProfiles'] = [self.profile]
         self.product = {'id':'custom-keys','name':'Custom keys','price':99.99,'type':'physical','active':True,
                         'status':'available','trackStock':False,'keycaps':{'profileId':'x16-compatible'},
                         'officeShipping':{'US':{'firstItem':10,'additionalItem':3}}}
         self.catalog['products'].append(self.product)
         self.design = {'profileId':'x16-compatible','revision':'v06.1','alpha':'GR002','modifiers':'GR009',
-                       'accents':'BL003','mark':'roddy-r','arrows':'small-black','keyColors':{}}
+                       'accents':'BL003','mark':'roddy-r','arrows':'small-black','numberRow':'swatches','keyColors':{}}
         self.items = [{'id':'custom-keys','qty':1,'design':copy.deepcopy(self.design)}]
         self.packets = self.app.state.order_packets
 
@@ -121,7 +123,7 @@ class KeycapOrderTests(unittest.TestCase):
         self.assertEqual(self.admin('POST',path,{'action':'download'}).status_code,409)
 
     def test_tampered_stale_missing_or_foreign_designs_are_rejected(self):
-        for changes in [{'mark':'commander-x16'},{'mark':'plain-x'},{'arrows':'secret'},{'accents':'#000'},{'revision':'old'},{'profileId':'other'},{'price':.01}]:
+        for changes in [{'numberRow':'unknown'},{'mark':'plain-x'},{'arrows':'secret'},{'accents':'#000'},{'revision':'old'},{'profileId':'other'},{'price':.01}]:
             items=[{'id':'custom-keys','qty':1,'design':{**self.design,**changes}}]
             self.assertIn(self.quote(items).status_code,[400,409])
         self.assertEqual(self.quote([{'id':'custom-keys','qty':1}]).status_code,400)
@@ -130,7 +132,7 @@ class KeycapOrderTests(unittest.TestCase):
         self.assertEqual(self.provider.created,[])
 
     def test_disabled_mark_is_rejected_even_when_an_old_catalog_allows_it(self):
-        for mark in ['commander-x16','roddy-x','pixel-rainbow-x']:
+        for mark in ['roddy-x','pixel-rainbow-x']:
             self.profile['marks'].append(mark)
             self.items[0]['design']['mark']=mark
             self.assertEqual(self.quote().status_code,400)
@@ -217,3 +219,22 @@ class KeycapOrderTests(unittest.TestCase):
         self.template['marks']['roddy-r'][0]['colorId']='#000000'
         (self.templates/'x16-v06-cherry-tkl.json').write_text(json.dumps(self.template))
         self.assertEqual(self.quote().status_code,409);self.assertEqual(self.provider.created,[])
+
+    def test_profile_unchecking_hides_butterfly_and_api_rejects_saved_selection(self):
+        design={**self.design,'mark':'commander-x16'}
+        self.assertEqual(snapshot(self.catalog,self.product,design)['selection']['mark'],'commander-x16')
+        self.profile['marks'].remove('commander-x16')
+        self.assertEqual(self.quote([{'id':'custom-keys','qty':1,'design':design}]).status_code,409)
+
+    def test_text_number_row_uses_contrast_and_freezes_the_order_choice(self):
+        self.items[0]['design'].update(numberRow='text',keyColors={'1':'GR001'})
+        original=copy.deepcopy(self.template)
+        result=self.paid_order();order=self.order(result['sessionId']);summary,files=packet(order)
+        document=json.loads(files[0][1]);layers=document['keys']['test-number']['layers']
+        self.assertEqual([l['vectDef'] for l in layers],[l['vectDef'] for l in self.template['numberRowText']['test-number']])
+        self.assertEqual({l['colorId'] for l in layers},{'GR002'})
+        self.assertEqual(summary['items'][0]['selection']['numberRow'],'text')
+        self.assertEqual(self.template,original)
+        self.profile['defaults']={'numberRow':'swatches'};self.profile['numberRows']=['swatches']
+        self.assertEqual(packet(order)[1],files)
+        self.assertEqual(self.quote().status_code,409)

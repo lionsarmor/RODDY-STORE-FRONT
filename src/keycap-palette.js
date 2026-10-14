@@ -1,8 +1,7 @@
 import document from '../backend/keycap_palette.json' with {type:'json'};
 import legacyColors from '../backend/keycap_color_map.json' with {type:'json'};
-export const PALETTE_VERSION=document.version;
-export const YUZU_COLORS=document.colors;
-export const PALETTE=Object.freeze(Object.assign(Object.create(null),Object.fromEntries(YUZU_COLORS.map(c=>[c.id,c]))));
+export const KEYCAP_COLORS=document.colors;
+export const PALETTE=Object.freeze(Object.assign(Object.create(null),Object.fromEntries(KEYCAP_COLORS.map(c=>[c.id,c]))));
 export const colorHex=id=>PALETTE[id]?.hex || '#808080';
 export const colorName=id=>PALETTE[id] ? `${PALETTE[id].name} · ${id}` : id;
 // Only catalog defaults migrate. Customer/order input must already use palette IDs.

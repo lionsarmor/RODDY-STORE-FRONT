@@ -3001,10 +3001,11 @@
     {
       "id": "x16-compatible",
       "name": "X16 compatible",
-      "revision": "v06.5-arrows-swatches",
+      "revision": "v06.6-number-row",
       "templateId": "x16-v06-cherry-tkl",
-      "description": "V6 PETSCII artwork and number-row color swatches, with Yuzu palette colors. Set the main groups, then color individual keys to make the set your own.",
+      "description": "V6 PETSCII artwork with a choice of number-row color swatches or color-name labels. Set the main groups, then color individual keys to make the set your own.",
       "marks": [
+        "commander-x16",
         "otter-x",
         "analog-x",
         "roddy-r",
@@ -3025,8 +3026,13 @@
         "accents": "BL003",
         "mark": "roddy-r",
         "arrows": "small-black",
-        "keyColors": {}
-      }
+        "keyColors": {},
+        "numberRow": "swatches"
+      },
+      "numberRows": [
+        "swatches",
+        "text"
+      ]
     }
   ]
 }
