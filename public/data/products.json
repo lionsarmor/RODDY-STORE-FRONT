@@ -2978,7 +2978,7 @@
     {
       "id": "mister-analog-io",
       "sku": "C-032",
-      "name": "MiSTer Analog I/O Board v6.1",
+      "name": "MiSTer Analog I/O Board v6.1 + RGB Fan",
       "category": "computers",
       "type": "physical",
       "status": "coming-soon",
@@ -2988,12 +2988,13 @@
       "pricePending": true,
       "stock": 0,
       "trackStock": false,
-      "description": "An analog I/O expansion based on the MiSTer community v6.1 design, with VGA, audio, buttons and indicators for a classic DE10-Nano setup. Display and core compatibility depend on configuration. The user port is a dedicated accessory connection, not a general USB port. Development board, cooling and case sold separately.",
-      "shortDescription": "Classic analog video and controls for your MiSTer stack.",
+      "description": "An analog I/O expansion based on the MiSTer community v6.1 design, with VGA, audio, buttons and indicators for a classic DE10-Nano setup. The planned purple-board bundle adds a clear-frame 40mm RGB cooling fan and mounting screws with nuts. Display and core compatibility depend on configuration. The user port is a dedicated accessory connection, not a general USB port. DE10-Nano, heatsink and case sold separately.",
+      "shortDescription": "Purple analog I/O with an RGB fan and mounting hardware.",
       "images": [
+        "img/products/mister/mister-analog-io-rgb-bundle-preview-v3.png",
         "img/products/mister/mister-analog-io-purple-preview-v2.png"
       ],
-      "coverImage": "img/products/mister/mister-analog-io-purple-preview-v2.png",
+      "coverImage": "img/products/mister/mister-analog-io-rgb-bundle-preview-v3.png",
       "tags": [
         "new-tag-5"
       ],
@@ -3002,11 +3003,13 @@
         "Video connection": "VGA",
         "Platform": "DE10-Nano MiSTer",
         "Finish": "Planned purple PCB / white silkscreen",
-        "Sold separately": "DE10-Nano and other accessories not included"
+        "Sold separately": "DE10-Nano, heatsink, case and other expansion boards",
+        "Planned bundle": "One I/O board, one RGB fan, four mounting screws and four nuts",
+        "Cooling": "40 × 40 × 10 mm RGB fan; 5V power"
       },
       "supplier": null,
       "officeShipping": {},
-      "releaseNote": "Coming soon. Purple finish preview; final appearance, included parts and pricing will be confirmed before orders open.",
+      "releaseNote": "Coming soon. Preview of the planned purple board, RGB fan and mounting hardware. Fan wiring, mounting clearance and final pricing are being verified before orders open.",
       "compareAtPrice": 0,
       "story": "",
       "documentationUrl": "",
