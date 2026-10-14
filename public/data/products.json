@@ -2898,7 +2898,7 @@
       "category": "computers",
       "type": "physical",
       "status": "coming-soon",
-      "active": false,
+      "active": true,
       "featured": false,
       "price": 0,
       "pricePending": true,
@@ -2906,17 +2906,21 @@
       "trackStock": false,
       "description": "A 128MB SDRAM expansion based on the MiSTer community XS-DS v3.0 design. Planned for the DE10-Nano GPIO header. The development board and other accessories are separate. Final hardware configuration and compatibility will be confirmed after prototype testing.",
       "shortDescription": "128MB of dedicated SDRAM for a classic MiSTer FPGA build.",
-      "images": [],
-      "coverImage": "",
+      "images": [
+        "img/products/mister/mister-sdram-128mb-purple-concept-v1.png"
+      ],
+      "coverImage": "img/products/mister/mister-sdram-128mb-purple-concept-v1.png",
       "tags": [],
       "specs": {
         "Memory": "128MB SDRAM",
         "Board revision": "XS-DS v3.0",
-        "Platform": "DE10-Nano MiSTer"
+        "Platform": "DE10-Nano MiSTer",
+        "Finish": "Planned purple PCB / white silkscreen",
+        "Sold separately": "DE10-Nano and other accessories not included"
       },
       "supplier": null,
       "officeShipping": {},
-      "releaseNote": "In preparation. Final specifications, pricing and shipping will be confirmed before orders open.",
+      "releaseNote": "Coming soon. Concept render shows the proposed purple finish; final appearance, specifications and pricing will be confirmed before orders open.",
       "compareAtPrice": 0,
       "story": "",
       "documentationUrl": "",
@@ -2933,7 +2937,7 @@
       "category": "computers",
       "type": "physical",
       "status": "coming-soon",
-      "active": false,
+      "active": true,
       "featured": false,
       "price": 0,
       "pricePending": true,
@@ -2941,17 +2945,21 @@
       "trackStock": false,
       "description": "A USB hub based on the MiSTer community v2.1 design for a classic DE10-Nano stack. Connect a mix of controllers, keyboards and other supported USB peripherals. The hub-to-board link, power arrangement and case fit will be confirmed for the final configuration. Development board sold separately.",
       "shortDescription": "Seven USB data ports for controllers, keyboards and more.",
-      "images": [],
-      "coverImage": "",
+      "images": [
+        "img/products/mister/mister-usb-hub-purple-concept-v1.png"
+      ],
+      "coverImage": "img/products/mister/mister-usb-hub-purple-concept-v1.png",
       "tags": [],
       "specs": {
         "Data ports": "7 USB ports",
         "Board revision": "v2.1",
-        "Platform": "DE10-Nano MiSTer"
+        "Platform": "DE10-Nano MiSTer",
+        "Finish": "Planned purple PCB / white silkscreen",
+        "Sold separately": "DE10-Nano and other accessories not included"
       },
       "supplier": null,
       "officeShipping": {},
-      "releaseNote": "In preparation. Final specifications, pricing and shipping will be confirmed before orders open.",
+      "releaseNote": "Coming soon. Concept render shows the proposed purple finish; final appearance, specifications and pricing will be confirmed before orders open.",
       "compareAtPrice": 0,
       "story": "",
       "documentationUrl": "",
@@ -2968,7 +2976,7 @@
       "category": "computers",
       "type": "physical",
       "status": "coming-soon",
-      "active": false,
+      "active": true,
       "featured": false,
       "price": 0,
       "pricePending": true,
@@ -2976,17 +2984,21 @@
       "trackStock": false,
       "description": "An analog I/O expansion based on the MiSTer community v6.1 design, with VGA, audio, buttons and indicators for a classic DE10-Nano setup. Display and core compatibility depend on configuration. The user port is a dedicated accessory connection, not a general USB port. Development board, cooling and case sold separately.",
       "shortDescription": "Classic analog video and controls for your MiSTer stack.",
-      "images": [],
-      "coverImage": "",
+      "images": [
+        "img/products/mister/mister-analog-io-purple-concept-v1.png"
+      ],
+      "coverImage": "img/products/mister/mister-analog-io-purple-concept-v1.png",
       "tags": [],
       "specs": {
         "Board revision": "Analog I/O v6.1",
         "Video connection": "VGA",
-        "Platform": "DE10-Nano MiSTer"
+        "Platform": "DE10-Nano MiSTer",
+        "Finish": "Planned purple PCB / white silkscreen",
+        "Sold separately": "DE10-Nano and other accessories not included"
       },
       "supplier": null,
       "officeShipping": {},
-      "releaseNote": "In preparation. Final specifications, pricing and shipping will be confirmed before orders open.",
+      "releaseNote": "Coming soon. Concept render shows the proposed purple finish; final appearance, specifications and pricing will be confirmed before orders open.",
       "compareAtPrice": 0,
       "story": "",
       "documentationUrl": "",
@@ -3003,7 +3015,7 @@
       "category": "computers",
       "type": "physical",
       "status": "coming-soon",
-      "active": false,
+      "active": true,
       "featured": false,
       "price": 0,
       "pricePending": true,
@@ -3011,16 +3023,20 @@
       "trackStock": false,
       "description": "A real-time clock add-on based on the MiSTer community v1.4 design. Battery-backed timekeeping is useful for supported systems and applications. Battery, final chip selection and physical stack compatibility will be specified before release.",
       "shortDescription": "A compact real-time clock for a classic MiSTer setup.",
-      "images": [],
-      "coverImage": "",
+      "images": [
+        "img/products/mister/mister-rtc-purple-concept-v1.png"
+      ],
+      "coverImage": "img/products/mister/mister-rtc-purple-concept-v1.png",
       "tags": [],
       "specs": {
         "Board revision": "v1.4",
-        "Platform": "DE10-Nano MiSTer"
+        "Platform": "DE10-Nano MiSTer",
+        "Finish": "Planned purple PCB / white silkscreen",
+        "Sold separately": "DE10-Nano and other accessories not included"
       },
       "supplier": null,
       "officeShipping": {},
-      "releaseNote": "In preparation. Final specifications, pricing and shipping will be confirmed before orders open.",
+      "releaseNote": "Coming soon. Concept render shows the proposed purple finish; final appearance, specifications and pricing will be confirmed before orders open.",
       "compareAtPrice": 0,
       "story": "",
       "documentationUrl": "",
@@ -3037,7 +3053,7 @@
       "category": "computers",
       "type": "physical",
       "status": "coming-soon",
-      "active": false,
+      "active": true,
       "featured": false,
       "price": 0,
       "pricePending": true,
@@ -3045,16 +3061,20 @@
       "trackStock": false,
       "description": "A USB bridge based on the MiSTer community v1.0 design. Connector orientation and spacing must match the selected DE10-Nano and USB hub stack. Final fit will be confirmed with the complete assembly before release.",
       "shortDescription": "A compact connection between the board and USB hub.",
-      "images": [],
-      "coverImage": "",
+      "images": [
+        "img/products/mister/mister-usb-bridge-purple-concept-v1.png"
+      ],
+      "coverImage": "img/products/mister/mister-usb-bridge-purple-concept-v1.png",
       "tags": [],
       "specs": {
         "Board revision": "v1.0",
-        "Platform": "DE10-Nano MiSTer"
+        "Platform": "DE10-Nano MiSTer",
+        "Finish": "Planned purple PCB / white silkscreen",
+        "Sold separately": "DE10-Nano and other accessories not included"
       },
       "supplier": null,
       "officeShipping": {},
-      "releaseNote": "In preparation. Final specifications, pricing and shipping will be confirmed before orders open.",
+      "releaseNote": "Coming soon. Concept render shows the proposed purple finish; final appearance, specifications and pricing will be confirmed before orders open. Image shows the bare PCB; final connector configuration is pending.",
       "compareAtPrice": 0,
       "story": "",
       "documentationUrl": "",
