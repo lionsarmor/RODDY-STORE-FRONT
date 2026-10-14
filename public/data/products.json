@@ -156,9 +156,9 @@
     },
     {
       "id": "standard-keycaps",
-      "sku": "RODDY-KCAP-ANSI87",
+      "sku": "C-004",
       "name": "CUSTOM KEYCAPS",
-      "category": "labs",
+      "category": "computers",
       "price": 99.99,
       "stock": 10,
       "active": true,
