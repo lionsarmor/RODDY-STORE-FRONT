@@ -133,7 +133,7 @@
 }
 
 /* Vue <Transition name="tagline-fade"> — used by RotatingTagline.vue so
-   every "future we were promised" slot fades between lines instead of
+   each on-page brand line fades between phrases instead of
    snapping. */
 .tagline-fade-enter-active,
 .tagline-fade-leave-active {

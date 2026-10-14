@@ -1,6 +1,6 @@
 # RODDY STORE FRONT
 
-RODDY ● Modern technology from a future we were promised.
+RODDY ● Play. Build. Make it yours.
 
 A storefront for the RODDY brand — 14 palettes pulled straight from the
 brand pack, a click-the-logo theme switcher, a product catalog, a real cart
