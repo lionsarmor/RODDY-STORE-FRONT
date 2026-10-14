@@ -64,6 +64,24 @@ class KeycapOrderTests(unittest.TestCase):
         self.profile['name'] = 'Changed later'
         self.assertEqual(frozen['profile']['name'],'X16 compatible')
 
+    def test_standard_profile_freezes_plain_legends_and_rejects_x16_number_modes(self):
+        self.template.pop('numberRowText')
+        self.template['numberRows']=['plain']
+        (self.templates/'x16-v06-cherry-tkl.json').write_text(json.dumps(self.template))
+        self.profile['numberRows']=['plain']
+        self.items[0]['design']['numberRow']='plain'
+        result=self.paid_order()
+        order=self.order(result['sessionId'])
+        details,files=packet(order)
+        self.assertEqual(details['items'][0]['selection']['numberRow'],'plain')
+        self.assertEqual(len(files),2)
+        self.assertEqual(self.packets.info(order['session'])['state'],'ready')
+        # A catalog edit cannot claim a mode absent from its physical template.
+        self.profile['numberRows']=['plain','swatches','text']
+        for mode in ['swatches','text']:
+            self.items[0]['design']['numberRow']=mode
+            self.assertEqual(self.quote().status_code,409)
+
     def test_every_available_mark_and_arrow_style_is_frozen_into_manufacturing_json(self):
         from backend.keycaps import ARROWS
         for mark in MARKS:

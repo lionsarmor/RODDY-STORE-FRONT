@@ -49,6 +49,8 @@ export function normalizeProduct(p) {
     githubUrl: p.githubUrl || "",
     officeShipping: p.officeShipping || {},
     supplier: p.supplier || null,
+    fulfillment: p.fulfillment || "",
+    fulfillmentRef: p.fulfillmentRef || "",
     keycaps: p.keycaps || null,
     merch: p.merch ? { ...p.merch, variants: Array.isArray(p.merch.variants) ? p.merch.variants : [], shippingCountries: p.merch.shippingCountries || ["US", "CA"], shippingProfiles: p.merch.shippingProfiles || [] } : null,
   };
@@ -59,7 +61,7 @@ export function normalizeCatalog(data) {
     ...data,
     schemaVersion: 2,
     keycapProfiles: Array.isArray(data.keycapProfiles) ? data.keycapProfiles.map(profile=>{
-      const clean={...profile,numberRows:profile.numberRows || Object.keys(NUMBER_ROWS),marks:profile.marks?.filter(id=>!DISABLED_MARKS.includes(id)),defaults:{numberRow:'swatches',...profile.defaults,keyColors:profile.defaults?.keyColors || {}}};
+      const clean={...profile,numberRows:profile.numberRows || KEYCAP_PREVIEWS[profile.templateId]?.numberRows || ['swatches','text'],marks:profile.marks?.filter(id=>!DISABLED_MARKS.includes(id)),defaults:{numberRow:'swatches',...profile.defaults,keyColors:profile.defaults?.keyColors || {}}};
       for(const group of ['alpha','modifiers','accents'])clean.defaults[group]=catalogColorId(clean.defaults[group]);
       if(DISABLED_MARKS.includes(clean.defaults?.mark))clean.defaults={...clean.defaults,mark:defaultDesign(clean).mark};
       return clean;
@@ -146,25 +148,25 @@ export function validateCatalog(data) {
       if (typeof s.supplierSku !== "string" || !s.supplierSku.trim() || s.supplierSku.length > 80 || supplierKeys.has(key))
         errors.push(`${p.name}: supplier listing and variant must be present and unique.`);
       supplierKeys.add(key);
-      if (!["pending", "office"].includes(s.fulfillment)) errors.push(`${p.name}: choose pending or office fulfillment. Direct supplier ordering is not enabled.`);
+      if (!["pending", "office", "manual"].includes(s.fulfillment)) errors.push(`${p.name}: choose a supported fulfillment mode.`);
       if (s.provider === "aliexpress" && (typeof s.variantId !== "string" || !s.variantId)) errors.push(`${p.name}: choose an exact AliExpress variant before importing.`);
       if (s.productUrl && (!safeLink(s.productUrl) || !s.productUrl.startsWith("https://"))) errors.push(`${p.name}: use a valid HTTPS supplier listing URL.`);
       if ([s.minimumQuantity, s.orderMultiple].some(n => !Number.isInteger(n) || n < 1)) errors.push(`${p.name}: supplier minimums must be positive whole numbers.`);
     }
     if (p.merch) {
       const m = p.merch, ids = new Set(), combinations = new Set();
-      if (p.type !== "physical" || m.provider !== "printify") errors.push(`${p.name}: Printify requires a physical product.`);
-      if (!/^[a-zA-Z0-9_-]{1,80}$/.test(m.productId || "") || !Number.isInteger(m.shopId) || m.shopId < 1)
+      if (p.type !== "physical" || !["printify","custom"].includes(m.provider)) errors.push(`${p.name}: Printify requires a physical product.`);
+      if (m.provider!=="custom" && (!/^[a-zA-Z0-9_-]{1,80}$/.test(m.productId || "") || !Number.isInteger(m.shopId) || m.shopId < 1))
         errors.push(`${p.name}: import a valid Printify product and store.`);
       for (const v of m.variants) {
         const combo = JSON.stringify([v.color, v.size]);
-        if (typeof v.id !== "string" || !v.id || ids.has(v.id) || combinations.has(combo) || !Number.isInteger(v.providerVariantId) || v.providerVariantId < 1)
+        if (typeof v.id !== "string" || !v.id || ids.has(v.id) || combinations.has(combo) || (m.provider!=="custom" && (!Number.isInteger(v.providerVariantId) || v.providerVariantId < 1)))
           errors.push(`${p.name}: variant IDs and color/size combinations must be unique and mapped to Printify.`);
         ids.add(v.id); combinations.add(combo);
         if (!Number.isFinite(v.price) || v.price <= 0 || v.price > 999999 || Math.abs(v.price * 100 - Math.round(v.price * 100)) > .00001)
           errors.push(`${p.name}: every variant needs a valid retail price with at most two decimals.`);
         if (typeof v.enabled !== "boolean" || ![true, false, null].includes(v.available)) errors.push(`${p.name}: invalid variant availability.`);
-        if (v.image && !safeLink(v.image)) errors.push(`${p.name}: invalid variant image URL.`);
+        if (v.image && !safeLink(v.image) && !(/^img\/[a-zA-Z0-9_./-]+\.(png|jpe?g|webp|svg)$/i.test(v.image) && !v.image.split('/').includes('..'))) errors.push(`${p.name}: invalid variant image URL.`);
       }
       if (!m.shippingCountries.length || m.shippingCountries.some(c => !/^[A-Z]{2}$/.test(c))) errors.push(`${p.name}: choose valid shipping countries.`);
       for (const rate of m.shippingProfiles) {

@@ -25,10 +25,14 @@ from .square import Square, PaymentUnavailable, PaymentInputError
 from .printify import load_connection, PrintifyUnavailable
 from .commerce import Commerce
 from .order_packets import OrderPackets
+from .supplier_quotes import supplier_quote_client
+from .supplier_packets import supplier_packet_zip
 from .keycaps import packet_zip
 from .suppliers import register_suppliers
 from .newsletter import register_newsletter
 from .forum import register_forum
+from .pcb_projects import register_pcb_projects
+from .catalog_sourcing import register_catalog_sourcing
 
 
 def checkout_url(value):
@@ -38,7 +42,7 @@ def checkout_url(value):
 
 
 def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
-               catalog_loader=None, enabled=None, site=None, public_url=None, printify_config=None, physical_enabled=None, printify_factory=None, worker_enabled=None, keycap_packets_dir=None):
+               catalog_loader=None, enabled=None, site=None, public_url=None, printify_config=None, physical_enabled=None, printify_factory=None, worker_enabled=None, keycap_packets_dir=None, supplier_quote_factory=None):
     database = Path(database or os.getenv("STORE_DATABASE", "/var/lib/roddy-store/orders.sqlite3"))
     private_dir = Path(private_dir or os.getenv("STORE_PRIVATE_DIR", "/var/lib/roddy-store/files")).resolve()
     manifest = manifest or os.getenv("STORE_MANIFEST", "/etc/roddy-store/digital-products.json")
@@ -66,7 +70,8 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
         except (httpx.HTTPError, ValueError) as exc:
             raise HTTPException(503, "Catalog is unavailable. Please try again.") from exc
 
-    catalog_loader = catalog_loader or load_catalog
+    source_catalog = catalog_loader or load_catalog
+    catalog_loader = lambda:sourcing.hydrate(source_catalog())
     database.parent.mkdir(parents=True, exist_ok=True)
 
     @contextmanager
@@ -125,9 +130,10 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
     @app.middleware("http")
     async def headers(request, call_next):
         # Newsletter sections accept longer copy; other endpoints retain the small-cart limit.
-        if request.method == "POST":
+        pcb_upload = re.fullmatch(r'/admin/pcb/projects/[a-f0-9-]+/files/[a-z]+', request.url.path)
+        if request.method == "POST" and not pcb_upload:
             body = await request.body()
-            limit = 65536 if (request.url.path.startswith("/admin/newsletters/") or request.url.path == "/admin/suppliers/preferences") else 262144 if request.url.path in {"/quote", "/checkout"} else 8192
+            limit = 65536 if (request.url.path.startswith("/admin/newsletters/") or request.url.path == "/admin/suppliers/preferences") else 262144 if request.url.path in {"/quote", "/checkout", "/admin/catalog-sourcing"} else 32768 if request.url.path.startswith('/admin/pcb/') else 8192
             if len(body) > limit:
                 return JSONResponse({"error": "Request too large."}, status_code=413)
         response = await call_next(request)
@@ -137,8 +143,11 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
         return response
 
     @app.exception_handler(HTTPException)
-    async def http_error(_, exc):
-        return JSONResponse({"error": exc.detail}, status_code=exc.status_code)
+    async def http_error(request, exc):
+        detail=exc.detail
+        if not request.url.path.startswith('/admin/') and isinstance(detail,str) and re.search(r'printify|aliexpress|mouser|yuzu|goblintech|pcbway',detail,re.I):
+            detail='This item is temporarily unavailable. Please try again or contact RODDY.'
+        return JSONResponse({"error": detail}, status_code=exc.status_code)
 
     @app.exception_handler(RequestValidationError)
     async def validation_error(_, exc):
@@ -153,8 +162,8 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
         return JSONResponse({"error": str(exc)}, status_code=503)
 
     @app.exception_handler(PrintifyUnavailable)
-    async def printify_error(_, exc):
-        return JSONResponse({"error": str(exc)}, status_code=503)
+    async def printify_error(request, exc):
+        return JSONResponse({"error": str(exc) if request.url.path.startswith('/admin/') else 'This item is temporarily unavailable. Please try again or contact RODDY.'}, status_code=503)
 
     def rate_limit(request, kind, maximum):
         # systemd runs one uvicorn process; SQLite makes limits durable across restarts.
@@ -242,7 +251,7 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
         return dict(row)
 
     def verify(order):
-        paid = bool(order["provider_id"] and provider.paid(order["provider_id"], order["amount"]))
+        paid = commerce.check_payment(order)
         commerce.mark_paid(order, paid)
         return paid
 
@@ -348,8 +357,8 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
                                       "expiresAt": now + 900})
         return {"paid": paid, "amountTotal": order["amount"], "currency": "USD", "downloads": downloads,
                 "mode": provider.mode, "shipping": order.get("shipping", 0),
-                "items": [{"id": i["id"], "variantId": i.get("variantId", ""), "name": i["name"], "qty": i.get("qty", 1), "kind": i.get("kind", "digital"), "label": i.get("label", ""), **({"design": i["designSnapshot"]["selection"]} if i.get("kind") == "keycaps" else {})} for i in json.loads(order["items"])],
-                "fulfillments": [{k: v for k, v in f.items() if k not in {"supplierId", "error"}} for f in commerce.fulfillments(order["session"])] if paid else []}
+                "items": [{"id": i["id"], "variantId": i.get("variantId", ""), "name": i["name"], "qty": i.get("qty", 1), "kind": i.get("kind", "digital") if i.get("kind") in {"digital","keycaps"} else "physical", "label": i.get("label", ""), **({"design": i["designSnapshot"]["selection"]} if i.get("kind") == "keycaps" else {})} for i in json.loads(order["items"])],
+                "fulfillments": [{**{k:v for k,v in f.items() if k not in {"supplierId","error","kind"}},"kind":f["kind"] if f["kind"] in {"keycaps","office"} else "made-to-order" if f["kind"]=="printify" else "shipment-"+str(index)} for index,f in enumerate(commerce.fulfillments(order["session"]))] if paid else []}
 
     @app.get("/download/{ticket}")
     def download(request: Request, ticket: str):
@@ -403,19 +412,68 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
         return {"shopId": client.shop_id, "product": client.product(product_id)}
 
     @app.get("/admin/orders")
-    def admin_orders(request: Request, view: str = "all"):
+    def admin_orders(request: Request, view: str = "all", status: str = "all", cursor: str = "", limit: int = 50,
+                     start: int = 0, end: int = 0, search: str = ""):
         require_admin(request)
-        with connect() as db:
-            if view not in {"all", "keycaps"}:
-                raise HTTPException(400, "Choose an order view.")
-            rows = db.execute("SELECT o.* FROM orders o JOIN fulfillments f ON f.session=o.session WHERE o.paid=1 AND f.kind='keycaps' AND f.state='awaiting-submission' ORDER BY o.created LIMIT 100").fetchall() if view == "keycaps" else db.execute("SELECT * FROM orders ORDER BY created DESC LIMIT 100").fetchall()
-        return {"data": [{"id": row["request_id"], "providerId": row["provider_id"], "created": row["created"],
-                          "amount_total": row["amount"], "shipping": row["shipping"], "currency": "USD",
-                          "payment_status": "paid" if row["paid"] else "canceled" if row["cancelled"] else "unconfirmed",
-                          "address": json.loads(row["address"]) if row["address"] else None,
-                          "items": [{"id": i["id"], "name": i["name"], "qty": i.get("qty", 1), "kind": i.get("kind", "digital"), "label": i.get("label", "")} for i in json.loads(row["items"])],
-                          "orderPacket": order_packets.info(row["session"]),
-                          "fulfillments": commerce.fulfillments(row["session"])} for row in rows], "has_more": False}
+        rows, page = commerce.records.page(view=view,status=status,cursor=cursor,limit=limit,start=start,end=end,search=search)
+        data=[]
+        for row in rows:
+            finance=commerce.records.summary(row)
+            data.append({"id":row["request_id"],"providerId":row["provider_id"],"created":row["created"],
+                         "amount_total":row["amount"],"shipping":row["shipping"],"currency":"USD",
+                         "payment_status":finance['status'],"finance":finance,
+                         "address":json.loads(row["address"]) if row["address"] else None,
+                         "items":[{"id":i["id"],"name":i["name"],"qty":i.get("qty",1),"kind":i.get("kind","digital"),"label":i.get("label",""),"unitPrice":i["cents"],**({"supplier":i["supplier"],"procurement":i["procurement"]} if i.get("kind") in {"aliexpress","mouser"} else {})} for i in json.loads(row["items"])],
+                         "expenses":commerce.records.expenses(row['session']),
+                         "orderPacket":order_packets.info(row["session"]),"fulfillments":commerce.fulfillments(row["session"])})
+        return {"data":data,**page,"summary":commerce.records.dashboard(start,end,search)}
+
+    @app.post("/admin/orders/export")
+    def export_orders(request: Request, body: dict):
+        require_admin(request)
+        kind=body.get('kind','orders')
+        content=commerce.records.export(kind,view=body.get('view','all'),status=body.get('status','all'),
+                                       start=body.get('start',0),end=body.get('end',0),search=body.get('search',''))
+        return Response(content,media_type='text/csv; charset=utf-8',headers={"Content-Disposition":f'attachment; filename="RODDY-{kind}.csv"',"Cache-Control":"no-store"})
+
+    @app.post("/admin/orders/sync")
+    def sync_order_records(request: Request, body: dict):
+        require_admin(request)
+        rows,page=commerce.records.page(limit=20,cursor=body.get('cursor',''),start=body.get('start',0),end=body.get('end',0))
+        checked=0
+        for order in rows:
+            if not order['provider_id']:continue
+            paid=commerce.check_payment(order)
+            commerce.mark_paid(order,paid);checked+=1
+        return {'checked':checked,**page}
+
+    @app.post('/admin/orders/{reference}/supplier')
+    def manual_supplier_order(reference: str, request: Request, body: dict):
+        require_admin(request)
+        with connect() as db:row=db.execute('SELECT * FROM orders WHERE request_id=?',(reference,)).fetchone()
+        if not row:raise HTTPException(404,'Order not found.')
+        order=dict(row)
+        if not verify(order):raise HTTPException(409,'Payment must be confirmed first.')
+        kind=body.get('kind')
+        if kind not in {'aliexpress','mouser'} or not any(i.get('kind')==kind for i in json.loads(order['items'])):raise HTTPException(400,'Choose a supplier belonging to this order.')
+        action=body.get('action')
+        existing=next(f for f in commerce.fulfillments(order['session']) if f['kind']==kind)
+        if action in {'ordered','pending'} and existing['state']=='shipped':raise HTTPException(409,'This order has already shipped.')
+        if action=='download':return Response(supplier_packet_zip(order,kind),media_type='application/zip',headers={'Content-Disposition':f'attachment; filename="RODDY-{reference}-{kind}.zip"','Cache-Control':'no-store'})
+        if action=='ordered':
+            supplier_ref=body.get('supplierReference','')
+            if not isinstance(supplier_ref,str) or not 1<=len(supplier_ref.strip())<=150 or any(ord(c)<32 for c in supplier_ref):raise HTTPException(400,'Enter the supplier order reference.')
+            existing=next(f for f in commerce.fulfillments(order['session']) if f['kind']==kind)
+            if existing['state']=='shipped':raise HTTPException(409,'This order has already shipped.')
+            commerce.update(order['session'],kind,'submitted',supplier_id=supplier_ref.strip())
+        elif action=='pending':commerce.update(order['session'],kind,'ready-to-order')
+        else:raise HTTPException(400,'Choose download, ordered or pending.')
+        return {'saved':True}
+
+    @app.post("/admin/orders/{reference}/expenses")
+    def supplier_expense(reference: str, request: Request, body: dict):
+        require_admin(request)
+        return commerce.records.expense(reference,body)
 
     @app.get("/admin/sales")
     def sale_notifications(request: Request, after: int | None = None):
@@ -462,7 +520,7 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
         if not verify(order):
             raise HTTPException(409, "Payment must be fully confirmed before shipping.")
         kind = body.get("kind", "office")
-        if kind not in {"office", "keycaps"} or not any(i.get("kind") == kind for i in json.loads(order["items"])):
+        if kind not in {"office", "keycaps", "aliexpress", "mouser"} or not any(i.get("kind") == kind for i in json.loads(order["items"])):
             raise HTTPException(409, "This order has no matching manual shipment.")
         carrier, number, url = (str(body.get(k, "")).strip() for k in ["carrier", "number", "url"])
         if not carrier or not number or len(carrier) > 100 or len(number) > 150 or (url and (len(url) > 1000 or not urlsplit(url).scheme in {"http", "https"} or not urlsplit(url).hostname or urlsplit(url).username)):
@@ -555,7 +613,10 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
             raise HTTPException(400, "Choose download or submitted.")
         return Response(packet_zip(order), media_type="application/zip", headers={"Cache-Control": "no-store", "Content-Disposition": f'attachment; filename="RODDY-{reference}-keycaps.zip"'})
 
+    sourcing=register_catalog_sourcing(app,require_admin,os.getenv("CATALOG_SOURCING",str(database.parent/"catalog-sourcing.json")))
     register_forum(app, connect, require_admin, rate_limit, origins)
     register_newsletter(app, connect, require_admin, rate_limit, origins)
-    register_suppliers(app, connect, require_admin, os.getenv("SUPPLIERS_CONFIG", str(database.parent / "suppliers.json")), public_url, site, rate_limit)
+    supplier_services = register_suppliers(app, connect, require_admin, os.getenv("SUPPLIERS_CONFIG", str(database.parent / "suppliers.json")), public_url, site, rate_limit)
+    commerce.supplier_quote_factory=supplier_quote_factory or (lambda kind:supplier_quote_client(kind,supplier_services['buyer']() if kind=='aliexpress' else supplier_services['mouser'](),supplier_services['reserve']))
+    app.state.pcb_projects=register_pcb_projects(app,require_admin,os.getenv('PCB_PROJECTS_DIR',str(database.parent/'pcb-projects')))
     return app

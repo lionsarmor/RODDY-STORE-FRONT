@@ -18,6 +18,7 @@ import MerchEditor from "./MerchEditor.vue";
 import { importPrintifyProduct, priceLabel } from "../merch.js";
 import SaleNotifications from './SaleNotifications.vue';
 import KeycapManager from './KeycapManager.vue';
+import PcbWizard from './PcbWizard.vue';
 import ProductEditor from "./ProductEditor.vue";
 import MediaEditor from "./MediaEditor.vue";
 import { useThemeStore } from "../stores/theme";
@@ -50,6 +51,7 @@ const tabs = [
   { id: "printify", label: "Printify merchandise", icon: "◇" },
   { id: "keycaps", label: "Keycap profiles", icon: "⌨" },
   { id: "orders", label: "Orders", icon: "▤" },
+  { id: "pcb", label: "Electronics / PCBWay", icon: "⚡" },
   { id: "newsletters", label: "Newsletters & ads", icon: "✉" },
   { id: "forum", label: "Community forum", icon: "☷" },
 ];
@@ -357,11 +359,19 @@ async function publish() {
       throw new Error(
         "A secret token was found in the catalog. Remove it from public fields before publishing.",
       );
+    const copiedImages=new Map();
+    for (const p of snapshot.products) for (const v of p.merch?.variants || []) {
+      if (/^https:\/\/images-api\.printify\.com\//.test(v.image || '')) {
+        if(!copiedImages.has(v.image)){const data=await commerceRequest(snapshot.settings.checkoutEndpoint,'/admin/catalog-images',form.token,{url:v.image});copiedImages.set(v.image,data.image);}
+        v.image=copiedImages.get(v.image);
+      }
+    }
     const sources = new Set();
     for (const p of snapshot.products)
       [p.coverImage, ...p.images].forEach((src) => {
         if (src?.startsWith("data:")) sources.add(src);
       });
+    for(const p of snapshot.products)for(const v of p.merch?.variants || [])if(v.image?.startsWith("data:"))sources.add(v.image);
     if (snapshot.settings.heroImage?.startsWith("data:"))
       sources.add(snapshot.settings.heroImage);
     const uploaded = new Map();
@@ -375,6 +385,7 @@ async function publish() {
     for (const p of snapshot.products) {
       p.coverImage = uploaded.get(p.coverImage) || p.coverImage;
       p.images = p.images.map((src) => uploaded.get(src) || src);
+      for(const v of p.merch?.variants || [])v.image=uploaded.get(v.image) || v.image;
     }
     snapshot.settings.heroImage =
       uploaded.get(snapshot.settings.heroImage) || snapshot.settings.heroImage;
@@ -1320,6 +1331,7 @@ function syncPrintify(source, targetId) {
               <p class="help-copy">Customers can combine merchandise and downloads in one checkout. The backend quotes shipping for their address, verifies payment, submits Printify orders and refreshes tracking. Printify charges production and shipping to your Printify account separately; keep its payment method funded. Review exceptions in Orders.</p>
             </section>
           </template>
+          <template v-if="tab === 'pcb'"><PcbWizard :endpoint="catalog.settings.checkoutEndpoint" :token="form.token" :connected="connected" :products="catalog.products" /></template>
           <template v-if="tab === 'orders'"><OrderManager :refresh-key="ordersRefresh" :endpoint="catalog.settings.checkoutEndpoint" :token="form.token" :connected="connected" /></template>
           <div v-show="tab === 'suppliers'"><SupplierManager :catalog="catalog" :token="form.token" :connected="connected" @import-products="catalog.products.push(...$event)" @edit-product="selected = $event; tab = 'products'" /></div>
           <div v-show="tab === 'newsletters'"><NewsletterManager :endpoint="catalog.settings.checkoutEndpoint" :token="form.token" :connected="connected" :github="form" :library="library" :products="catalog.products" /></div>

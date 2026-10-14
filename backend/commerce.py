@@ -15,6 +15,7 @@ from fastapi import HTTPException
 from .printify import PrintifyUnavailable
 from .square import PaymentUnavailable
 from .keycaps import selection_input, snapshot, label
+from .order_records import OrderRecords
 
 
 def cents(value):
@@ -77,8 +78,10 @@ class Commerce:
         self.connect, self.catalog, self.digital_items = connect, catalog, digital_items
         self.provider, self.printify, self.enabled = provider, printify, enabled
         self.packets = packets
+        self.supplier_quote_factory = None
         self.lock = threading.Lock()
         self.recover = lambda order: None
+        self.records = OrderRecords(connect)
         with connect() as db:
             columns = {r[1] for r in db.execute("PRAGMA table_info(orders)")}
             for name, kind in {"address": "TEXT", "shipping": "INTEGER NOT NULL DEFAULT 0",
@@ -107,8 +110,18 @@ class Commerce:
             );
             """)
 
+    def check_payment(self, order):
+        if not order.get('provider_id'):
+            return False
+        if hasattr(self.provider, 'payment_report'):
+            report = self.provider.payment_report(order['provider_id'], order['amount'])
+            if order.get('cancelled') and not report.get('captured'):report['status']='canceled'
+            self.records.record(order, report)
+            return report['fullyPaid']
+        return self.provider.paid(order['provider_id'], order['amount'])
+
     def inventory(self):
-        products = [p for p in self.catalog()["products"] if p.get("type") == "physical" and not p.get("merch") and not p.get("keycaps")]
+        products = [p for p in self.catalog()["products"] if p.get("type") == "physical" and not p.get("merch") and not p.get("keycaps") and (not p.get("supplier") or p["supplier"].get("fulfillment")=="office")]
         with self.connect() as db:
             for p in products:
                 db.execute("INSERT OR IGNORE INTO inventory VALUES(?,?)", (p["id"], max(0, int(p.get("stock", 0)))))
@@ -128,13 +141,17 @@ class Commerce:
                 raise HTTPException(409, "An item is unavailable. Refresh your cart.")
             if line.get("design") and not p.get("keycaps"):
                 raise HTTPException(400, "This product does not accept a keycap design.")
-            if p.get("supplier") and (not isinstance(p["supplier"], dict) or p["supplier"].get("fulfillment") != "office" or p.get("merch") or p["supplier"].get("provider") not in {"mouser", "aliexpress"}):
-                raise HTTPException(409, "Supplier fulfillment is not configured for this item. It cannot be purchased yet.")
+            if p.get("supplier") and (not isinstance(p["supplier"], dict) or p["supplier"].get("fulfillment") not in {"office","manual"} or p.get("merch") or p["supplier"].get("provider") not in {"mouser", "aliexpress"}):
+                raise HTTPException(409, "This item is temporarily unavailable. Please contact RODDY.")
             item = {"id": p["id"], "name": p["name"], "qty": line["qty"], "variantId": line["variantId"]}
             if p.get("type") == "digital":
                 if line["qty"] != 1 or line["variantId"]:
                     raise HTTPException(400, "Digital downloads allow one copy per order.")
                 item.update(self.digital_items(json.dumps([p["id"]]))[0], kind="digital", qty=1)
+            elif p.get('type')=='physical' and (p.get('supplier') or {}).get('fulfillment')=='manual':
+                if not self.enabled or self.provider.mode!='live' or p['supplier']['provider'] not in {'aliexpress','mouser'} or p.get('trackStock') is not False or not self.supplier_quote_factory:
+                    raise HTTPException(409,'This item is temporarily unavailable.')
+                item.update(kind=p['supplier']['provider'],cents=cents(p['price']),supplier=dict(p['supplier']),label='',officeShipping=p.get('officeShipping',{}))
             elif p.get("type") == "physical" and p.get("keycaps"):
                 if not self.enabled or self.provider.mode != "live" or p.get("merch") or p.get("supplier") or p.get("trackStock") is not False or line["variantId"]:
                     raise HTTPException(409, "Custom keycap fulfillment is not configured for this product.")
@@ -200,8 +217,13 @@ class Commerce:
             if not isinstance(rate, dict) or any(k not in rate for k in ["firstItem", "additionalItem"]):
                 raise HTTPException(409, "Shipping is not configured for this product and country.")
             office_shipping += cents(rate["firstItem"]) + cents(rate["additionalItem"]) * (i["qty"] - 1)
+        direct_shipping=0
+        for item in items:
+            if item['kind'] in {'aliexpress','mouser'}:
+                item['procurement']=self.supplier_quote_factory(item['kind']).quote(item,address)
+                direct_shipping+=item['procurement']['shippingCents']
         pod_shipping = supplier.quote_shipping(self.supplier_lines(items), address) if supplier else 0
-        shipping = office_shipping + pod_shipping
+        shipping = office_shipping + pod_shipping + direct_shipping
         quote_id, now = secrets.token_urlsafe(32), int(time.time())
         with self.connect() as db:
             db.execute("DELETE FROM quotes WHERE created < ?", (now - 86400,))
@@ -232,8 +254,13 @@ class Commerce:
         address = json.loads(quote["address"])
         current, _ = self.price(cart, live=bool(address), country=address["country"] if address else None)
         items = json.loads(quote["items"])
-        if json.dumps(current, sort_keys=True) != json.dumps(items, sort_keys=True):
+        if json.dumps(current, sort_keys=True) != json.dumps([{k:v for k,v in i.items() if k!='procurement'} for i in items], sort_keys=True):
             raise HTTPException(409, "Prices or options changed. Refresh your quote.")
+        for item in items:
+            if item['kind'] in {'aliexpress','mouser'}:
+                live_quote=self.supplier_quote_factory(item['kind']).quote(item,address)
+                if live_quote['totalCents']>item['procurement']['totalCents'] or live_quote['service']!=item['procurement']['service']:
+                    raise HTTPException(409,'Price or shipping changed. Refresh your quote.')
         self.inventory() if any(i["kind"] == "office" for i in items) else None
         session = secrets.token_urlsafe(32)
         with self.connect() as db:
@@ -269,7 +296,7 @@ class Commerce:
                 kinds = {i.get("kind", "digital") for i in json.loads(order["items"])} - {"digital"}
                 for kind in kinds:
                     db.execute("INSERT OR IGNORE INTO fulfillments(session,kind,state,updated) VALUES(?,?,?,?)",
-                               (order["session"], kind, "queued" if kind == "printify" else "awaiting-submission" if kind == "keycaps" else "ready-to-ship", int(time.time())))
+                               (order["session"], kind, "queued" if kind == "printify" else "ready-to-order" if kind in {"aliexpress","mouser"} else "awaiting-submission" if kind == "keycaps" else "ready-to-ship", int(time.time())))
                 if "keycaps" in kinds and self.packets:
                     self.packets.enqueue(db, order["session"])
             elif order["paid"]:
@@ -328,33 +355,36 @@ class Commerce:
         self.update(order["session"], "printify", "delivered" if shipments and all(s["deliveredAt"] for s in shipments) else status,
                     supplier_id, issue, shipments)
 
+    def was_paid(self, session):
+        with self.connect() as db:return bool(db.execute('SELECT 1 FROM sale_events WHERE session=?',(session,)).fetchone())
+
     def tick(self):
         if not self.lock.acquire(blocking=False):
             return
         try:
             with self.connect() as db:
-                rows = db.execute("SELECT * FROM orders WHERE cancelled=0 AND created>? AND checked<? ORDER BY checked LIMIT 50", (int(time.time()) - 30 * 86400, int(time.time()) - 30)).fetchall()
+                rows = db.execute("SELECT * FROM orders WHERE cancelled=0 AND (created>? OR EXISTS(SELECT 1 FROM sale_events e WHERE e.session=orders.session)) AND checked<? ORDER BY checked LIMIT 50", (int(time.time()) - 30 * 86400, int(time.time()) - 30)).fetchall()
             for row in rows:
                 order = dict(row)
                 try:
                     with self.connect() as db:
-                        db.execute("UPDATE orders SET checked=? WHERE session=?", (int(time.time()) + (270 if order["paid"] else 0), order["session"]))
+                        db.execute("UPDATE orders SET checked=? WHERE session=?", (int(time.time()) + (86370 if order["created"] < time.time()-30*86400 else 270 if order["paid"] else 0), order["session"]))
                     if not order["provider_id"]:
                         # Recover a Square timeout with the original idempotency
                         # key, including when the buyer never returns to the site.
                         self.recover(order)
                         with self.connect() as db:
                             order = dict(db.execute("SELECT * FROM orders WHERE session=?", (order["session"],)).fetchone())
-                    paid = self.provider.paid(order["provider_id"], order["amount"])
+                    paid = self.check_payment(order)
                     self.mark_paid(order, paid)
                     if paid and self.enabled and self.provider.mode == "live":
                         if self.packets:
                             self.packets.process(order)
                         self.process_printify(order)
-                    elif not paid and not order["paid"] and order["created"] < time.time() - 3600 and order["link_id"]:
+                    elif not paid and not order["paid"] and not self.was_paid(order["session"]) and order["created"] < time.time() - 3600 and order["link_id"]:
                         # Delete the hosted link BEFORE releasing reservations.
                         self.provider.cancel_checkout(order["link_id"])
-                        if self.provider.paid(order["provider_id"], order["amount"]):
+                        if self.check_payment(order):
                             self.mark_paid(order, True)
                         else:
                             with self.connect() as db:

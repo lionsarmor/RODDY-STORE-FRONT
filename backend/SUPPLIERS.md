@@ -7,7 +7,7 @@ catalog (`public/data/products.json`). Square checkout, office inventory, Printi
 digital releases, forum and newsletters use the existing FastAPI/SQLite droplet
 service. No new framework, database or alternate customer checkout is introduced.
 
-This phase adds **Suppliers & imports** in admin: private connection management,
+**Suppliers & imports** provides in admin: private connection management,
 keyword search, exact listing lookup, preferred-store bookmarks, seller verification,
 selected draft imports and fee-aware retail estimates. It does **not** enable direct
 Mouser/AliExpress purchasing, automatic supplier charges or background supplier sync.
@@ -34,7 +34,9 @@ No tests or deployment scripts place real supplier orders or attempt real paymen
 Sign into admin using the existing GitHub-owner connection, then open **Suppliers &
 imports**. Save API credentials in its password fields over HTTPS:
 
-- Mouser: Search API key from My Mouser → API access. No Order key is requested.
+- Mouser: Search API key from My Mouser → API access. A separate optional Order/Cart
+  key can be saved and checked with a read-only account-options request. Purchasing
+  stays manual regardless of either key's approval status.
 - AliExpress: approved Open Platform App Key and App Secret with Dropship search
   permission. Exact listing/SKU details also require an authorized buyer token.
   An affiliate-only application's permissions may be insufficient.
@@ -68,25 +70,13 @@ entered token has no automatic renewal metadata. Provider errors never echo toke
 Testing/production application token lifetimes differ; use the returned durations,
 not assumed thirty-day validity. Authorization does not enable supplier ordering.
 
-### X16 keycaps manufacturer onboarding
+### Custom keycaps
 
-Suppliers admin includes the existing **v05 AULA F87/F87 Pro ANSI 87-key, 80% TKL**
-design, pinned to source revision `e0b66b85566b53df6d7770bc1ebc081df73d0756` in
-`lionsarmor/x16-keycaps`. The original checkout was inspected read-only. Its inventory
-has 87 keys, and the supplier package file hashes and ZIP integrity were checked.
-An identical supplier ZIP is hosted under `public/merch/keycaps/`, with its SHA-256
-recorded in `SHA256SUMS.txt`; it requires no GitHub access. No artwork was rebuilt.
-
-`public/merch/keycaps/FULFILLMENT_REQUEST.txt` is an unsent inquiry for Goblintech.
-The design already uses their ANSI80 template. Custom manufacturing and creator
-programs are leads, not confirmation of per-customer drop shipping or a public API.
-YUZU is linked as a no-minimum custom-set alternative; its external creator checkout
-is not assumed to integrate with Square.
-
-Request a quote, digital proof and one physical fit sample before enabling sales.
-Confirm repeat one-set pricing, US/Canada shipping, neutral packaging, design SKU,
-billing, order submission, tracking, defects and cancellations. Nothing sends this
-inquiry, orders a sample, charges a card, or publishes a purchasable keycap listing.
+Current keycap profiles and private paid-order packets are described in
+[ORDERS.md](ORDERS.md). The legacy v05 inquiry and manufacturer review ZIP have
+been removed from public hosting; retained copies are private local artifacts.
+The storefront offers the current X16 and Standard ANSI 87 profiles. Paid orders
+freeze their exact design and enter the manual owner queue.
 
 Blank fields retain existing credentials. Values are cleared from the form after
 saving and never echoed in responses, public catalog, GitHub, localStorage or logs.
@@ -132,20 +122,11 @@ product instead. Refreshing supplier details does not overwrite owner edits.
 Bulk selection/review remains available. All imports remain unpublished drafts
 with fulfillment pending until the owner edits and publishes them normally.
 
-Mouser diagnostics: the live saved key was rejected with HTTP 200 containing
-`Errors: Code=Invalid, PropertyName=API Key, Message=Invalid unique identifier.`
-Its UUID formatting and lack of whitespace were checked, and the keyword request
-matches the official v1 schema. This response does not distinguish an unactivated
-key from a wrong/revoked key. Check **My Mouser → API access → Search API** for
-approval and the current key; Search and Order API keys are separate. Admin exposes
-this specific action using a fixed message, never raw provider text or credentials.
-The historical pending flag is a saved note, not a live claim about account approval.
-The owner subsequently confirmed that this was their pending **Order/Cart API key**,
-not a Search key. It was moved to private `orderKey` storage, with
-`orderApprovalPending: true`, and removed from `searchKey`. It does not configure
-or enable search. Request a separate Search API key through My Mouser's Search API
-section. Search disconnect preserves that separately stored Order key. API status
-exposes only boolean flags, never either credential; ordering remains disabled.
+Mouser Search access is connected and has passed a live keyword search. The
+separately saved Order/Cart key still returns HTTP 401 from the read-only account
+options endpoint, and the owner confirmed approval is pending. **Verify supplier
+connection** checks these capabilities separately without placing an order. Both
+keys remain private; manual purchasing does not require Order/Cart API approval.
 
 Save a store's name, AliExpress Store ID and keywords in Preferred suppliers.
 Entering an ID builds its official HTTPS store URL; pasting a `/store/NUMBER` URL
@@ -163,7 +144,7 @@ becomes its own draft in this phase; there is no invented Printify-compatible op
 mapping. Duplicate provider + listing + variant identities are rejected. Imports
 report independent successes/failures and never add the supplier's entire catalog.
 
-Drafts have `active: false`, `status: coming-soon`, tracked stock zero, public
+Drafts have `active: false`, `status: coming-soon`, tracked stock zero, private
 provenance under `supplier`, and `fulfillment: pending`. Internal supplier cost is
 used for estimates but omitted from public product records. Use the normal editor
 for categories, content, media, tags, price and visibility. Existing products are
@@ -183,18 +164,19 @@ configure tracked office stock and shipping rates. Those sales use the existing
 mixed-cart Square/office flow. Disconnecting provenance keeps content and does not
 place/cancel supplier orders or alter live inventory.
 
-## Remaining direct-fulfillment work
+## Manual supplier fulfillment
 
-Before direct supplier sales become available, connect the appropriate ordering
-permissions, verify account billing and destination support, implement real shipping
-quotes and SKU/MOQ/stock/cost checks, persist supplier-order approval/outbox states,
-reconcile uncertain submissions before retries, and support tracking, cancellations,
-refund exceptions and separate shipments in mixed carts. Confirm supplier resale and
-third-party shipping terms for this business. Automatic submission/payment should
-follow successful approved-order validation, not be inferred from a saved card.
+The owner may select `fulfillment: manual` for a supplier item and disable local
+stock tracking. AliExpress checkout validates the exact seller/SKU, stock, price
+and tracked destination quote with the buyer connection. Mouser checks live Search
+API prices, MOQ/order multiple and stock, with explicitly configured shipping.
+Paid orders enter **Orders → To order / send** for the owner to purchase manually,
+record a supplier reference and invoice, then save shipment tracking. See
+[ORDERS.md](ORDERS.md). No supplier order or payment endpoint is called.
 
-These tasks are intentionally not represented as completed by catalog search/import
-capabilities. No enabled checkbox can bypass the checkout guard.
+Future automatic purchasing would need separate explicit authorization, approved
+billing/API permissions, durable submission/reconciliation and exception handling.
+The owner has deferred that work; a saved token or card never enables it.
 
 ## Official references
 

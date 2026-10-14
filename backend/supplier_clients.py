@@ -184,3 +184,28 @@ class AliExpress:
                 'availability': 'Choose a variant to see stock and price', 'minimumQuantity': 1, 'orderMultiple': 1,
                 'sellerId': str(store.get('store_id', ''))[:50], 'sellerName': str(store.get('store_name', ''))[:160],
                 'leadTime': str(result.get('logistics_info_dto', {}).get('delivery_time', ''))[:100], 'priceBreaks': [], 'restriction': ''}
+
+
+class MouserOrdering:
+    """Read-only account readiness; order submission is a separate capability."""
+    def __init__(self, config, reserve):
+        self.key,self.reserve=config.get('orderKey'),reserve
+
+    def options(self):
+        if not self.key:
+            raise HTTPException(409,'Save the separate Mouser Order/Cart API key first.')
+        self.reserve('mouser')
+        try:
+            response=httpx.post('https://api.mouser.com/api/v1/order/options/query',
+                params={'apiKey':self.key},json={'OrderInitialize':{'CurrencyCode':'USD'}},timeout=20)
+            if response.status_code in {401,403}:
+                raise HTTPException(409,'Mouser rejected the Order/Cart API connection. Check its approval and save the active Order/Cart key; the Search key is different.')
+            if not response.is_success:raise HTTPException(503,'Mouser ordering options are unavailable. No order was placed.')
+            result=response.json();result=result.get('OrderInitialize',result)
+            if result.get('Errors'):raise HTTPException(409,'Mouser account options need attention. Check billing and Order/Cart API access in My Mouser.')
+            payment=result.get('Payment') or {};shipping=result.get('Shipping') or {}
+            return {'accessVerified':True,'billingReady':bool(result.get('BillingAddress')),
+                    'currency':result.get('CurrencyCode'),'shippingMethods':len(shipping.get('Methods') or []),
+                    'paymentMethods':len(payment.get('PaymentTypes') or []),'orderPlaced':False}
+        except (httpx.HTTPError,ValueError):
+            raise HTTPException(503,'Mouser ordering connection could not be checked. No order was placed.') from None

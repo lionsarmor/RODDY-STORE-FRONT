@@ -1,3 +1,5 @@
+import {commerceRequest} from './commerce-api';
+import {publicCatalog,hydrateCatalog} from './catalog-sourcing';
 /* GitHub Contents API — reads and writes public/data/products.json directly
    from the browser using a user-supplied personal access token. No backend.
    Note: this is the path in the repo's source tree (what the GitHub API
@@ -57,7 +59,9 @@ export async function fetchCatalog({ owner, repo, branch, token }) {
   }
 
   const json = await res.json();
-  return { sha: json.sha, catalog: JSON.parse(base64ToUtf8(json.content)) };
+  const catalog=JSON.parse(base64ToUtf8(json.content));
+  if(catalog.products.some(p=>p.fulfillmentRef)){const sources=await commerceRequest(catalog.settings.checkoutEndpoint,"/admin/catalog-sourcing",token);return {sha:json.sha,catalog:hydrateCatalog(catalog,sources.products)};}
+  return {sha:json.sha,catalog};
 }
 
 // Older saved drafts contain the original blob SHA, but no baseline catalog.
@@ -72,9 +76,13 @@ export async function fetchCatalogRevision({ owner, repo, token }, sha) {
 }
 
 export async function saveCatalog({ owner, repo, branch, token, sha }, catalog) {
+  const mapped=catalog.products.filter(p=>p.supplier || p.merch?.provider==="printify");
+  const sources=mapped.length?await commerceRequest(catalog.settings.checkoutEndpoint,"/admin/catalog-sourcing",token,{products:mapped}):{references:{}};
+  for(const p of catalog.products){if(sources.references[p.id])p.fulfillmentRef=sources.references[p.id];if(p.supplier)p.fulfillment=p.supplier.fulfillment;}
+  const published=publicCatalog(catalog,sources.references);
   const body = {
     message: `Update inventory via RODDY admin (${new Date().toISOString().slice(0, 19)}Z)`,
-    content: utf8ToBase64(`${JSON.stringify(catalog, null, 2)}\n`),
+    content: utf8ToBase64(`${JSON.stringify(published, null, 2)}\n`),
     branch,
   };
   if (sha) body.sha = sha;

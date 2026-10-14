@@ -44,7 +44,7 @@ export function importPrintifyProduct(product, detail, shopId, keepPrices = true
 // Standard provider rates are an estimate, not an address-specific checkout quote.
 export function shippingFor(product, variant, country) {
   if (!variant || !product.merch?.shippingCountries?.includes(country)) return null;
-  const profiles = (product.merch.shippingProfiles || []).filter(p => p.variantIds.includes(variant.providerVariantId));
+  const profiles = (product.merch.shippingProfiles || []).filter(p => p.variantIds.some(id=>String(id)===String(variant.providerVariantId ?? variant.id)));
   return profiles.find(p => p.countries.includes(country)) || profiles.find(p => p.countries.includes('REST_OF_THE_WORLD')) || null;
 }
 export function estimateShipping(items, country) {

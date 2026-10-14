@@ -10,6 +10,17 @@ import {reactive} from 'vue';
 import {PALETTE,colorHex,legendColorId} from './keycap-palette.js';
 const catalog=normalizeCatalog(JSON.parse(readFileSync(new URL('../public/data/products.json',import.meta.url))));
 const profile=catalog.keycapProfiles[0];const template=KEYCAP_PREVIEWS[profile.templateId];
+test('standard ANSI profile has plain legends, independent cart identity and no manufacturing fields',()=>{
+  const standard=catalog.keycapProfiles.find(p=>p.id==='standard-ansi87');
+  const selection=defaultDesign(standard),preview=generatePreview(standard,selection);
+  assert.equal(selection.numberRow,'plain');assert.equal(preview.keys.length,87);
+  assert.ok(!KEYCAP_PREVIEWS[standard.templateId].keys.some(k=>k.numberRowText || k.colorNames));
+  for(const mode of ['text','swatches'])assert.ok(designError({...selection,numberRow:mode},{...standard,numberRows:['plain',mode]}));
+  assert.ok(designError({...defaultDesign(profile),numberRow:'plain'},{...profile,numberRows:['swatches','text','plain']}));
+  assert.notEqual(designKey(selection),designKey(defaultDesign(profile)));
+  const serialized=JSON.stringify(KEYCAP_PREVIEWS[standard.templateId]);
+  for(const field of ['keycapProfileId','layoutKeys','keyTemplates','vectDef'])assert.ok(!serialized.includes('"'+field+'"'));
+});
 test('restored X16 butterfly is selectable and profile checkboxes can hide it',()=>{
   assert.ok(MARKS['commander-x16']);
   const selected={...defaultDesign(profile),mark:'commander-x16'};

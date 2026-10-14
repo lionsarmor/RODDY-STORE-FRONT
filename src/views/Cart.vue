@@ -37,7 +37,7 @@ function itemError(item) {
   if (item.product.keycaps) {
     const error = designError(item.design, profileFor(catalog, item.product));
     if (error) return error;
-    if (["soon", "out"].includes(stockState(item.product)) || item.product.pricePending) return "Your design is saved. Ordering opens when this set is ready.";
+    if (["soon", "out"].includes(stockState(item.product)) || item.product.pricePending) return "This set is temporarily unavailable.";
     return "";
   }
   if (item.product.merch) {
@@ -47,7 +47,7 @@ function itemError(item) {
   }
   if (item.product.price <= 0) return "Get free downloads from their product pages.";
   if (item.product.type === "digital" && item.qty !== 1) return "Choose one copy of this digital download.";
-  if (item.product.type === "physical" && !item.product.trackStock) return "This office-shipped item needs inventory configured before checkout.";
+  if (item.product.type === "physical" && !item.product.trackStock && (item.product.supplier?.fulfillment || item.product.fulfillment)!=="manual") return "This item is temporarily unavailable.";
   if (
     ["soon", "out"].includes(stockState(item.product)) ||
     item.product.pricePending
@@ -209,7 +209,7 @@ function updateQty(item, value) {
           ><span>{{ formatPrice(quote ? quote.amountTotal / 100 : total + (shipping || 0)) }}{{ physical && !quote ? " (estimate)" : "" }}</span>
         </div>
         <p class="mb-5 text-xs leading-relaxed text-text-dim">
-          {{ physical ? "USD. One payment covers your order. Downloads unlock after payment; made-to-order and office items ship separately." : "USD. Your software download appears after payment is confirmed." }}
+          {{ physical ? "USD. One payment covers your order. Downloads unlock after payment. Items may arrive in separate packages." : "USD. Your software download appears after payment is confirmed." }}
         </p>
         <button
           class="button primary w-full"

@@ -41,8 +41,8 @@ export function supplierDraft(row, variantId, category, rules, existing) {
     minimumQuantity: row.minimumQuantity || 1, orderMultiple: row.orderMultiple || 1};
   if (existing.some(p => p.supplier && supplierIdentity(p) === supplierIdentity(supplier))) throw new Error(`${row.name}: already imported. Edit its existing product instead.`);
   const estimate = priceEstimate(variant ? variant.costCents : row.costCents, rules);
-  const base = `${row.provider}-${slugify(row.sku)}${variant ? '-' + slugify(variant.id) : ''}`;
-  let id = base, sku = `${row.provider === 'mouser' ? 'M' : 'AE'}-${row.sku}${variant ? '-' + variant.id : ''}`, n = 1;
+  const base = 'roddy-item-'+crypto.randomUUID().slice(0,8);
+  let id = base, sku = 'RODDY-'+base.slice(-8).toUpperCase(), n = 1;
   while (existing.some(p => p.id === id)) id = `${base}-${n++}`;
   while (existing.some(p => p.sku?.toLowerCase() === sku.toLowerCase())) sku += '-new';
   return normalizeProduct({id, sku, name: row.name + (variant?.label ? ` — ${variant.label}` : ''), category,
@@ -51,5 +51,5 @@ export function supplierDraft(row, variantId, category, rules, existing) {
     shortDescription: '', images: row.image ? [row.image] : [], coverImage: row.image || '', tags: [],
     specs: {...(row.manufacturer ? {Manufacturer: row.manufacturer} : {}), ...(row.manufacturerPartNumber ? {'Manufacturer part': row.manufacturerPartNumber} : {}),
       ...(variant?.label ? {Variant: variant.label} : {})}, supplier, officeShipping: {},
-    releaseNote: 'Supplier fulfillment and shipping are being prepared. Not available for purchase yet.'});
+    releaseNote: 'Coming soon.'});
 }

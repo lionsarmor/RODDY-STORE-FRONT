@@ -109,7 +109,7 @@ class MixedCheckoutTests(unittest.TestCase):
         self.tick(); self.assertEqual(len(self.supplier.submitted),1); self.assertEqual(len(self.supplier.production),1)
         status=self.client.post('/order',json={'sessionId':session}).json()
         self.assertTrue(status['paid']); self.assertEqual(len(status['downloads']),1)
-        self.assertEqual({f['kind'] for f in status['fulfillments']},{'office','printify'})
+        self.assertEqual({f['kind'] for f in status['fulfillments']},{'office','made-to-order'})
         self.assertNotIn('supplierId',json.dumps(status['fulfillments']))
         inventory=self.client.get('/inventory').json()['items'][0]; self.assertEqual(inventory['available'],1)
         self.tick(); self.assertEqual(self.client.get('/inventory').json()['items'][0]['available'],1)

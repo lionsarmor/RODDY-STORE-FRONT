@@ -79,23 +79,51 @@ class Square:
             raise PaymentUnavailable("Invalid payment link reference.")
         return self.request("DELETE", "/v2/online-checkout/payment-links/" + link_id)
 
-    def paid(self, provider_id, amount):
+    def payment_report(self, provider_id, amount):
         order = self.request("GET", "/v2/orders/" + provider_id)["order"]
         expected = {"amount": amount, "currency": "USD"}
+        report = {"fullyPaid": False, "status": "unconfirmed", "captured": 0,
+                  "refunded": 0, "fees": None, "tax": None, "paidAt": None, "payments": []}
         if (order.get("id") != provider_id or order.get("location_id") != self.location
-                or order.get("total_money") != expected or order.get("state") == "CANCELED"):
-            return False
-        # A successful redirect or an order's status alone is not proof of payment.
+                or order.get("total_money") != expected):
+            return report
+        report["tax"] = order.get("total_tax_money", {}).get("amount")
+        fees, fees_known, refund_pending = 0, True, False
         for tender in order.get("tenders", []):
             payment_id = tender.get("payment_id") or tender.get("id")
             if not payment_id:
                 continue
             payment = self.request("GET", "/v2/payments/" + payment_id)["payment"]
-            if (payment.get("order_id") == provider_id
-                    and payment.get("location_id") == self.location
-                    and payment.get("status") == "COMPLETED"
-                    and payment.get("amount_money") == expected
-                    and not payment.get("refund_ids")
-                    and payment.get("refunded_money", {}).get("amount", 0) == 0):
-                return True
-        return False
+            money = payment.get("amount_money", {})
+            if (payment.get("order_id") != provider_id or payment.get("location_id") != self.location
+                    or money.get("currency") != "USD" or type(money.get("amount")) is not int):
+                continue
+            refunded = payment.get("refunded_money", {}).get("amount", 0)
+            known_fee = payment.get("processing_fee")
+            receipt = {"id": payment_id, "status": payment.get("status"), "amount": money["amount"],
+                       "refunded": refunded, "createdAt": payment.get("created_at"),
+                       "refundIds": payment.get("refund_ids", [])}
+            report["payments"].append(receipt)
+            if payment.get("status") == "COMPLETED":
+                report["captured"] += money["amount"]
+                report["refunded"] += refunded
+                if payment.get("created_at"):
+                    report["paidAt"] = min(report["paidAt"] or payment["created_at"], payment["created_at"])
+                fees_known = fees_known and isinstance(known_fee, list)
+                fees += sum(f.get("amount_money", {}).get("amount", 0) for f in known_fee or [])
+                refund_pending = refund_pending or bool(payment.get("refund_ids") and not refunded)
+        report["fees"] = fees if fees_known and report["captured"] else None
+        report["fullyPaid"] = (report["captured"] == amount and not report["refunded"]
+                               and not refund_pending and order.get("state") != "CANCELED")
+        report["status"] = ("refunded" if report["captured"] and report["refunded"] >= report["captured"]
+                            else "partially-refunded" if report["refunded"]
+                            else "payment-review" if refund_pending
+                            else "paid" if report["fullyPaid"]
+                            else "canceled" if order.get("state") == "CANCELED"
+                            else "processing" if any(p["status"] in {"APPROVED", "PENDING"} for p in report["payments"])
+                            else "failed" if any(p["status"] == "FAILED" for p in report["payments"])
+                            else "unconfirmed")
+        return report
+
+    def paid(self, provider_id, amount):
+        return self.payment_report(provider_id, amount)["fullyPaid"]

@@ -1,15 +1,16 @@
 import {PALETTE,colorHex,colorName,catalogColorId,legendColorId} from './keycap-palette.js';
 import markOptions from '../backend/keycap_mark_options.json' with {type: 'json'};
 import x16 from './keycap-previews/x16-v06-cherry-tkl.json' with {type: 'json'};
+import standard from './keycap-previews/standard-cherry-tkl.json' with {type: 'json'};
 
 // One validated template per physical layout. Profiles are catalog data and
 // can share a layout while offering different defaults and allowed options.
-export const KEYCAP_PREVIEWS = {[x16.id]: x16};
+export const KEYCAP_PREVIEWS = {[x16.id]: x16,[standard.id]:standard};
 export const DISABLED_MARKS = Object.keys(markOptions).filter(id=>markOptions[id].enabled===false);
 export const MARKS = Object.fromEntries(Object.entries(markOptions).filter(([,option])=>option.enabled!==false).map(([id,option])=>[id,option.label]));
 export const MARK_DESCRIPTIONS = Object.fromEntries(Object.entries(markOptions).map(([id,option])=>[id,option.inspiration || '']));
 export const ARROWS = {'small-black':'Small black arrows','small-white':'Small white arrows','bold-black':'Bold black arrows','bold-white':'Bold white arrows'};
-export const NUMBER_ROWS = {swatches:'Colored boxes',text:'Color names'};
+export const NUMBER_ROWS = {swatches:'Colored boxes',text:'Color names',plain:'Standard legends'};
 export function arrowShapes(key, style) {
   const paletteId=style.endsWith('-white')?'GR002':'GR001';
   return (style.startsWith('bold-')?key.boldArrows:key.shapes).map(s=>({...s,paletteId,fill:colorHex(paletteId)}));
@@ -40,7 +41,7 @@ export function designError(design, profile) {
   const ids=new Set(KEYCAP_PREVIEWS[profile.templateId].keys.map(k=>k.id));
   if(!overrides || typeof overrides!=='object' || Array.isArray(overrides) || Object.keys(overrides).length>256 || Object.entries(overrides).some(([key,color])=>!ids.has(key)||!PALETTE[color])) return 'Choose valid individual keys and available palette colors.';
   if (!availableMarks(profile).includes(design.mark) || !(profile.arrows || Object.keys(ARROWS)).includes(design.arrows)) return 'Choose an available symbol and arrow style.';
-  if (!NUMBER_ROWS[design.numberRow] || !(profile.numberRows || Object.keys(NUMBER_ROWS)).includes(design.numberRow) || (design.numberRow==='text' && !KEYCAP_PREVIEWS[profile.templateId].keys.some(k=>k.numberRowText))) return 'Choose an available number-row style.';
+  if (!(KEYCAP_PREVIEWS[profile.templateId].numberRows || ['swatches','text']).includes(design.numberRow) || !NUMBER_ROWS[design.numberRow] || !(profile.numberRows || Object.keys(NUMBER_ROWS)).includes(design.numberRow) || (design.numberRow==='text' && !KEYCAP_PREVIEWS[profile.templateId].keys.some(k=>k.numberRowText))) return 'Choose an available number-row style.';
   return '';
 }
 // Display geometry only. Supplier layouts, IDs and manufacturing JSON stay on

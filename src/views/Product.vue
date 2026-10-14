@@ -282,7 +282,7 @@ async function buyNow() {
           </label>
           <p class="merch-shipping" v-if="selectedShipping">Standard shipping estimate: <strong>{{ formatPrice(selectedShipping.firstItem) }}</strong> for the first item; {{ formatPrice(selectedShipping.additionalItem) }} per additional item. USD. Final shipping depends on the delivery address.</p>
           <p v-else class="merch-shipping">Shipping estimate unavailable for this selection and destination. Shipping will be confirmed before payment.</p>
-          <p v-if="catalog.settings.checkoutEnabled && purchasable" class="merch-shipping">Made to order and shipped by our print partner. Choose your options, add to cart, then enter your delivery address to confirm shipping and pay securely with Square. Ships to the United States and Canada.</p>
+          <p v-if="catalog.settings.checkoutEnabled && purchasable" class="merch-shipping">Made to order. Ships to the United States and Canada. Shipping is calculated at checkout.</p>
           <p v-else class="merch-shipping">Made to order. Ordering is currently unavailable.</p>
         </section>
         <div v-if="state === 'soon'" class="coming-soon-panel">

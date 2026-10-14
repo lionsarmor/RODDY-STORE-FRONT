@@ -14,7 +14,7 @@ TEMPLATES = Path(os.getenv('KEYCAP_TEMPLATES_DIR', '/var/lib/roddy-store/keycap-
 MARKS = {ident: option['label'] for ident, option in json.loads(Path(__file__).with_name('keycap_mark_options.json').read_text()).items() if option.get('enabled', True)}
 ARROWS = {'small-black': 'Small black arrows', 'small-white': 'Small white arrows',
           'bold-black': 'Bold black arrows', 'bold-white': 'Bold white arrows'}
-NUMBER_ROWS = {'swatches': 'Colored boxes', 'text': 'Color names'}
+NUMBER_ROWS = {'swatches': 'Colored boxes', 'text': 'Color names', 'plain': 'Standard legends'}
 FIELDS = {'profileId', 'revision', 'alpha', 'modifiers', 'accents', 'mark', 'arrows', 'numberRow', 'keyColors'}
 PALETTE_BYTES = Path(__file__).with_name('keycap_palette.json').read_bytes()
 PALETTE_DOCUMENT = json.loads(PALETTE_BYTES)
@@ -81,6 +81,8 @@ def snapshot(catalog, product, raw):
         raise HTTPException(409, 'This keyboard template is unavailable.') from None
     if template.get('paletteVersion') != PALETTE_DOCUMENT['version']:
         raise HTTPException(409, 'This keyboard template needs its palette update.')
+    if selection['numberRow'] not in template.get('numberRows', ['swatches','text'] if template.get('numberRowText') else ['plain']):
+        raise HTTPException(409, 'This keyboard does not support that number-row style.')
     if selection['numberRow'] == 'text' and not template.get('numberRowText'):
         raise HTTPException(409, 'This keyboard template does not have color-name labels.')
     key_ids = {meta['keyId'] for meta in template['meta'].values()}

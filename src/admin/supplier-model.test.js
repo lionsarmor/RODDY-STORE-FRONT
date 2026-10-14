@@ -27,7 +27,7 @@ test('selected supplier imports are hidden pending drafts, preserve provenance a
   assert.throws(() => supplierDraft(row, '', 'computers', rules, [p]), /already imported/);
   const catalog = normalizeCatalog({products: [p], categories: [{id: 'computers', name: 'Computers'}], settings: {heroProductId: ''}});
   assert.deepEqual(validateCatalog(catalog), []);
-  p.supplier.fulfillment = 'automatic'; assert.ok(validateCatalog(catalog).some(e => e.includes('pending or office')));
+  p.supplier.fulfillment = 'automatic'; assert.ok(validateCatalog(catalog).some(e => e.includes('supported fulfillment')));
 });
 
 test('AliExpress requires an exact variant; different SKUs import separately and unknown prices stay pending', () => {

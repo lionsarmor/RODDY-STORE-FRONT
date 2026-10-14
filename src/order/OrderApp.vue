@@ -120,10 +120,10 @@ onMounted(verify);
           >↓ Download {{ file.name }}</a
         >
         <section v-for="f in fulfillments" :key="f.kind" class="border border-border p-4 text-left">
-          <h2 class="font-bold">{{f.kind === 'office' ? 'Ships from RODDY' : 'Made to order'}} · {{f.state.replaceAll('-', ' ')}}</h2>
+          <h2 class="font-bold">Order status · {{['ready-to-order','ready-to-ship','submitted','awaiting-submission','queued','submitting','awaiting-payment','review'].includes(f.state)?'Preparing your order':f.state.replaceAll('-', ' ')}}</h2>
           <p v-for="s in f.shipments" :key="s.number" class="mt-3 text-sm">{{s.carrier}} · {{s.number}} <a v-if="/^https?:\/\//.test(s.url || '')" :href="s.url" target="_blank" rel="noopener noreferrer" class="text-button">Track shipment ↗</a></p>
-          <p v-if="f.kind === 'keycaps' && f.state === 'awaiting-submission'" class="mt-3 text-sm">Your custom design is saved. RODDY will review it and submit your set to the maker.</p>
-          <p v-if="f.state === 'review'" class="mt-3 text-sm">RODDY is reviewing fulfillment. Your payment is confirmed.</p>
+          <p v-if="f.kind === 'keycaps' && f.state === 'awaiting-submission'" class="mt-3 text-sm">Your custom keycaps are being prepared.</p>
+          <p v-if="f.state === 'review'" class="mt-3 text-sm">Your payment is confirmed. We’ll update this page as your order progresses.</p>
         </section>
         <p v-if="orderItems.some(i => i.kind !== 'digital')" class="text-sm">Items may arrive in separate shipments. Check this page for updates.</p>
         <p class="text-xs leading-relaxed text-text-dim">

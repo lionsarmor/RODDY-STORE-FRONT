@@ -12,7 +12,7 @@ from urllib.parse import urlsplit
 from fastapi import HTTPException, Request
 
 from .newsletter_mail import text
-from .supplier_clients import AliExpress, Mouser, link
+from .supplier_clients import AliExpress, Mouser, MouserOrdering, link
 from .aliexpress_auth import register_aliexpress_auth
 
 PROVIDERS = {'mouser', 'aliexpress'}
@@ -98,6 +98,7 @@ def register_suppliers(app, connect, require_admin, config_path, public_url, sit
                  'callbackUrl': callback_url if provider == 'aliexpress' else '',
                  'searchVerifiedAt': config.get(provider, {}).get('verifiedAt'),
                  'approvalPending': config.get(provider, {}).get('approvalPending', False),
+                 'orderVerifiedAt': config.get(provider, {}).get('orderVerifiedAt'),
                  'orderKeyStored': bool(config.get(provider, {}).get('orderKey')) if provider == 'mouser' else False,
                  'orderApprovalPending': config.get(provider, {}).get('orderApprovalPending', False) if provider == 'mouser' else False,
                  'capabilities': {'keywordSearch': True, 'productLookup': True, 'completeSellerCatalog': False, 'orderSubmission': False, 'automaticPayment': False}}
@@ -143,7 +144,7 @@ def register_suppliers(app, connect, require_admin, config_path, public_url, sit
     def save_connection(request: Request, body: dict):
         require_admin(request)
         provider = provider_input(body.get('provider'))
-        fields = ['searchKey'] if provider == 'mouser' else ['appKey', 'appSecret', 'accessToken']
+        fields = ['searchKey','orderKey'] if provider == 'mouser' else ['appKey', 'appSecret', 'accessToken']
         with config_lock:
             config = read_connections(config_path)
             entry = dict(config.get(provider, {}))
@@ -166,7 +167,7 @@ def register_suppliers(app, connect, require_admin, config_path, public_url, sit
                             raise HTTPException(400, 'API credentials cannot contain whitespace.')
                         entry[field] = value
                 needed = ['searchKey'] if provider == 'mouser' else ['appKey', 'appSecret']
-                if not all(entry.get(field) for field in needed):
+                if not (any(entry.get(field) for field in ['searchKey','orderKey']) if provider=='mouser' else all(entry.get(field) for field in needed)):
                     raise HTTPException(400, 'Complete the required supplier credentials.')
                 entry.pop('verifiedAt', None)
                 if provider == 'mouser' and isinstance(body.get('approvalPending'), bool):
@@ -177,6 +178,33 @@ def register_suppliers(app, connect, require_admin, config_path, public_url, sit
                 with connect() as db:
                     db.execute('DELETE FROM supplier_oauth')
         return {'connections': connection_status(config)}
+
+    @app.post('/admin/suppliers/verify')
+    def verify_connection(request: Request, body: dict):
+        require_admin(request)
+        provider=provider_input(body.get('provider'))
+        config=read_connections(config_path).get(provider,{})
+        checks={}
+        if provider=='mouser':
+            for name,client in [('search',lambda:Mouser(config,reserve).search('ESP32',1,'US')),('ordering',lambda:MouserOrdering(config,reserve).options())]:
+                try:
+                    if name=='search' and not config.get('searchKey'):raise HTTPException(409,'Save a Mouser Search API key first.')
+                    result=client();checks[name]={'ok':True,**(result if name=='ordering' else {'products':len(result['products'])})}
+                    config['verifiedAt' if name=='search' else 'orderVerifiedAt']=int(time.time())
+                    config['approvalPending' if name=='search' else 'orderApprovalPending']=False
+                except HTTPException as exc:checks[name]={'ok':False,'message':exc.detail}
+            with config_lock:
+                current=read_connections(config_path)
+                saved=current.get(provider,{})
+                if saved.get('searchKey')==config.get('searchKey') and saved.get('orderKey')==config.get('orderKey'):
+                    current[provider]=config;write_connections(config_path,current)
+        else:
+            try:
+                config=refresh_buyer();result=AliExpress(config,reserve).search('AULA F87',1,'US')
+                checks['search']={'ok':True,'products':len(result['products'])}
+                checks['ordering']={'ok':False,'message':'Buyer product access does not establish purchasing/payment access. Direct ordering is not enabled.'}
+            except HTTPException as exc:checks['search']={'ok':False,'message':exc.detail}
+        return {'checks':checks,'connections':connection_status(read_connections(config_path)),'orderPlaced':False}
 
     @app.post('/admin/suppliers/preferences')
     def save_preferences(request: Request, body: dict):
@@ -247,3 +275,5 @@ def register_suppliers(app, connect, require_admin, config_path, public_url, sit
                 raise HTTPException(400, 'Use an AliExpress /item/NUMBER.html URL or numeric product ID.')
             query = match[1]
         return cached(provider, 'product', query, page, country)
+
+    return {'buyer':refresh_buyer,'reserve':reserve,'mouser':lambda:read_connections(config_path).get('mouser',{})}

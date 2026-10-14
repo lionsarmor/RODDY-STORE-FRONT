@@ -6,7 +6,7 @@ const props = defineProps({catalog: Object, token: String, connected: Boolean});
 const emit = defineEmits(['import-products', 'edit-product']);
 const state = ref(null);
 const preferences = ref({favorites: [], revision: 1});
-const credentials = reactive({searchKey: '', appKey: '', appSecret: '', accessToken: ''});
+const credentials = reactive({searchKey: '', orderKey:'', appKey: '', appSecret: '', accessToken: ''});
 const provider = ref('mouser');
 const query = ref('');
 const country = ref('US');
@@ -26,10 +26,9 @@ const busy = ref(false);
 const error = ref('');
 const message = ref('');
 const authorizationUrl = ref('');
+const checks=ref(null);
 const connectionsPanel = ref(null);
 let initialized = false;
-const keycapPackageUrl = import.meta.env.BASE_URL + 'merch/keycaps/RODDY_X16_GOBLINTECH_REVIEW_v05.zip';
-const keycapInquiryUrl = import.meta.env.BASE_URL + 'merch/keycaps/FULFILLMENT_REQUEST.txt';
 const rules = reactive({mode: 'markup', percent: 30, minimumProfit: 5, shippingBuffer: 15, feePercent: 2.9, feeFixed: .30, round99: true});
 const favorite = computed(() => preferences.value.favorites.find(f => f.id === favoriteId.value));
 const connection = computed(() => state.value?.connections.find(c => c.provider === provider.value));
@@ -80,7 +79,7 @@ function chooseFavorite() {
   results.value = null; selected.value = [];
 }
 async function saveConnection() {
-  try { await api('/connections', {provider: provider.value, ...credentials}); await load(); message.value = 'Credentials saved privately. Run a search to verify access. No supplier orders or payments are enabled.'; }
+  try { await api('/connections', {provider: provider.value, ...credentials}); await load(); message.value = 'Credentials saved privately. Run a search to verify access. Supplier orders are placed manually from the Orders inbox.'; }
   finally { Object.keys(credentials).forEach(key => credentials[key] = ''); }
 }
 async function search(next = 1) {
@@ -233,7 +232,7 @@ function importSelected() {
       <section class="admin-section">
         <h2>Supplier API connection</h2>
         <p class="notice">{{ connection?.approvalPending ? 'Mouser key saved and marked pending; a successful API search has not verified approval. Run a search for the current provider response.' : connection?.searchVerifiedAt ? 'Search API access verified by a successful read.' : connection?.searchConfigured ? 'Credentials configured — verify by searching below.' : 'API credentials not configured yet. Website searches still work.' }} <span v-if="provider === 'aliexpress'">{{ connection?.buyerAuthorized ? 'Buyer token saved; verify permissions with an exact product lookup.' : 'Buyer authorization is needed to load exact product variants.' }}</span></p>
-        <template v-if="provider === 'mouser'"><p class="help-copy">Create/sign in to My Mouser. Under the separate Search API section, choose Learn More and request Search API access. Enter the resulting Search API key here. A key described as “Order API and Cart API” cannot be used for searches; approval of those APIs does not activate Search API.</p><p v-if="connection?.orderKeyStored" class="help-copy">Your existing Order/Cart key is retained privately for future ordering setup{{ connection.orderApprovalPending ? '; those APIs are still pending approval' : '' }}. No supplier ordering is enabled.</p><label>Mouser Search API key<input v-model="credentials.searchKey" type="password" autocomplete="off" placeholder="Paste the separate Search API key" /></label><a href="https://www.mouser.com/en/api-search/" target="_blank" rel="noopener noreferrer">Get Mouser Search API access ↗</a></template>
+        <template v-if="provider === 'mouser'"><p class="help-copy">Create/sign in to My Mouser. Under the separate Search API section, choose Learn More and request Search API access. Enter the resulting Search API key here. A key described as “Order API and Cart API” cannot be used for searches; approval of those APIs does not activate Search API.</p><p v-if="connection?.orderKeyStored" class="help-copy">Your Order/Cart key is retained privately{{ connection.orderApprovalPending ? '; approval is still pending' : '' }}. Supplier orders are placed manually.</p><label>Mouser Order/Cart API key<input v-model="credentials.orderKey" type="password" autocomplete="off" placeholder="Leave blank to keep the saved Order/Cart key" /></label><label>Mouser Search API key<input v-model="credentials.searchKey" type="password" autocomplete="off" placeholder="Paste the separate Search API key" /></label><a href="https://www.mouser.com/en/api-search/" target="_blank" rel="noopener noreferrer">Get Mouser Search API access ↗</a></template>
         <template v-else>
           <p class="help-copy">Developer review approval lets you proceed with application setup. In AliExpress App Console, choose the active Drop Shipping category and Create App. Name it RODDY Store and request search and product-detail permissions. Commercial Developer, Self-Developer and Affiliates API are different categories. Save its App Key and App Secret here, then authorize the buyer account you will use for sourcing.</p>
           <p class="help-copy">In the application settings, set this exact callback URL:</p><code class="supplier-callback">{{ connection?.callbackUrl || 'Backend HTTPS public URL needs configuration.' }}</code>
@@ -242,7 +241,7 @@ function importSelected() {
           <p v-if="connection?.accessExpiresAt" class="help-copy">Buyer access expires: {{ new Date(connection.accessExpiresAt * 1000).toLocaleString() }}. {{ connection.refreshAvailable ? 'The server renews it before supplier reads when renewal is still valid.' : 'Authorize again when it expires.' }}</p>
         </template>
         <p class="help-copy">Credentials are sent over HTTPS to your backend, stored in a private mode-600 file, and never returned to the browser or saved in the public catalog. Blank fields keep existing values. Save, then run a search to check access. Do not paste credentials in chat or GitHub.</p>
-        <div class="admin-actions"><button class="button primary" @click="act(saveConnection)">Save private API connection</button><button class="button small" :disabled="!connection?.searchConfigured" @click="act(async () => { await api('/connections', {provider, disconnect: true}); await load(); results = null; message = 'Connection removed locally. Revoke its key in the supplier dashboard if needed.'; })">Disconnect this API</button></div>
+        <div v-if="checks" class="notice"><p v-for="(check,name) in checks" :key="name">{{name}}: {{check.ok?'Verified':check.message}}<span v-if="check.paymentMethods!==undefined"> · {{check.paymentMethods}} payment methods · {{check.shippingMethods}} shipping methods</span></p></div><div class="admin-actions"><button class="button small" @click="act(async()=>{const result=await api('/verify',{provider});checks=result.checks;await load();})">Verify supplier connection</button><button class="button primary" @click="act(saveConnection)">Save private API connection</button><button class="button small" :disabled="!connection?.searchConfigured" @click="act(async () => { await api('/connections', {provider, disconnect: true}); await load(); results = null; message = 'Connection removed locally. Revoke its key in the supplier dashboard if needed.'; })">Disconnect this API</button></div>
         <div v-if="provider === 'aliexpress'" class="admin-actions"><button class="button small" :disabled="!connection?.searchConfigured || !connection?.callbackUrl" @click="act(authorizeBuyer)">Authorize AliExpress buyer</button><a v-if="authorizationUrl" class="button primary" :href="authorizationUrl" target="_blank" rel="noopener noreferrer">Continue to AliExpress ↗</a><button class="button small" :disabled="!connection?.refreshAvailable" @click="act(async () => { await api('/aliexpress/refresh', {}); await load(); message = 'Buyer authorization renewed privately. Run an exact product lookup to verify permissions.'; })">Renew buyer authorization</button></div>
       </section>
       </details>
@@ -263,21 +262,13 @@ function importSelected() {
       <section class="admin-section">
         <h2>How payments and fulfillment work</h2>
         <p><strong>Customer → RODDY through Square → your payout bank.</strong> The supplier charges your separate supplier account for goods and shipping. Square does not split a checkout payment or transfer it to Mouser, Printify or AliExpress automatically.</p>
-        <p>Printify merchandise already uses the store's paid-order fulfillment flow. Mouser and AliExpress search/import connections below do not enable purchasing. Their API ordering, account billing, exact SKU, landed cost, shipping quote and tracking still need verification before direct supplier sales can launch.</p>
+        <p>Printify merchandise already uses the store's paid-order fulfillment flow. Mouser and AliExpress orders are purchased manually from Orders after customer payment. Checkout checks stock and exact selections; automatic purchasing and supplier payment are disabled.</p>
         <p class="help-copy">Mouser's Order API supports cards saved in your Mouser account. AliExpress exposes a payment-attempt option for an authorized DS account. A saved card alone is not proof that your application/account can use it successfully; ordering, authorization and payment must be tested together. Keep cards on the supplier's own billing page. Never enter card numbers, CVV, bank details or email passwords in this admin.</p>
         <p class="help-copy">Supplier-sourced drafts default to “Fulfillment pending” and cannot be purchased. For stock you actually receive and ship yourself, choose office fulfillment in its product editor and set stock/rates in Orders. Existing digital, office and Printify checkout continues through Square.</p>
         <p><a href="https://www.mouser.com/en/api-order/" target="_blank" rel="noopener noreferrer">Mouser ordering & saved cards ↗</a> · <a href="https://printify.com/app/" target="_blank" rel="noopener noreferrer">Printify billing ↗</a> · <a href="https://openservice.aliexpress.com/" target="_blank" rel="noopener noreferrer">AliExpress API console ↗</a></p>
       </section>
       </details>
-      <details class="supplier-settings"><summary>X16 keycaps manufacturer setup</summary>
-      <section class="admin-section">
-        <h2>X16 keycaps · manufacturer setup</h2>
-        <p><strong>AULA F87 / F87 Pro · ANSI 87 keys · 80% TKL.</strong> The current v05 design includes the X16 graphic legends, blue/off-white/charcoal palette, number-row color swatches and 6.25u spacebar. It is already mapped to Goblintech's ANSI 80% template.</p>
-        <p class="notice">Supplier inquiry pending. Goblintech's custom manufacturing and creator services are candidates; one-set repeat fulfillment, price, US/Canada shipping, billing and any API still need written confirmation. No keycap product is available for checkout yet.</p>
-        <ol class="help-copy"><li>Download the current v05 package and fulfillment-request draft below. Send the request to sales@goblintechkeys.com or merch@goblintechkeys.com; nothing is sent by this admin.</li><li>Obtain a quote and digital proof, then order one sample and check all 87 keys on the actual AULA keyboard. Printed legends and color fidelity take priority over shine-through.</li><li>Confirm a stable design SKU, per-order shipping, supplier billing, tracking and order-submission method before connecting paid-order fulfillment. Keep the listing unavailable until those terms and the sample are accepted.</li></ol>
-        <div class="admin-actions"><a class="button small" :href="keycapPackageUrl" target="_blank" rel="noopener noreferrer">Download v05 supplier package ↗</a><a class="button small" :href="keycapInquiryUrl" download="RODDY-X16-FULFILLMENT-REQUEST.txt">Download fulfillment request</a><a class="button small" href="https://goblintechkeys.com/pages/custom-bulk-order-keycap-sets" target="_blank" rel="noopener noreferrer">Goblintech manufacturer ↗</a></div>
-      </section>
-      </details>
+      <details class="supplier-settings"><summary>Custom keycap fulfillment</summary><section class="admin-section"><h2>Custom keycap fulfillment</h2><p>Current designs are managed in Keycap profiles. Paid custom sets enter Orders with their private design JSON and delivery details. Download the packet, place the maker order manually and record its reference and tracking.</p></section></details>
     </fieldset>
   </div>
 </template>

@@ -1,7 +1,8 @@
 # Mixed checkout and fulfillment
 
 RODDY uses one Square-hosted payment for digital downloads, Printify merchandise
-and items shipped from the owner's office. Card details stay with Square.
+and items shipped from the owner's office or manually ordered from suppliers.
+Card details stay with Square. See [ORDERS.md](ORDERS.md) for the order desk.
 
 ## Configuration
 
@@ -44,7 +45,7 @@ and additional-item rates in USD. A missing country/rate blocks purchase rather
 than becoming free shipping. Rates are per product; different office products'
 charges add together. Publish these settings with the catalog.
 
-In **Orders → Office inventory**, set live on-hand stock. The catalog stock seeds
+In **Orders → Stock you ship from RODDY**, set live on-hand stock. The catalog stock seeds
 new products only. Publishing an old catalog never restores sold stock. Unpaid
 checkouts reserve stock; paid orders deduct it once. Abandoned hosted links are
 canceled after one hour before their reservations are released. The owner can
@@ -53,7 +54,7 @@ Set the product price and availability to Available only when ready to ship.
 Link Commander starts hidden/coming soon with no price or shipping rates. Keychain
 Kreatures keeps its existing coming-soon status; shipping is left unset.
 
-Filter Orders to **Office: ready to ship**, pack the listed items to the displayed
+Open **Orders → To order / send**, pack office items to the displayed
 address, then enter carrier/tracking and mark shipped. Tracking appears on the
 customer's private order page. Refunds do not automatically put stock back: inspect
 returned goods and explicitly restock if appropriate.

@@ -1,7 +1,10 @@
 # Droplet checkout, community, newsletters and paid downloads
 
 Supplier search/import connections are described in [SUPPLIERS.md](SUPPLIERS.md).
-Direct Mouser/AliExpress ordering remains disabled until separately implemented and verified.
+Mouser and AliExpress products use manual purchasing from the order desk. See
+[ORDERS.md](ORDERS.md) for fulfillment, complete history and accounting exports.
+Private electronics fabrication/assembly packages use the [PCB project wizard](PCB-PROJECTS.md).
+Supplier mappings use [private catalog storage](CATALOG-PRIVACY.md).
 
 Manual newsletters and private subscriber records use the same database and service.
 See [NEWSLETTERS.md](NEWSLETTERS.md) for the admin workflow and backup requirements.
@@ -129,11 +132,11 @@ Wallet availability depends on the Square account, browser, and buyer location.
   Back up `/var/lib/roddy-store` plus the protected configuration. Keep those
   backups private. Do not mix live and sandbox databases; archive sandbox data
   and set a fresh `STORE_DATABASE` path before switching to live mode.
-- The admin order list uses the existing GitHub owner sign-in and returns only
-  the latest 100 attempts, without receipt tokens or private file paths. It
-  shows the last verified status; Square is authoritative for current payments,
-  refunds, and disputes. Promotions, automated dispute handling and tax reporting
-  are not implemented. Mixed fulfillment is described in COMMERCE.md.
+- The admin order desk uses the existing GitHub owner sign-in, paginates the full
+  history, and exports matching orders, line items, supplier expenses and payment
+  observations. It omits receipt tokens and private file paths. Square remains
+  authoritative for current payments, refunds and disputes. CSV records support
+  bookkeeping; automated tax calculation and filing are not implemented.
 
 ## Operations and rollback
 
