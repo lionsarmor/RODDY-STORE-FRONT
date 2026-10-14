@@ -162,7 +162,7 @@
       "price": 99.99,
       "stock": 10,
       "active": true,
-      "featured": false,
+      "featured": true,
       "description": "Classic ANSI legends. Your own colors.\n\nA complete 87-key Cherry-profile keycap set for ANSI TKL mechanical keyboards. Choose the main colors, customize individual keys and pick your system-key symbol and arrows.\n\nMX-compatible stems and a 6.25u spacebar. Keycaps only; keyboard sold separately.",
       "specs": {
         "Layout": "ANSI 87-key TKL · 6.25u spacebar",
