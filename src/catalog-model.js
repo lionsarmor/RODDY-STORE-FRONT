@@ -1,3 +1,4 @@
+import {catalogColorId} from './keycap-palette.js';
 import { KEYCAP_PREVIEWS, MARKS, DISABLED_MARKS, ARROWS, defaultDesign, designError } from './keycaps.js';
 
 export const DEFAULT_TAGS = [
@@ -58,7 +59,8 @@ export function normalizeCatalog(data) {
     ...data,
     schemaVersion: 2,
     keycapProfiles: Array.isArray(data.keycapProfiles) ? data.keycapProfiles.map(profile=>{
-      const clean={...profile,marks:profile.marks?.filter(id=>!DISABLED_MARKS.includes(id))};
+      const clean={...profile,marks:profile.marks?.filter(id=>!DISABLED_MARKS.includes(id)),defaults:{...profile.defaults,keyColors:profile.defaults?.keyColors || {}}};
+      for(const group of ['alpha','modifiers','accents'])clean.defaults[group]=catalogColorId(clean.defaults[group]);
       if(DISABLED_MARKS.includes(clean.defaults?.mark))clean.defaults={...clean.defaults,mark:defaultDesign(clean).mark};
       return clean;
     }) : [],

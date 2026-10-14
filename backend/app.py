@@ -127,7 +127,7 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
         # Newsletter sections accept longer copy; other endpoints retain the small-cart limit.
         if request.method == "POST":
             body = await request.body()
-            limit = 65536 if (request.url.path.startswith("/admin/newsletters/") or request.url.path == "/admin/suppliers/preferences") else 32768 if request.url.path in {"/quote", "/checkout"} else 8192
+            limit = 65536 if (request.url.path.startswith("/admin/newsletters/") or request.url.path == "/admin/suppliers/preferences") else 262144 if request.url.path in {"/quote", "/checkout"} else 8192
             if len(body) > limit:
                 return JSONResponse({"error": "Request too large."}, status_code=413)
         response = await call_next(request)

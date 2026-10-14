@@ -8,7 +8,7 @@ from unittest.mock import patch
 import zipfile
 
 from backend import test_commerce as commerce_tests
-from backend.keycaps import snapshot, packet, MARKS, label
+from backend.keycaps import snapshot, packet, MARKS, label, PALETTE, PALETTE_DOCUMENT, validate_colors
 
 
 class KeycapOrderTests(unittest.TestCase):
@@ -22,15 +22,15 @@ class KeycapOrderTests(unittest.TestCase):
         commerce_tests.MixedCheckoutTests.setUp(self)
         self.templates = self.root/'test-keycap-templates'
         self.templates.mkdir()
-        def layer(path, color='#0A0D12'):
+        def layer(path, color='GR001'):
             return {'id':'test-layer','colorId':color,'x':0,'y':0,'vectDef':path,'vectScale':100,'vectViewbox':'0 0 1250 1000'}
-        keys = {'test-commander':{'colorId':'#7FAFD3','layers':[layer('M100 100H200V200H100Z')]},
-                'test-arrow':{'colorId':'#7FAFD3','layers':[layer('M150 100L200 200H100Z')]}}
+        keys = {'test-commander':{'colorId':'BL003','layers':[layer('M100 100H200V200H100Z')]},
+                'test-arrow':{'colorId':'BL003','layers':[layer('M150 100L200 200H100Z')]}}
         self.template = {'id':'x16-v06-cherry-tkl','revision':'fixture-1','compatibility':'Synthetic test fixture; not a manufacturing design.',
                          'base':{'name':'Test','keys':keys,'layoutKeys':[{'id':k} for k in keys]},
-                         'meta':{'test-commander':{'group':'accents','sourceKey':'COMMANDER'},'test-arrow':{'group':'accents','sourceKey':'UP'}},
+                         'meta':{'test-commander':{'group':'accents','sourceKey':'COMMANDER','keyId':'commander','autoLegendLayers':[]},'test-arrow':{'group':'accents','sourceKey':'UP','keyId':'up','autoLegendLayers':[]}},
                          'marks':{name:[layer('M100 100H200V200H100Z')] for name in MARKS},
-                         'arrows':{'test-arrow':[layer('M100 100H300V300H100Z','#FFFFFF')]}}
+                         'paletteVersion':PALETTE_DOCUMENT['version'], 'arrows':{'test-arrow':[layer('M100 100H300V300H100Z','GR002')]}}
         (self.templates/'x16-v06-cherry-tkl.json').write_text(json.dumps(self.template))
         template_patch = patch('backend.keycaps.TEMPLATES', self.templates)
         template_patch.start()
@@ -42,8 +42,8 @@ class KeycapOrderTests(unittest.TestCase):
                         'status':'available','trackStock':False,'keycaps':{'profileId':'x16-compatible'},
                         'officeShipping':{'US':{'firstItem':10,'additionalItem':3}}}
         self.catalog['products'].append(self.product)
-        self.design = {'profileId':'x16-compatible','revision':'v06.1','alpha':'#F7F7F5','modifiers':'#50545E',
-                       'accents':'#7FAFD3','mark':'roddy-r','arrows':'small-black'}
+        self.design = {'profileId':'x16-compatible','revision':'v06.1','alpha':'GR002','modifiers':'GR009',
+                       'accents':'BL003','mark':'roddy-r','arrows':'small-black','keyColors':{}}
         self.items = [{'id':'custom-keys','qty':1,'design':copy.deepcopy(self.design)}]
         self.packets = self.app.state.order_packets
 
@@ -184,3 +184,30 @@ class KeycapOrderTests(unittest.TestCase):
         self.admin('POST','/admin/orders/'+order['request_id']+'/keycaps',{'action':'submitted'})
         self.assertEqual(self.admin('GET','/admin/sales?after='+str(events['cursor'])).json()['pendingKeycaps'],0)
         self.assertEqual(self.admin('GET','/admin/orders?view=keycaps').json()['data'],[])
+
+    def test_individual_colors_survive_payment_and_owner_packet(self):
+        self.items[0]['design']['keyColors']={'up':'RD003','commander':'YW026'}
+        result=self.paid_order();order=self.order(result['sessionId']);summary,files=packet(order)
+        design=json.loads(files[0][1]);self.assertEqual(design['keys']['test-arrow']['colorId'],'RD003')
+        self.assertEqual(design['keys']['test-commander']['colorId'],'YW026')
+        self.assertEqual(summary['items'][0]['selection']['keyColors'],{'up':'RD003','commander':'YW026'})
+        self.assertIn('RD003',summary['items'][0]['palette']);self.assertEqual(summary['items'][0]['palette']['RD003']['hex'],PALETTE['RD003']['hex'])
+        self.assertTrue(validate_colors(design))
+
+    def test_unknown_raw_hex_foreign_keys_and_malformed_overrides_fail_before_checkout(self):
+        for changes in [{'alpha':'#FAF7F0'},{'accents':'ZZ999'},{'keyColors':{'up':'#262626'}},
+                        {'keyColors':{'other-layout-key':'GR001'}},{'keyColors':[]},{'keyColors':None},
+                        {'keyColors':{'up':False}},{'keyColors':{'__proto__':'GR001'}}]:
+            with self.subTest(changes=changes):
+                self.items[0]['design']={**self.design,**changes};self.assertEqual(self.quote().status_code,400)
+        self.assertEqual(self.provider.created,[])
+
+    def test_per_key_color_changes_invalidate_a_payment_quote(self):
+        self.items[0]['design']['keyColors']={'up':'RD003'}
+        quoted=self.quote().json();self.items[0]['design']['keyColors']['up']='OG001'
+        self.assertEqual(self.checkout(quoted).status_code,409);self.assertEqual(self.provider.created,[])
+
+    def test_unapproved_legend_color_in_private_artwork_is_rejected(self):
+        self.template['marks']['roddy-r'][0]['colorId']='#000000'
+        (self.templates/'x16-v06-cherry-tkl.json').write_text(json.dumps(self.template))
+        self.assertEqual(self.quote().status_code,409);self.assertEqual(self.provider.created,[])
