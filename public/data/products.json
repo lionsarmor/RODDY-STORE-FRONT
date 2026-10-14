@@ -2783,7 +2783,7 @@
       "type": "physical",
       "status": "available",
       "active": true,
-      "featured": false,
+      "featured": true,
       "price": 99.99,
       "pricePending": false,
       "stock": 3,
