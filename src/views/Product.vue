@@ -126,6 +126,7 @@ watch(
     qty.value = 1;
   },
 );
+function openKeycapDesigner() { document.getElementById("keycap-studio-title")?.scrollIntoView({behavior:"smooth",block:"center"}); }
 function move(dir) {
   if (images.value.length)
     activeIndex.value =
@@ -258,6 +259,7 @@ async function buyNow() {
             >{{ formatPrice(product.compareAtPrice) }}</del
           ><small v-if="!product.pricePending && product.price > 0">USD</small>
         </div>
+        <div v-if="product.keycaps" class="purchase-actions"><button class="button primary" @click="openKeycapDesigner">Customize your set ↓</button></div>
         <section v-if="product.merch" class="merch-options" aria-label="Choose merchandise options">
           <fieldset v-if="colors.length">
             <legend>Color <strong>{{ selectedColor }}</strong></legend>
