@@ -3,6 +3,12 @@
     "label": "Commander X16 butterfly",
     "enabled": true
   },
+  "commander-x16-rainbow": {
+    "label": "Commander X16 rainbow"
+  },
+  "blank": {
+    "label": "Blank Commander key"
+  },
   "otter-x": {
     "label": "OtterX X"
   },

@@ -2888,6 +2888,8 @@
       "description": "Choose your colors and symbols. Make your keyboard yours.",
       "marks": [
         "commander-x16",
+        "blank",
+        "commander-x16-rainbow",
         "otter-x",
         "analog-x",
         "roddy-r",
@@ -2924,6 +2926,8 @@
       "description": "Classic legends, custom colors. Build your everyday keyboard.",
       "marks": [
         "commander-x16",
+        "blank",
+        "commander-x16-rainbow",
         "otter-x",
         "analog-x",
         "roddy-r",

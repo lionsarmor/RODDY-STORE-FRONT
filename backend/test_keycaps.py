@@ -31,7 +31,7 @@ class KeycapOrderTests(unittest.TestCase):
                          'base':{'name':'Test','keys':keys,'layoutKeys':[{'id':k} for k in keys]},
                          'meta':{'test-commander':{'group':'accents','sourceKey':'COMMANDER','keyId':'commander','autoLegendLayers':[]},'test-arrow':{'group':'accents','sourceKey':'UP','keyId':'up','autoLegendLayers':[]},'test-number':{'group':'alpha','sourceKey':'1','keyId':'1','autoLegendLayers':[0]}},
                          'numberRowText':{'test-number':[layer('M100 100H150V250H100Z'),layer('M100 400H300V450H100Z')]},
-                         'marks':{name:[layer('M100 100H200V200H100Z')] for name in MARKS},
+                         'marks':{name:[] if name == 'blank' else [layer('M100 100H200V200H100Z')] for name in MARKS},
                          'paletteVersion':PALETTE_DOCUMENT['version'], 'arrows':{'test-arrow':[layer('M100 100H300V300H100Z','GR002')]}}
         (self.templates/'x16-v06-cherry-tkl.json').write_text(json.dumps(self.template))
         template_patch = patch('backend.keycaps.TEMPLATES', self.templates)
@@ -63,6 +63,19 @@ class KeycapOrderTests(unittest.TestCase):
         self.assertTrue(frozen['json']['layoutKeys'] == template['base']['layoutKeys'])
         self.profile['name'] = 'Changed later'
         self.assertEqual(frozen['profile']['name'],'X16 compatible')
+
+    def test_blank_commander_survives_paid_order_packet_and_later_catalog_changes(self):
+        self.items[0]['design']['mark']='blank'
+        self.items[0]['design']['keyColors']={'commander':'RD003'}
+        result=self.paid_order()
+        order=self.order(result['sessionId'])
+        self.profile['marks'].remove('blank')
+        details,files=packet(order)
+        printed=json.loads(files[0][1])
+        self.assertEqual(details['items'][0]['selection']['mark'],'blank')
+        self.assertEqual(printed['keys']['test-commander']['layers'],[])
+        self.assertEqual(printed['keys']['test-commander']['colorId'],'RD003')
+        self.assertEqual(printed['keys']['test-number'],self.template['base']['keys']['test-number'])
 
     def test_standard_profile_freezes_plain_legends_and_rejects_x16_number_modes(self):
         self.template.pop('numberRowText')

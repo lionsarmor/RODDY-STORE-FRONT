@@ -10,6 +10,21 @@ import {reactive} from 'vue';
 import {PALETTE,colorHex,legendColorId} from './keycap-palette.js';
 const catalog=normalizeCatalog(JSON.parse(readFileSync(new URL('../public/data/products.json',import.meta.url))));
 const profile=catalog.keycapProfiles[0];const template=KEYCAP_PREVIEWS[profile.templateId];
+test('both profiles offer a genuinely blank Commander key and a stock-color X16 rainbow',()=>{
+  for(const p of catalog.keycapProfiles){
+    const base=defaultDesign(p),blank={...base,mark:'blank'},rainbow={...base,mark:'commander-x16-rainbow'};
+    assert.ok(availableMarks(p).includes(blank.mark));assert.ok(availableMarks(p).includes(rainbow.mark));
+    const original=generatePreview(p,base),clear=generatePreview(p,blank),colored=generatePreview(p,rainbow);
+    assert.deepEqual(clear.keys.find(k=>k.id==='commander').shapes,[]);
+    const shapes=colored.keys.find(k=>k.id==='commander').shapes;
+    assert.ok(new Set(shapes.map(s=>s.paletteId)).size>=7);
+    assert.ok(shapes.every(s=>s.fill===colorHex(s.paletteId)));
+    for(const key of original.keys.filter(k=>k.id!=='commander'))assert.deepEqual(clear.keys.find(k=>k.id===key.id),key);
+    assert.notEqual(designKey(blank),designKey(base));assert.notEqual(designKey(blank),designKey(rainbow));
+    const hidden={...p,marks:p.marks.filter(id=>!['blank','commander-x16-rainbow'].includes(id))};
+    assert.ok(designError(blank,hidden));assert.ok(designError(rainbow,hidden));
+  }
+});
 test('standard ANSI profile has plain legends, independent cart identity and no manufacturing fields',()=>{
   const standard=catalog.keycapProfiles.find(p=>p.id==='standard-ansi87');
   const selection=defaultDesign(standard),preview=generatePreview(standard,selection);
