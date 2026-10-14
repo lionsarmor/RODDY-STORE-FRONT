@@ -1,8 +1,9 @@
+import {designKey} from './keycaps.js';
 // Public merchandise data contains retail prices and customer shipping, never credentials.
 export const money = (value) => Math.round(Number(value) * 100) / 100;
 export const merchVariants = (product) => (product?.merch?.variants || []).filter(v => v.enabled);
 export const variantLabel = (variant) => [variant?.color, variant?.size].filter(Boolean).join(' / ');
-export const cartLineKey = (id, variantId = '') => JSON.stringify([id, variantId || '']);
+export const cartLineKey = (id, variantId = '', design = null) => JSON.stringify([id, variantId || '', ...(design ? [designKey(design)] : [])]);
 export function priceLabel(product) {
   if (product.pricePending) return 'Pricing to be announced';
   const prices = merchVariants(product).map(v => v.price);
@@ -60,5 +61,5 @@ export function estimateShipping(items, country) {
 }
 export function hydrateLine(entry, product) {
   const variant = product.merch ? product.merch.variants.find(v => v.id === entry.variantId) || null : null;
-  return {...entry, product, variant, key: cartLineKey(entry.id, entry.variantId), price: variant?.price ?? product.price};
+  return {...entry, product, variant, key: cartLineKey(entry.id, entry.variantId, entry.design), price: variant?.price ?? product.price};
 }

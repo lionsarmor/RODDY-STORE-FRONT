@@ -14,6 +14,7 @@ from fastapi import HTTPException
 
 from .printify import PrintifyUnavailable
 from .square import PaymentUnavailable
+from .keycaps import selection_input, snapshot, label
 
 
 def cents(value):
@@ -60,19 +61,22 @@ def cart_input(raw):
         if not isinstance(item, dict):
             raise HTTPException(400, "Invalid cart item.")
         pid, vid, qty = item.get("id"), item.get("variantId", ""), item.get("qty")
+        design = selection_input(item['design']) if 'design' in item else None
+        selection_key = json.dumps(design, sort_keys=True) if design else ''
         if (not isinstance(pid, str) or not re.fullmatch(r"[a-z0-9][a-z0-9-]{0,100}", pid)
                 or not isinstance(vid, str) or not re.fullmatch(r"[a-zA-Z0-9_-]{0,80}", vid)
-                or type(qty) is not int or not 1 <= qty <= 99 or (pid, vid) in seen):
+                or type(qty) is not int or not 1 <= qty <= 99 or (pid, vid, selection_key) in seen):
             raise HTTPException(400, "Invalid cart quantities or duplicate selections.")
-        seen.add((pid, vid))
-        result.append({"id": pid, "variantId": vid, "qty": qty})
-    return json.dumps(sorted(result, key=lambda i: (i["id"], i["variantId"])), sort_keys=True)
+        seen.add((pid, vid, selection_key))
+        result.append({"id": pid, "variantId": vid, "qty": qty, **({"design": design} if design else {})})
+    return json.dumps(sorted(result, key=lambda i: (i["id"], i["variantId"], json.dumps(i.get("design"), sort_keys=True))), sort_keys=True)
 
 
 class Commerce:
-    def __init__(self, connect, catalog, digital_items, provider, printify, enabled):
+    def __init__(self, connect, catalog, digital_items, provider, printify, enabled, packets=None):
         self.connect, self.catalog, self.digital_items = connect, catalog, digital_items
         self.provider, self.printify, self.enabled = provider, printify, enabled
+        self.packets = packets
         self.lock = threading.Lock()
         self.recover = lambda order: None
         with connect() as db:
@@ -91,6 +95,10 @@ class Commerce:
               session TEXT NOT NULL REFERENCES orders(session), product TEXT NOT NULL,
               qty INTEGER NOT NULL, PRIMARY KEY(session,product)
             );
+            CREATE TABLE IF NOT EXISTS sale_events (
+              id INTEGER PRIMARY KEY AUTOINCREMENT, session TEXT NOT NULL UNIQUE REFERENCES orders(session),
+              confirmed INTEGER NOT NULL
+            );
             CREATE TABLE IF NOT EXISTS fulfillments (
               session TEXT NOT NULL REFERENCES orders(session), kind TEXT NOT NULL,
               state TEXT NOT NULL, supplier_id TEXT, error TEXT NOT NULL DEFAULT '',
@@ -100,7 +108,7 @@ class Commerce:
             """)
 
     def inventory(self):
-        products = [p for p in self.catalog()["products"] if p.get("type") == "physical" and not p.get("merch")]
+        products = [p for p in self.catalog()["products"] if p.get("type") == "physical" and not p.get("merch") and not p.get("keycaps")]
         with self.connect() as db:
             for p in products:
                 db.execute("INSERT OR IGNORE INTO inventory VALUES(?,?)", (p["id"], max(0, int(p.get("stock", 0)))))
@@ -110,13 +118,16 @@ class Commerce:
                  "reserved": held.get(p["id"], 0), "available": stock[p["id"]] - held.get(p["id"], 0)} for p in products]
 
     def price(self, cart, live=False, country=None):
-        products = {p["id"]: p for p in self.catalog()["products"]}
+        catalog = self.catalog()
+        products = {p["id"]: p for p in catalog["products"]}
         result, supplier, product_cache = [], None, {}
         for line in json.loads(cart):
             p = products.get(line["id"])
             if (not p or not p.get("active") or p.get("status") != "available" or p.get("pricePending")
                     or p.get("downloadUrl") or "free" in p.get("tags", [])):
                 raise HTTPException(409, "An item is unavailable. Refresh your cart.")
+            if line.get("design") and not p.get("keycaps"):
+                raise HTTPException(400, "This product does not accept a keycap design.")
             if p.get("supplier") and (not isinstance(p["supplier"], dict) or p["supplier"].get("fulfillment") != "office" or p.get("merch") or p["supplier"].get("provider") not in {"mouser", "aliexpress"}):
                 raise HTTPException(409, "Supplier fulfillment is not configured for this item. It cannot be purchased yet.")
             item = {"id": p["id"], "name": p["name"], "qty": line["qty"], "variantId": line["variantId"]}
@@ -124,6 +135,12 @@ class Commerce:
                 if line["qty"] != 1 or line["variantId"]:
                     raise HTTPException(400, "Digital downloads allow one copy per order.")
                 item.update(self.digital_items(json.dumps([p["id"]]))[0], kind="digital", qty=1)
+            elif p.get("type") == "physical" and p.get("keycaps"):
+                if not self.enabled or self.provider.mode != "live" or p.get("merch") or p.get("supplier") or p.get("trackStock") is not False or line["variantId"]:
+                    raise HTTPException(409, "Custom keycap fulfillment is not configured for this product.")
+                design = snapshot(catalog, p, line.get("design"))
+                item.update(kind="keycaps", cents=cents(p["price"]), designSnapshot=design,
+                            label=label(design["selection"]), officeShipping=p.get("officeShipping", {}))
             elif p.get("type") == "physical" and p.get("merch"):
                 if not self.enabled or self.provider.mode != "live":
                     raise HTTPException(503, "Made-to-order checkout is unavailable.")
@@ -171,14 +188,17 @@ class Commerce:
         items, supplier = self.price(cart, live=physical, country=address["country"] if physical else None)
         office_shipping = 0
         available = {i["id"]: i["available"] for i in self.inventory()} if any(i["kind"] == "office" for i in items) else {}
+        shipping_groups = {}
         for i in items:
-            if i["kind"] != "office":
-                continue
-            if i["qty"] > available.get(i["id"], 0):
+            if i["kind"] in {"office", "keycaps"}:
+                group = shipping_groups.setdefault(i["id"], {**i, "qty": 0})
+                group["qty"] += i["qty"]
+        for i in shipping_groups.values():
+            if i["kind"] == "office" and i["qty"] > available.get(i["id"], 0):
                 raise HTTPException(409, "There is not enough office stock for this order.")
             rate = i["officeShipping"].get(address["country"])
             if not isinstance(rate, dict) or any(k not in rate for k in ["firstItem", "additionalItem"]):
-                raise HTTPException(409, "Shipping is not configured for this office-shipped item and country.")
+                raise HTTPException(409, "Shipping is not configured for this product and country.")
             office_shipping += cents(rate["firstItem"]) + cents(rate["additionalItem"]) * (i["qty"] - 1)
         pod_shipping = supplier.quote_shipping(self.supplier_lines(items), address) if supplier else 0
         shipping = office_shipping + pod_shipping
@@ -241,13 +261,17 @@ class Commerce:
         with self.connect() as db:
             db.execute("BEGIN IMMEDIATE")
             if paid:
+                if not order["paid"]:
+                    db.execute("INSERT OR IGNORE INTO sale_events(session,confirmed) VALUES(?,?)", (order["session"],int(time.time())))
                 for row in db.execute("SELECT * FROM reservations WHERE session=?", (order["session"],)).fetchall():
                     db.execute("UPDATE inventory SET stock=stock-? WHERE product=?", (row["qty"], row["product"]))
                 db.execute("DELETE FROM reservations WHERE session=?", (order["session"],))
                 kinds = {i.get("kind", "digital") for i in json.loads(order["items"])} - {"digital"}
                 for kind in kinds:
                     db.execute("INSERT OR IGNORE INTO fulfillments(session,kind,state,updated) VALUES(?,?,?,?)",
-                               (order["session"], kind, "queued" if kind == "printify" else "ready-to-ship", int(time.time())))
+                               (order["session"], kind, "queued" if kind == "printify" else "awaiting-submission" if kind == "keycaps" else "ready-to-ship", int(time.time())))
+                if "keycaps" in kinds and self.packets:
+                    self.packets.enqueue(db, order["session"])
             elif order["paid"]:
                 db.execute("UPDATE fulfillments SET error='Payment refunded or no longer fully paid. Review in Square and contact supplier before shipping.',updated=? WHERE session=?",
                            (int(time.time()), order["session"]))
@@ -324,6 +348,8 @@ class Commerce:
                     paid = self.provider.paid(order["provider_id"], order["amount"])
                     self.mark_paid(order, paid)
                     if paid and self.enabled and self.provider.mode == "live":
+                        if self.packets:
+                            self.packets.process(order)
                         self.process_printify(order)
                     elif not paid and not order["paid"] and order["created"] < time.time() - 3600 and order["link_id"]:
                         # Delete the hosted link BEFORE releasing reservations.

@@ -1,6 +1,8 @@
 """Checkout, digital delivery and fulfillment service for the droplet."""
 
 import hashlib
+import io
+import zipfile
 from contextlib import contextmanager, asynccontextmanager
 import threading
 import json
@@ -17,11 +19,13 @@ import httpx
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, Response
 
 from .square import Square, PaymentUnavailable, PaymentInputError
 from .printify import load_connection, PrintifyUnavailable
 from .commerce import Commerce
+from .order_packets import OrderPackets
+from .keycaps import packet_zip
 from .suppliers import register_suppliers
 from .newsletter import register_newsletter
 from .forum import register_forum
@@ -34,7 +38,7 @@ def checkout_url(value):
 
 
 def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
-               catalog_loader=None, enabled=None, site=None, public_url=None, printify_config=None, physical_enabled=None, printify_factory=None, worker_enabled=None):
+               catalog_loader=None, enabled=None, site=None, public_url=None, printify_config=None, physical_enabled=None, printify_factory=None, worker_enabled=None, keycap_packets_dir=None):
     database = Path(database or os.getenv("STORE_DATABASE", "/var/lib/roddy-store/orders.sqlite3"))
     private_dir = Path(private_dir or os.getenv("STORE_PRIVATE_DIR", "/var/lib/roddy-store/files")).resolve()
     manifest = manifest or os.getenv("STORE_MANIFEST", "/etc/roddy-store/digital-products.json")
@@ -123,7 +127,7 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
         # Newsletter sections accept longer copy; other endpoints retain the small-cart limit.
         if request.method == "POST":
             body = await request.body()
-            limit = 65536 if (request.url.path.startswith("/admin/newsletters/") or request.url.path == "/admin/suppliers/preferences") else 8192
+            limit = 65536 if (request.url.path.startswith("/admin/newsletters/") or request.url.path == "/admin/suppliers/preferences") else 32768 if request.url.path in {"/quote", "/checkout"} else 8192
             if len(body) > limit:
                 return JSONResponse({"error": "Request too large."}, status_code=413)
         response = await call_next(request)
@@ -242,7 +246,9 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
         commerce.mark_paid(order, paid)
         return paid
 
-    commerce = Commerce(connect, catalog_loader, price_cart, provider, printify_factory, physical_enabled)
+    order_packets = OrderPackets(connect, keycap_packets_dir or os.getenv("KEYCAP_PACKETS_DIR", str(database.parent / "keycap-orders")))
+    commerce = Commerce(connect, catalog_loader, price_cart, provider, printify_factory, physical_enabled, order_packets)
+    app.state.order_packets = order_packets
     app.state.commerce = commerce
 
     @app.post("/quote")
@@ -266,7 +272,7 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
         account_ready = provider.check_account() if configured else False
         return {"provider": provider.name, "configured": configured,
                 "accountReady": account_ready, "mode": provider.mode,
-                "checkoutEnabled": enabled, "physicalEnabled": physical_enabled, "fulfillmentWorker": worker_enabled}
+                "checkoutEnabled": enabled, "physicalEnabled": physical_enabled, "fulfillmentWorker": worker_enabled, "keycapOrderPackets": True}
 
     @app.post("/checkout")
     def checkout(request: Request, body: dict):
@@ -342,7 +348,7 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
                                       "expiresAt": now + 900})
         return {"paid": paid, "amountTotal": order["amount"], "currency": "USD", "downloads": downloads,
                 "mode": provider.mode, "shipping": order.get("shipping", 0),
-                "items": [{"id": i["id"], "variantId": i.get("variantId", ""), "name": i["name"], "qty": i.get("qty", 1), "kind": i.get("kind", "digital"), "label": i.get("label", "")} for i in json.loads(order["items"])],
+                "items": [{"id": i["id"], "variantId": i.get("variantId", ""), "name": i["name"], "qty": i.get("qty", 1), "kind": i.get("kind", "digital"), "label": i.get("label", ""), **({"design": i["designSnapshot"]["selection"]} if i.get("kind") == "keycaps" else {})} for i in json.loads(order["items"])],
                 "fulfillments": [{k: v for k, v in f.items() if k not in {"supplierId", "error"}} for f in commerce.fulfillments(order["session"])] if paid else []}
 
     @app.get("/download/{ticket}")
@@ -397,16 +403,32 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
         return {"shopId": client.shop_id, "product": client.product(product_id)}
 
     @app.get("/admin/orders")
-    def admin_orders(request: Request):
+    def admin_orders(request: Request, view: str = "all"):
         require_admin(request)
         with connect() as db:
-            rows = db.execute("SELECT * FROM orders ORDER BY created DESC LIMIT 100").fetchall()
+            if view not in {"all", "keycaps"}:
+                raise HTTPException(400, "Choose an order view.")
+            rows = db.execute("SELECT o.* FROM orders o JOIN fulfillments f ON f.session=o.session WHERE o.paid=1 AND f.kind='keycaps' AND f.state='awaiting-submission' ORDER BY o.created LIMIT 100").fetchall() if view == "keycaps" else db.execute("SELECT * FROM orders ORDER BY created DESC LIMIT 100").fetchall()
         return {"data": [{"id": row["request_id"], "providerId": row["provider_id"], "created": row["created"],
                           "amount_total": row["amount"], "shipping": row["shipping"], "currency": "USD",
                           "payment_status": "paid" if row["paid"] else "canceled" if row["cancelled"] else "unconfirmed",
                           "address": json.loads(row["address"]) if row["address"] else None,
                           "items": [{"id": i["id"], "name": i["name"], "qty": i.get("qty", 1), "kind": i.get("kind", "digital"), "label": i.get("label", "")} for i in json.loads(row["items"])],
+                          "orderPacket": order_packets.info(row["session"]),
                           "fulfillments": commerce.fulfillments(row["session"])} for row in rows], "has_more": False}
+
+    @app.get("/admin/sales")
+    def sale_notifications(request: Request, after: int | None = None):
+        require_admin(request)
+        if after is not None and (after < 0 or after > 9223372036854775807):
+            raise HTTPException(400, "Invalid sale cursor.")
+        with connect() as db:
+            latest = db.execute("SELECT COALESCE(MAX(id),0) FROM sale_events").fetchone()[0]
+            pending = db.execute("SELECT COUNT(*) FROM fulfillments f JOIN orders o ON o.session=f.session WHERE o.paid=1 AND f.kind='keycaps' AND f.state='awaiting-submission'").fetchone()[0]
+            rows = db.execute("SELECT e.id event_id,e.confirmed,o.* FROM sale_events e JOIN orders o ON o.session=e.session WHERE e.id>? AND o.paid=1 ORDER BY e.id LIMIT 20", (after,)).fetchall() if after is not None else []
+        return {"cursor": rows[-1]["event_id"] if rows else latest, "pendingKeycaps": pending,
+                "sales": [{"eventId": row["event_id"], "id": row["request_id"], "amountCents": row["amount"], "confirmed": row["confirmed"],
+                           "items": [{"name":i["name"],"qty":i.get("qty",1)} for i in json.loads(row["items"])]} for row in rows]}
 
     @app.get("/admin/inventory")
     def admin_inventory(request: Request):
@@ -439,12 +461,13 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
         order = dict(row)
         if not verify(order):
             raise HTTPException(409, "Payment must be fully confirmed before shipping.")
-        if not any(i.get("kind") == "office" for i in json.loads(order["items"])):
-            raise HTTPException(409, "This order has no office shipment.")
+        kind = body.get("kind", "office")
+        if kind not in {"office", "keycaps"} or not any(i.get("kind") == kind for i in json.loads(order["items"])):
+            raise HTTPException(409, "This order has no matching manual shipment.")
         carrier, number, url = (str(body.get(k, "")).strip() for k in ["carrier", "number", "url"])
         if not carrier or not number or len(carrier) > 100 or len(number) > 150 or (url and (len(url) > 1000 or not urlsplit(url).scheme in {"http", "https"} or not urlsplit(url).hostname or urlsplit(url).username)):
             raise HTTPException(400, "Enter a carrier, tracking number and optional HTTP(S) tracking URL.")
-        commerce.update(order["session"], "office", "shipped", shipments=[{"carrier": carrier, "number": number, "url": url}])
+        commerce.update(order["session"], kind, "shipped", shipments=[{"carrier": carrier, "number": number, "url": url}])
         return {"saved": True}
 
     @app.post("/admin/orders/{reference}/cancel")
@@ -491,6 +514,46 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
             raise HTTPException(409, "No matching Printify order found. Check the supplier dashboard before creating anything manually.")
         commerce.update(order["session"], "printify", "submitted", supplier_id=found["id"])
         return {"saved": True}
+
+    @app.post("/admin/keycaps/packets")
+    def pending_keycap_packets(request: Request, body: dict):
+        require_admin(request)
+        with connect() as db:
+            rows = db.execute("SELECT o.* FROM orders o JOIN fulfillments f ON f.session=o.session WHERE o.paid=1 AND f.kind='keycaps' AND f.state='awaiting-submission' ORDER BY o.created LIMIT 100").fetchall()
+        if not rows:
+            raise HTTPException(409, "There are no paid keycap orders awaiting submission.")
+        data = io.BytesIO()
+        with zipfile.ZipFile(data, 'w', zipfile.ZIP_DEFLATED) as archive:
+            from .keycaps import packet
+            for row in rows:
+                order = dict(row)
+                _, files = packet(order)
+                for name, content in files:
+                    archive.writestr('RODDY-'+order['request_id']+'/'+name, content)
+        return Response(data.getvalue(), media_type="application/zip", headers={"Cache-Control":"no-store", "Content-Disposition":'attachment; filename="RODDY-pending-keycap-orders.zip"'})
+
+    @app.post("/admin/orders/{reference}/keycaps")
+    def keycap_packet(reference: str, request: Request, body: dict):
+        require_admin(request)
+        with connect() as db:
+            row = db.execute("SELECT * FROM orders WHERE request_id=?", (reference,)).fetchone()
+        if not row:
+            raise HTTPException(404, "Order not found.")
+        order = dict(row)
+        if not verify(order) or not any(i.get("kind") == "keycaps" for i in json.loads(order["items"])):
+            raise HTTPException(409, "A paid keycap order is required.")
+        if body.get("action") in {"submitted", "pending"}:
+            supplier_reference = body.get("supplierReference", "")
+            if not isinstance(supplier_reference, str) or len(supplier_reference.strip()) > 150 or any(ord(c)<32 for c in supplier_reference):
+                raise HTTPException(400, "Enter the maker's order reference after submitting manually.")
+            existing = next(f for f in commerce.fulfillments(order["session"]) if f["kind"] == "keycaps")
+            if existing["state"] == "shipped":
+                raise HTTPException(409, "This order is already shipped.")
+            commerce.update(order["session"], "keycaps", "submitted" if body["action"] == "submitted" else "awaiting-submission", supplier_id=supplier_reference.strip() or None)
+            return {"saved": True}
+        if body.get("action") != "download":
+            raise HTTPException(400, "Choose download or submitted.")
+        return Response(packet_zip(order), media_type="application/zip", headers={"Cache-Control": "no-store", "Content-Disposition": f'attachment; filename="RODDY-{reference}-keycaps.zip"'})
 
     register_forum(app, connect, require_admin, rate_limit, origins)
     register_newsletter(app, connect, require_admin, rate_limit, origins)

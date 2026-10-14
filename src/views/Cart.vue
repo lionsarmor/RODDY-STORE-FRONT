@@ -11,6 +11,7 @@ import { useCartStore } from "../stores/cart";
 import { useCheckoutStore } from "../stores/checkout";
 import { useUiStore } from "../stores/ui";
 import { estimateShipping, variantLabel, cartLineKey } from "../merch.js";
+import {profileFor,designError,designLabel} from '../keycaps.js';
 const address = reactive({first_name: "", last_name: "", email: "", phone: "", country: "US", region: "", address1: "", address2: "", city: "", zip: ""});
 const destination = computed(() => address.country);
 const quote = ref(null);
@@ -33,6 +34,12 @@ const shipping = computed(() =>
   physical.value ? estimateShipping(items.value, destination.value) : 0,
 );
 function itemError(item) {
+  if (item.product.keycaps) {
+    const error = designError(item.design, profileFor(catalog, item.product));
+    if (error) return error;
+    if (["soon", "out"].includes(stockState(item.product)) || item.product.pricePending) return "Your design is saved. Ordering opens when this set is ready.";
+    return "";
+  }
   if (item.product.merch) {
     if (!item.variant || !item.variant.enabled) return "This selection is no longer offered. Choose a color and size on the product page.";
     if (item.variant.available !== true) return "This selection is unavailable. Choose another color or size.";
@@ -83,6 +90,7 @@ function updateQty(item, value) {
       Math.max(1, Math.trunc(Number(value)) || 1),
     ),
     item.variantId || "",
+    item.design,
   );
 }
 </script>
@@ -102,9 +110,9 @@ function updateQty(item, value) {
     </div>
     <div v-else class="grid gap-8 lg:grid-cols-[1.5fr_1fr]">
       <div>
-        <div v-for="entry in missing" :key="cartLineKey(entry.id, entry.variantId)" class="notice mb-4">
+        <div v-for="entry in missing" :key="cartLineKey(entry.id, entry.variantId, entry.design)" class="notice mb-4">
           An item is no longer in the catalog: {{ entry.id }}.
-          <button class="text-button" @click="cart.remove(entry.id, entry.variantId)">
+          <button class="text-button" @click="cart.remove(entry.id, entry.variantId, entry.design)">
             Remove
           </button>
         </div>
@@ -127,6 +135,7 @@ function updateQty(item, value) {
               class="font-mono text-sm font-bold"
               >{{ item.product.name }}</RouterLink
             >
+            <p v-if="item.design" class="mt-2 text-xs leading-relaxed">{{designLabel(item.design)}}</p>
             <p v-if="item.variant" class="mt-2 text-sm">{{ variantLabel(item.variant) }}</p>
             <p class="mt-2 font-mono text-xs text-text-dim">
               {{
@@ -154,7 +163,7 @@ function updateQty(item, value) {
               "
               @change="updateQty(item, $event.target.value)"
           /></label>
-          <button class="text-button" @click="cart.remove(item.product.id, item.variantId)">
+          <button class="text-button" @click="cart.remove(item.product.id, item.variantId, item.design)">
             Remove
           </button>
         </div>

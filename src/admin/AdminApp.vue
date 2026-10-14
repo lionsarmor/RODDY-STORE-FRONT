@@ -16,6 +16,8 @@ import NewsletterManager from "./NewsletterManager.vue";
 import ForumManager from "./ForumManager.vue";
 import MerchEditor from "./MerchEditor.vue";
 import { importPrintifyProduct, priceLabel } from "../merch.js";
+import SaleNotifications from './SaleNotifications.vue';
+import KeycapManager from './KeycapManager.vue';
 import ProductEditor from "./ProductEditor.vue";
 import MediaEditor from "./MediaEditor.vue";
 import { useThemeStore } from "../stores/theme";
@@ -46,6 +48,7 @@ const tabs = [
   { id: "checkout", label: "Checkout & Square", icon: "▣" },
   { id: "suppliers", label: "Suppliers & imports", icon: "⇄" },
   { id: "printify", label: "Printify merchandise", icon: "◇" },
+  { id: "keycaps", label: "Keycap profiles", icon: "⌨" },
   { id: "orders", label: "Orders", icon: "▤" },
   { id: "newsletters", label: "Newsletters & ads", icon: "✉" },
   { id: "forum", label: "Community forum", icon: "☷" },
@@ -58,6 +61,7 @@ const form = reactive({
   remember: false,
 });
 const connected = ref(false);
+const ordersRefresh = ref(0);
 const showConnection = ref(false);
 const catalog = ref(null);
 const sha = ref(null);
@@ -721,6 +725,7 @@ function syncPrintify(source, targetId) {
             <li v-for="issue in issues" :key="issue">{{ issue }}</li>
           </ul>
         </details>
+        <SaleNotifications v-if="catalog" :endpoint="catalog.settings.checkoutEndpoint" :token="form.token" :connected="connected" @open-orders="tab='orders'" @new-sale="ordersRefresh++" />
         <fieldset v-if="catalog" :disabled="saving || !!mergeReview" class="admin-workspace">
           <template v-if="tab === 'overview'">
             <div class="admin-welcome">
@@ -959,6 +964,7 @@ function syncPrintify(source, targetId) {
               @media-busy="pendingMedia += $event ? 1 : -1"
             />
           </template>
+          <KeycapManager v-if="tab === 'keycaps'" :catalog="catalog" :endpoint="catalog.settings.checkoutEndpoint" :token="form.token" :connected="connected" @edit-product="selected=$event;tab='products'" @open-orders="tab='orders'" />
           <template v-if="tab === 'categories'"
             ><div class="section-heading">
               <p class="help-copy">
@@ -1314,7 +1320,7 @@ function syncPrintify(source, targetId) {
               <p class="help-copy">Customers can combine merchandise and downloads in one checkout. The backend quotes shipping for their address, verifies payment, submits Printify orders and refreshes tracking. Printify charges production and shipping to your Printify account separately; keep its payment method funded. Review exceptions in Orders.</p>
             </section>
           </template>
-          <template v-if="tab === 'orders'"><OrderManager :endpoint="catalog.settings.checkoutEndpoint" :token="form.token" :connected="connected" /></template>
+          <template v-if="tab === 'orders'"><OrderManager :refresh-key="ordersRefresh" :endpoint="catalog.settings.checkoutEndpoint" :token="form.token" :connected="connected" /></template>
           <div v-show="tab === 'suppliers'"><SupplierManager :catalog="catalog" :token="form.token" :connected="connected" @import-products="catalog.products.push(...$event)" @edit-product="selected = $event; tab = 'products'" /></div>
           <div v-show="tab === 'newsletters'"><NewsletterManager :endpoint="catalog.settings.checkoutEndpoint" :token="form.token" :connected="connected" :github="form" :library="library" :products="catalog.products" /></div>
           <template v-if="tab === 'forum'"><ForumManager :endpoint="catalog.settings.checkoutEndpoint" :token="form.token" :connected="connected" /></template>

@@ -12,6 +12,8 @@ import { safeLink } from "../catalog-model.js";
 import { useCartStore } from "../stores/cart";
 import { useUiStore } from "../stores/ui";
 import { useCheckoutStore } from "../stores/checkout";
+import KeycapConfigurator from '../components/KeycapConfigurator.vue';
+import {profileFor,defaultDesign,designError} from '../keycaps.js';
 import ProductTags from "../components/ProductTags.vue";
 import ProductArtwork from "../components/ProductArtwork.vue";
 import ProductCard from "../components/ProductCard.vue";
@@ -23,6 +25,9 @@ const cart = useCartStore();
 const ui = useUiStore();
 const checkout = useCheckoutStore();
 const product = computed(() => catalog.byId(props.id));
+const keyboardProfile = computed(()=>profileFor(catalog,product.value));
+const keycapSelection = ref(null);
+watch(keyboardProfile,p=>{keycapSelection.value=p?defaultDesign(p):null;},{immediate:true});
 const state = computed(() =>
   product.value ? stockState(product.value) : "out",
 );
@@ -133,8 +138,9 @@ function quantity() {
   );
 }
 function addToCart() {
-  if (!purchasable.value || !selectionValid.value) return;
-  cart.add(product.value.id, quantity(), maxQty.value, selectedVariant.value?.id || "");
+  if ((!purchasable.value && !product.value?.keycaps) || !selectionValid.value) return;
+  if (product.value.keycaps && designError(keycapSelection.value, keyboardProfile.value)) return;
+  cart.add(product.value.id, quantity(), maxQty.value, selectedVariant.value?.id || "", product.value.keycaps ? keycapSelection.value : null);
   ui.toast(`Added ${product.value.name} to cart`);
 }
 async function buyNow() {
@@ -348,6 +354,7 @@ async function buyNow() {
         <p class="launch-signoff">INDEPENDENT IDEAS. A VERY PERSONAL FUTURE.</p>
       </div>
     </div>
+    <KeycapConfigurator v-if="product.keycaps" :key="product.id" :profile="keyboardProfile" :profiles="catalog.keycapProfiles" :products="catalog.products" @change="keycapSelection=$event" @save="addToCart" />
     <section
       v-if="specifications.length"
       class="product-highlights"

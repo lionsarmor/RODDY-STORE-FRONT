@@ -1,5 +1,6 @@
 <script setup>
 import { computed, ref } from "vue";
+import KeycapProductEditor from './KeycapProductEditor.vue';
 import OfficeShipping from "./OfficeShipping.vue";
 import MerchEditor from "./MerchEditor.vue";
 import MediaEditor from "./MediaEditor.vue";
@@ -47,7 +48,7 @@ function toggleTag(id) {
       aria-label="Product editor sections"
     >
       <button
-        v-for="t in ['details', 'images', 'pricing', ...(product.type === 'physical' ? ['options & shipping', ...(product.supplier ? ['supplier'] : [])] : []), 'links']"
+        v-for="t in ['details', 'images', 'pricing', ...(product.type === 'physical' ? ['options & shipping', 'keyboard profile', ...(product.supplier ? ['supplier'] : [])] : []), 'links']"
         :key="t"
         role="tab"
         :aria-selected="tab === t"
@@ -191,7 +192,7 @@ function toggleTag(id) {
         announced (hides price and prevents purchase)</label
       >
       <label class="check"
-        ><input v-model="product.trackStock" type="checkbox" />Track stock (turn
+        ><input v-model="product.trackStock" type="checkbox" :disabled="!!product.keycaps" />Track stock (turn
         off for digital products or made-to-order merchandise)</label
       >
       <label class="check"
@@ -207,7 +208,8 @@ function toggleTag(id) {
         cannot be purchased. Office stock is seeded from this quantity once, then managed live in Orders → Office inventory. Paid sales deduct stock automatically; restock there.
       </p>
     </div>
-    <div v-if="tab === 'options & shipping'" class="editor-content"><MerchEditor v-if="product.merch" :product="product" /><OfficeShipping v-else :product="product" /></div>
+    <div v-if="tab === 'keyboard profile'" class="editor-content"><KeycapProductEditor :product="product" :catalog="catalog" /></div>
+    <div v-if="tab === 'options & shipping'" class="editor-content"><KeycapProductEditor v-if="product.keycaps" :product="product" :catalog="catalog" /><MerchEditor v-else-if="product.merch" :product="product" /><OfficeShipping v-else :product="product" /></div>
     <div v-if="tab === 'supplier' && product.supplier" class="editor-content">
       <h3>{{ product.supplier.provider === 'mouser' ? 'Mouser Electronics' : 'AliExpress' }}</h3>
       <p class="help-copy">Listing {{ product.supplier.supplierSku }} · Variant {{ product.supplier.variantId || 'not applicable' }}</p>

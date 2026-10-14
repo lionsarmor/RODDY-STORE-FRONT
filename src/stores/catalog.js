@@ -13,6 +13,7 @@ export const useCatalogStore = defineStore("catalog", {
     categories: [],
     products: [],
     tags: [],
+    keycapProfiles: [],
     settings: { ...DEFAULT_SETTINGS },
     preview: false,
     loaded: false,
@@ -41,6 +42,7 @@ export const useCatalogStore = defineStore("catalog", {
         this.categories = data.categories;
         this.products = data.products;
         this.tags = data.tags;
+        this.keycapProfiles = data.keycapProfiles;
         this.settings = data.settings;
         if (!this.preview && /^https:\/\//.test(this.settings.checkoutEndpoint || "")) {
           try {
@@ -90,7 +92,7 @@ export function stockLabel(product) {
   if (state === 'soon') return 'Coming soon';
   if (state === "out") return "Sold out";
   if (state === "low") return `Only ${product.stock} left`;
-  return product.merch ? "Made to order" : "In stock";
+  return product.merch || product.keycaps ? "Made to order" : "In stock";
 }
 
 export function formatPrice(amount) {

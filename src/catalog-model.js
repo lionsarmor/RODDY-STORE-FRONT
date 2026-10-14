@@ -1,3 +1,5 @@
+import { KEYCAP_TEMPLATES, MARKS, ARROWS, defaultDesign, designError } from './keycaps.js';
+
 export const DEFAULT_TAGS = [
   { id: "esp32", label: "ESP32", color: "#b9e6f5" },
   { id: "ai-assisted", label: "AI Assisted", color: "#dac6ff" },
@@ -46,6 +48,7 @@ export function normalizeProduct(p) {
     githubUrl: p.githubUrl || "",
     officeShipping: p.officeShipping || {},
     supplier: p.supplier || null,
+    keycaps: p.keycaps || null,
     merch: p.merch ? { ...p.merch, variants: Array.isArray(p.merch.variants) ? p.merch.variants : [], shippingCountries: p.merch.shippingCountries || ["US", "CA"], shippingProfiles: p.merch.shippingProfiles || [] } : null,
   };
 }
@@ -54,6 +57,7 @@ export function normalizeCatalog(data) {
   return {
     ...data,
     schemaVersion: 2,
+    keycapProfiles: Array.isArray(data.keycapProfiles) ? data.keycapProfiles : [],
     categories: Array.isArray(data.categories) ? data.categories : [],
     products: (data.products || []).map(normalizeProduct),
     tags: Array.isArray(data.tags) ? data.tags : structuredClone(DEFAULT_TAGS),
@@ -77,6 +81,7 @@ export function validateCatalog(data) {
     ["Product", data.products],
     ["Category", data.categories],
     ["Tag", data.tags],
+    ["Keyboard profile", data.keycapProfiles || []],
   ]) {
     const ids = new Set();
     for (const item of list) {
@@ -87,7 +92,13 @@ export function validateCatalog(data) {
         errors.push(`${label} ${item.id} needs a name.`);
     }
   }
+  for (const profile of data.keycapProfiles || []) {
+    if (!KEYCAP_TEMPLATES[profile.templateId] || !/^[a-zA-Z0-9._-]{1,40}$/.test(profile.revision || '')) errors.push(`${profile.name}: choose a validated template and revision.`);
+    if (!Array.isArray(profile.marks) || !profile.marks.length || profile.marks.some(id=>!MARKS[id]) || !Array.isArray(profile.arrows) || !profile.arrows.length || profile.arrows.some(id=>!ARROWS[id])) errors.push(`${profile.name}: choose supported symbols and arrows.`);
+    if (designError(defaultDesign(profile),profile)) errors.push(`${profile.name}: check profile defaults.`);
+  }
   for (const p of data.products) {
+    if (p.keycaps && (p.type !== 'physical' || p.merch || p.supplier || p.trackStock !== false || !(data.keycapProfiles || []).some(profile=>profile.id===p.keycaps.profileId))) errors.push(`${p.name}: choose a valid keyboard profile, physical product and made-to-order stock mode.`);
     if (!p.sku?.trim() || skus.has(p.sku.trim().toLowerCase()))
       errors.push(`${p.name}: SKU must be present and unique.`);
     if (p.sku?.trim()) skus.add(p.sku.trim().toLowerCase());

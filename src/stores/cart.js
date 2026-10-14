@@ -40,23 +40,23 @@ export const useCartStore = defineStore("cart", {
       }
     },
 
-    add(productId, qty = 1, maxQty = 99, variantId = "") {
-      const existing = this.items.find((i) => cartLineKey(i.id, i.variantId) === cartLineKey(productId, variantId));
+    add(productId, qty = 1, maxQty = 99, variantId = "", design = null) {
+      const existing = this.items.find((i) => cartLineKey(i.id, i.variantId, i.design) === cartLineKey(productId, variantId, design));
       qty = Math.min(99, Math.max(1, Math.trunc(Number(qty)) || 1));
       if (existing) existing.qty = Math.min(maxQty, existing.qty + qty);
-      else this.items.push({ id: productId, qty, ...(variantId ? {variantId} : {}) });
+      else this.items.push({ id: productId, qty, ...(variantId ? {variantId} : {}), ...(design ? {design: JSON.parse(JSON.stringify(design))} : {}) });
       this.persist();
     },
 
-    setQty(productId, qty, variantId = "") {
-      if (qty <= 0) return this.remove(productId, variantId);
-      const existing = this.items.find((i) => cartLineKey(i.id, i.variantId) === cartLineKey(productId, variantId));
+    setQty(productId, qty, variantId = "", design = null) {
+      if (qty <= 0) return this.remove(productId, variantId, design);
+      const existing = this.items.find((i) => cartLineKey(i.id, i.variantId, i.design) === cartLineKey(productId, variantId, design));
       if (existing) existing.qty = qty;
       this.persist();
     },
 
-    remove(productId, variantId = "") {
-      this.items = this.items.filter((i) => cartLineKey(i.id, i.variantId) !== cartLineKey(productId, variantId));
+    remove(productId, variantId = "", design = null) {
+      this.items = this.items.filter((i) => cartLineKey(i.id, i.variantId, i.design) !== cartLineKey(productId, variantId, design));
       this.persist();
     },
 

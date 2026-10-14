@@ -23,7 +23,7 @@ export function mergeCatalog(base, local, remote, choices = {}) {
       }
       return result;
     }
-    if (["products", "categories", "tags"].includes(path) && [before, mine, theirs].every(entities)) {
+    if (["products", "categories", "tags", "keycapProfiles"].includes(path) && [before, mine, theirs].every(entities)) {
       const maps = [before, mine, theirs].map((items) => new Map(items.map((item) => [item.id, item])));
       // Compare the relative order of surviving original entries. Additions and
       // deletions alone should not count as conflicting reorder operations.
