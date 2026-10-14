@@ -18,6 +18,7 @@ export function setShippingCountry(product, country, enabled) {
 
 export function shippingLabel(product) {
   if (product.type !== 'physical') return '';
+  if (product.status === 'coming-soon' && product.shippingCountries === undefined && !product.merch && !Object.keys(product.officeShipping || {}).length) return 'Shipping details coming soon';
   const countries = shippingCountries(product);
   return countries.length ? `Ships to ${countries.map(c => SHIPPING_COUNTRIES[c]).join(' & ')}${countries.length === 1 ? ' only' : ''}` : 'Shipping unavailable';
 }

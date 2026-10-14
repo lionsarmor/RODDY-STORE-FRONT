@@ -23,4 +23,5 @@ test('country controls preserve legacy coverage and shipping rates across produc
     assert.equal(shippingLabel(product),'Shipping unavailable');
   }
   assert.equal(shippingLabel({type:'digital'}),'');
+  assert.equal(shippingLabel({type:'physical',status:'coming-soon'}),'Shipping details coming soon');
 });
