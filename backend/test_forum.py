@@ -104,7 +104,9 @@ class ForumTests(unittest.TestCase):
             self.assertEqual(self.post(headers, title, body).status_code, 400)
         self.assertEqual(self.post(headers).status_code, 200)
 
-    def test_origin_checks_rate_limits_and_per_handle_cooldown(self):
+    # Keep the login burst in one minute bucket even on a slow CI runner.
+    @patch("backend.app.time.time", return_value=1_800_000_000)
+    def test_origin_checks_rate_limits_and_per_handle_cooldown(self, _clock):
         self.assertEqual(self.client.post("/forum/register", json={"handle": "someone", "password": "good password"}).status_code, 403)
         headers = self.account()
         self.assertEqual(self.post({**headers, "origin": "https://other.example"}).status_code, 403)
