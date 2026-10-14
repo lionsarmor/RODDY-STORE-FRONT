@@ -102,9 +102,9 @@
   "products": [
     {
       "id": "x16-keycaps",
-      "sku": "L-002",
+      "sku": "C-002",
       "name": "X16 KEYCAPS",
-      "category": "labs",
+      "category": "computers",
       "price": 99.99,
       "stock": 10,
       "active": true,
@@ -150,7 +150,9 @@
       "pricePending": false,
       "keycaps": {
         "profileId": "x16-compatible"
-      }
+      },
+      "fulfillment": "",
+      "fulfillmentRef": ""
     },
     {
       "id": "standard-keycaps",
@@ -200,7 +202,9 @@
       "pricePending": false,
       "keycaps": {
         "profileId": "standard-ansi87"
-      }
+      },
+      "fulfillment": "",
+      "fulfillmentRef": ""
     },
     {
       "id": "weather-commander-x16",
@@ -257,7 +261,10 @@
       "pricePending": false,
       "merch": null,
       "officeShipping": {},
-      "supplier": null
+      "supplier": null,
+      "fulfillment": "",
+      "fulfillmentRef": "",
+      "keycaps": null
     },
     {
       "id": "shadow-over-space",
@@ -320,7 +327,10 @@
       "documentationUrl": "",
       "merch": null,
       "officeShipping": {},
-      "supplier": null
+      "supplier": null,
+      "fulfillment": "",
+      "fulfillmentRef": "",
+      "keycaps": null
     },
     {
       "id": "desk-commander-cartridge",
@@ -382,7 +392,10 @@
       "documentationUrl": "",
       "merch": null,
       "officeShipping": {},
-      "supplier": null
+      "supplier": null,
+      "fulfillment": "",
+      "fulfillmentRef": "",
+      "keycaps": null
     },
     {
       "id": "desk-commander",
@@ -448,7 +461,10 @@
       "documentationUrl": "https://roddy.world/docs/desk-commander.html",
       "merch": null,
       "officeShipping": {},
-      "supplier": null
+      "supplier": null,
+      "fulfillment": "",
+      "fulfillmentRef": "",
+      "keycaps": null
     },
     {
       "id": "iknowwhatisaw",
@@ -500,7 +516,10 @@
       "pricePending": false,
       "merch": null,
       "officeShipping": {},
-      "supplier": null
+      "supplier": null,
+      "fulfillment": "",
+      "fulfillmentRef": "",
+      "keycaps": null
     },
     {
       "id": "keychain-kreatures",
@@ -547,7 +566,10 @@
       "documentationUrl": "",
       "merch": null,
       "officeShipping": {},
-      "supplier": null
+      "supplier": null,
+      "fulfillment": "",
+      "fulfillmentRef": "",
+      "keycaps": null
     },
     {
       "id": "kestrel-computer",
@@ -576,7 +598,10 @@
       "documentationUrl": "",
       "merch": null,
       "officeShipping": {},
-      "supplier": null
+      "supplier": null,
+      "fulfillment": "",
+      "fulfillmentRef": "",
+      "keycaps": null
     },
     {
       "id": "desk-mat",
@@ -695,7 +720,9 @@
       },
       "officeShipping": {},
       "supplier": null,
-      "fulfillmentRef": "c9a50a1501d880312d25042798248a6ff79b25ce2a506c4206e11481c6d6ce9a"
+      "fulfillmentRef": "a4cb14f91b6c5148465f8bec442365ec52b732330fa3c7409e91e7024845b0d8",
+      "fulfillment": "",
+      "keycaps": null
     },
     {
       "id": "hoodie",
@@ -2775,7 +2802,9 @@
       },
       "officeShipping": {},
       "supplier": null,
-      "fulfillmentRef": "70771e4ff6946709a18f91b821461679d028eb0d03acd4b8807d7a213a8a3d65"
+      "fulfillmentRef": "7b0f25d26e853eaf4b5c5b69fbd23269c1b8f6da1646a26a37716a4b4c0121fe",
+      "fulfillment": "",
+      "keycaps": null
     },
     {
       "id": "new-product",
@@ -2807,12 +2836,15 @@
       "merch": null,
       "pricePending": true,
       "officeShipping": {},
-      "supplier": null
+      "supplier": null,
+      "fulfillment": "",
+      "fulfillmentRef": "",
+      "keycaps": null
     },
     {
       "id": "aula-f87-pro",
       "sku": "RODDY-F87-PRO",
-      "name": "AULA F87 Pro Wireless Mechanical Keyboard",
+      "name": "AULA F87 PRO",
       "category": "labs",
       "type": "physical",
       "status": "available",
@@ -2844,36 +2876,8 @@
       "githubUrl": "",
       "merch": null,
       "fulfillmentRef": "a1dff8ebfb0b74b586666f78bffb133629aea4af4552a28d95c81bf42d4b9dab",
-      "fulfillment": "manual"
-    },
-    {
-      "id": "new-product-1",
-      "sku": "R-000",
-      "name": "New product",
-      "category": "apps",
-      "price": 0,
-      "stock": 0,
-      "active": false,
-      "featured": false,
-      "description": "",
-      "specs": {},
-      "images": [],
-      "status": "available",
-      "type": "physical",
-      "coverImage": "",
-      "tags": [],
-      "trackStock": true,
-      "compareAtPrice": 0,
-      "shortDescription": "",
-      "story": "",
-      "documentationUrl": "",
-      "releaseNote": "",
-      "downloadUrl": "",
-      "githubUrl": "",
-      "officeShipping": {},
-      "supplier": null,
-      "merch": null,
-      "pricePending": true
+      "fulfillment": "manual",
+      "keycaps": null
     }
   ],
   "keycapProfiles": [
@@ -2900,13 +2904,13 @@
         "bold-white"
       ],
       "defaults": {
+        "numberRow": "swatches",
         "alpha": "GR002",
         "modifiers": "GR009",
         "accents": "BL003",
         "mark": "roddy-r",
         "arrows": "small-black",
-        "keyColors": {},
-        "numberRow": "swatches"
+        "keyColors": {}
       },
       "numberRows": [
         "swatches",
@@ -2936,13 +2940,13 @@
         "bold-white"
       ],
       "defaults": {
+        "numberRow": "plain",
         "alpha": "GR002",
         "modifiers": "GR009",
         "accents": "BL003",
         "mark": "roddy-r",
         "arrows": "small-black",
-        "keyColors": {},
-        "numberRow": "plain"
+        "keyColors": {}
       },
       "numberRows": [
         "plain"
