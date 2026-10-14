@@ -110,6 +110,11 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
         def work():
             while not stop.is_set():
                 try:
+                    supplier_services['maintain']()
+                except Exception:
+                    import logging
+                    logging.getLogger("roddy-store").error("Supplier connection renewal needs attention; check Suppliers admin.")
+                try:
                     commerce.tick()
                 except Exception:
                     # No exception payloads: providers may include personal data.

@@ -54,7 +54,7 @@ def write_connections(path, data):
 
 def register_suppliers(app, connect, require_admin, config_path, public_url, site, rate_limit):
     register_supplier_directory(app, connect, require_admin)
-    config_lock = threading.Lock()
+    config_lock = threading.RLock()
     query_lock = threading.Lock()
     with connect() as db:
         db.executescript("""
@@ -85,6 +85,20 @@ def register_suppliers(app, connect, require_admin, config_path, public_url, sit
     refresh_buyer, callback_url = register_aliexpress_auth(app, connect, require_admin, config_path,
         read_connections, write_connections, config_lock, reserve, public_url, site, rate_limit)
 
+    last_maintenance = None
+    def maintain_connections():
+        nonlocal last_maintenance
+        with config_lock:
+            now = time.monotonic()
+            if last_maintenance is not None and now - last_maintenance < 300:
+                return
+            last_maintenance = now
+            current = read_connections(config_path).get('aliexpress', {})
+            if not current.get('accessToken') or not current.get('refreshToken') or current.get('refreshExpiresAt', 0) <= time.time():
+                return
+            # A quiet store must not depend on a shopper arriving before expiry.
+            refresh_buyer()
+
     def preferences(db):
         row = db.execute('SELECT * FROM supplier_preferences WHERE id=1').fetchone()
         return {**json.loads(row['data']), 'revision': row['revision']}
@@ -99,7 +113,8 @@ def register_suppliers(app, connect, require_admin, config_path, public_url, sit
                  'searchConfigured': bool(config.get(provider, {}).get('searchKey') if provider == 'mouser' else config.get(provider, {}).get('appKey') and config.get(provider, {}).get('appSecret')),
                  'buyerAuthorized': bool(config.get(provider, {}).get('accessToken')) if provider == 'aliexpress' else None,
                  'accessExpiresAt': config.get(provider, {}).get('accessExpiresAt') if provider == 'aliexpress' else None,
-                 'refreshAvailable': bool(config.get(provider, {}).get('refreshToken')) if provider == 'aliexpress' else False,
+                 'refreshAvailable': bool(config.get(provider, {}).get('refreshToken')) and config.get(provider, {}).get('refreshExpiresAt', 0) > time.time() if provider == 'aliexpress' else False,
+                 'refreshExpiresAt': config.get(provider, {}).get('refreshExpiresAt') if provider == 'aliexpress' else None,
                  'callbackUrl': callback_url if provider == 'aliexpress' else '',
                  'searchVerifiedAt': config.get(provider, {}).get('verifiedAt'),
                  'approvalPending': config.get(provider, {}).get('approvalPending', False),
@@ -281,4 +296,4 @@ def register_suppliers(app, connect, require_admin, config_path, public_url, sit
             query = match[1]
         return cached(provider, 'product', query, page, country)
 
-    return {'buyer':refresh_buyer,'reserve':reserve,'mouser':lambda:read_connections(config_path).get('mouser',{})}
+    return {'buyer':refresh_buyer,'reserve':reserve,'mouser':lambda:read_connections(config_path).get('mouser',{}),'maintain':maintain_connections}

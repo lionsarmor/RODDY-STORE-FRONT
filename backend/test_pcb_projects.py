@@ -25,13 +25,14 @@ class PcbWizardTests(unittest.TestCase):
   self.assertEqual(self.client.get('/admin/pcb/projects').status_code,401)
   self.assertEqual(self.request('GET','/projects',login='other').status_code,403)
   p=self.create();self.assertFalse(p['ready']);self.assertEqual(self.request('POST','/projects/'+p['id']+'/export',{}).status_code,409)
-  for slot,name,data in [('gerber','board.zip',gerber()),('bom','bom.csv',b'Reference,MPN,Quantity\nR1,TEST,1'),('placement','parts.pos',b'Ref X Y Rotation Side\nR1 1 2 0 top')]:
+  uploaded_gerber=gerber()
+  for slot,name,data in [('gerber','board.zip',uploaded_gerber),('bom','bom.csv',b'Reference,MPN,Quantity\nR1,TEST,1'),('placement','parts.pos',b'Ref X Y Rotation Side\nR1 1 2 0 top')]:
    r=self.upload(p,slot,name,data);self.assertEqual(r.status_code,200,r.text)
   p=r.json();self.assertTrue(p['ready']);folder=self.root/'pcb-projects'/p['id'];self.assertEqual(folder.stat().st_mode&0o777,0o700)
   for f in folder.iterdir():self.assertEqual(f.stat().st_mode&0o777,0o600)
   packet=self.request('POST','/projects/'+p['id']+'/export',{});self.assertEqual(packet.status_code,200);self.assertEqual(packet.headers['cache-control'],'no-store')
   with zipfile.ZipFile(io.BytesIO(packet.content)) as z:
-   m=json.loads(z.read('PROJECT_MANIFEST.json'));self.assertEqual(m['fulfillment']['address'],ADDRESS);self.assertEqual(m['automation'],{'submit':False,'pay':False});self.assertEqual(z.read('gerber/board.zip'),gerber());self.assertNotIn('stored',json.dumps(m))
+   m=json.loads(z.read('PROJECT_MANIFEST.json'));self.assertEqual(m['fulfillment']['address'],ADDRESS);self.assertEqual(m['automation'],{'submit':False,'pay':False});self.assertEqual(z.read('gerber/board.zip'),uploaded_gerber);self.assertNotIn('stored',json.dumps(m))
   self.assertFalse(list((self.root/'pcb-projects').glob('.packet-*')))
   self.assertEqual(len(self.request('GET','/projects').json()['projects']),1)
  def test_diy_and_through_hole_only_require_the_correct_files(self):

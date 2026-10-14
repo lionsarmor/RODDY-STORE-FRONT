@@ -83,12 +83,21 @@ def register_aliexpress_auth(app, connect, require_admin, config_path, read, wri
             db.execute('DELETE FROM supplier_oauth WHERE token=?', (digest(value),))
 
     def refresh(force=False):
-        # Called with the shared configuration lock held; rotation cannot overwrite a disconnect.
+        # Checkout, admin and maintenance all share the same rotation lock.
+        with lock:
+            return refresh_locked(force)
+
+    def refresh_locked(force=False):
         config = read(config_path)
         current = dict(config.get('aliexpress', {}))
-        if not force and (not current.get('accessExpiresAt') or current['accessExpiresAt'] > time.time() + 1800):
+        now = time.time()
+        access_due = bool(current.get('accessExpiresAt') and current['accessExpiresAt'] <= now + 1800)
+        refresh_due = bool(current.get('refreshToken') and now < current.get('refreshExpiresAt', 0) <= now + 1800)
+        # Some grants have a shorter refresh lifetime than access lifetime.
+        # Renew before either deadline, while the refresh token still works.
+        if not force and not access_due and not refresh_due:
             return current
-        if not current.get('refreshToken') or current.get('refreshExpiresAt', 0) <= time.time():
+        if not current.get('refreshToken') or current.get('refreshExpiresAt', 0) <= now:
             raise HTTPException(409, 'AliExpress buyer authorization needs renewal. Use Authorize AliExpress buyer in Suppliers admin.')
         reserve('aliexpress')
         current.update(token_request(current, 'refresh_token', current['refreshToken']))

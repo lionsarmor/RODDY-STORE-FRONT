@@ -10,6 +10,7 @@ from urllib.parse import parse_qs, urlsplit
 
 import httpx
 from fastapi.testclient import TestClient
+from fastapi import HTTPException
 
 from backend.aliexpress_auth import CALLBACK, COOKIE
 from backend.app import create_app
@@ -91,9 +92,11 @@ class AliExpressAuthTests(unittest.TestCase):
             self.assertNotIn(private, response.text+status)
         self.assertEqual(response.headers['referrer-policy'], 'no-referrer')
         self.assertEqual(response.headers['cache-control'], 'no-store')
-        connection = next(c for c in self.admin('').json()['connections'] if c['provider']=='aliexpress')
+        with patch('backend.suppliers.time.time', return_value=1791850001):
+            connection = next(c for c in self.admin('').json()['connections'] if c['provider']=='aliexpress')
         self.assertTrue(connection['buyerAuthorized']); self.assertTrue(connection['refreshAvailable'])
         self.assertEqual(connection['accessExpiresAt'], 1791853600)
+        self.assertEqual(connection['refreshExpiresAt'], 1791857200)
 
     def test_expired_state_changed_application_and_disconnect_invalidate_flow(self):
         state, _ = self.start()
@@ -152,6 +155,60 @@ class AliExpressAuthTests(unittest.TestCase):
         data = json.loads(before); data['aliexpress']['refreshExpiresAt'] = 0
         self.config.write_text(json.dumps(data))
         self.assertEqual(self.admin('/aliexpress/refresh', {}).status_code, 409)
+        connection = next(c for c in self.admin('').json()['connections'] if c['provider']=='aliexpress')
+        self.assertFalse(connection['refreshAvailable'])
+
+    def test_checkout_renews_when_refresh_token_expires_before_access_token(self):
+        state, _ = self.start()
+        with patch('backend.supplier_clients.httpx.post', return_value=httpx.Response(200, json=TOKENS)):
+            self.complete(state)
+        saved = json.loads(self.config.read_text())
+        saved['aliexpress'].update(accessExpiresAt=int(time.time())+86400, refreshExpiresAt=int(time.time())+600)
+        self.config.write_text(json.dumps(saved))
+        with patch('backend.supplier_clients.httpx.post', return_value=httpx.Response(200, json={**TOKENS, 'access_token': 'renewed-before-refresh-expiry'})) as post:
+            adapter = self.app.state.commerce.supplier_quote_factory('aliexpress')
+        self.assertEqual(adapter.client.config['accessToken'], 'renewed-before-refresh-expiry')
+        self.assertEqual(post.call_count, 1)
+        self.assertEqual(post.call_args.args[0], 'https://api-sg.aliexpress.com/rest/auth/token/refresh')
+        self.assertEqual(json.loads(self.config.read_text())['mouser']['searchKey'], 'keep-mouser')
+
+
+class QuietStoreRenewalTests(unittest.TestCase):
+    def setUp(self):
+        from contextlib import contextmanager
+        from fastapi import FastAPI
+        from backend.suppliers import register_suppliers
+        self.temp = tempfile.TemporaryDirectory(); self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name)
+        self.config = self.root/'suppliers.json'
+        self.config.write_text(json.dumps({'aliexpress': {
+            'appKey': 'test', 'appSecret': 'test', 'accessToken': 'old-access', 'refreshToken': 'old-refresh',
+            'accessExpiresAt': int(time.time())+86400, 'refreshExpiresAt': int(time.time())+600}}))
+        @contextmanager
+        def connect():
+            db = sqlite3.connect(self.root/'test.sqlite3'); db.row_factory = sqlite3.Row
+            try:
+                with db: yield db
+            finally: db.close()
+        self.services = register_suppliers(FastAPI(), connect, lambda _:None, self.config, 'https://api.example.test', 'https://roddy.world', lambda *_:None)
+
+    def test_maintenance_renews_without_checkout_and_throttles_failed_retries(self):
+        with patch('backend.suppliers.time.monotonic', return_value=1000), patch('backend.supplier_clients.httpx.post', side_effect=httpx.ConnectError('unavailable')) as post:
+            with self.assertRaises(HTTPException): self.services['maintain']()
+            self.services['maintain']()
+            self.assertEqual(post.call_count, 1)
+        self.assertEqual(json.loads(self.config.read_text())['aliexpress']['accessToken'], 'old-access')
+        with patch('backend.suppliers.time.monotonic', return_value=1301), patch('backend.supplier_clients.httpx.post', return_value=httpx.Response(200, json=TOKENS)) as post:
+            self.services['maintain']()
+            self.assertEqual(post.call_count, 1)
+        self.assertEqual(json.loads(self.config.read_text())['aliexpress']['accessToken'], TOKENS['access_token'])
+
+    def test_maintenance_never_reauthorizes_disconnected_or_expired_grants(self):
+        for index, config in enumerate([{}, {'accessToken':'old', 'refreshToken':'old', 'refreshExpiresAt':0}]):
+            self.config.write_text(json.dumps({'aliexpress':config}))
+            with patch('backend.suppliers.time.monotonic', return_value=2000+index*1000), patch('backend.supplier_clients.httpx.post') as post:
+                self.services['maintain']()
+                post.assert_not_called()
 
 
 if __name__ == '__main__':

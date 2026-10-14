@@ -63,9 +63,16 @@ or disconnecting invalidates pending flows and clears tokens from a different ap
 
 The server exchanges the code using official GOP `/rest/auth/token/create` signing
 (API path + sorted parameters, HMAC-SHA256), then saves access/refresh tokens and
-expiry times privately. Before supplier reads it renews tokens within 30 minutes of
-expiry using `/rest/auth/token/refresh`. **Renew buyer authorization** also allows
-explicit renewal. If renewal expires or is revoked, authorize again. A manually
+expiry times privately. Supplier reads and the fulfillment worker renew tokens
+within 30 minutes of either the access or renewal deadline using
+`/rest/auth/token/refresh`. The worker checks every five minutes even when there
+are no orders; failures do not stop payment checks or other fulfillment work.
+Rotation shares the configuration lock with admin changes. **Renew buyer
+authorization** also allows explicit renewal. Suppliers admin shows both expiry
+times. Renewal does not extend the authorization grant's refresh deadline; use
+**Authorize AliExpress buyer** again before that deadline to keep renewal working.
+See the [official authorization guide](https://developer.alibaba.com/docs/doc.htm?articleId=120687&docType=1&treeId=727).
+If renewal expires or is revoked, authorize again. A manually
 entered token has no automatic renewal metadata. Provider errors never echo tokens.
 Testing/production application token lifetimes differ; use the returned durations,
 not assumed thirty-day validity. Authorization does not enable supplier ordering.
