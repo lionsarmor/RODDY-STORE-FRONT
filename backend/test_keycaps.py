@@ -124,15 +124,16 @@ class KeycapOrderTests(unittest.TestCase):
         self.assertEqual(self.provider.created,[])
 
     def test_disabled_mark_is_rejected_even_when_an_old_catalog_allows_it(self):
-        self.profile['marks'].append('commander-x16')
-        self.items[0]['design']['mark']='commander-x16'
-        self.assertEqual(self.quote().status_code,400)
+        for mark in ['commander-x16','roddy-x','pixel-rainbow-x']:
+            self.profile['marks'].append(mark)
+            self.items[0]['design']['mark']=mark
+            self.assertEqual(self.quote().status_code,400)
         self.assertEqual(self.provider.created,[])
 
     def test_shipping_must_be_configured_and_changed_quote_cannot_buy_another_design(self):
         self.product['officeShipping']={};self.assertEqual(self.quote().status_code,409)
         self.product['officeShipping']={'US':{'firstItem':10,'additionalItem':3}}
-        q=self.quote().json();self.items[0]['design']['mark']='roddy-x'
+        q=self.quote().json();self.items[0]['design']['mark']='otter-x'
         self.assertEqual(self.checkout(q).status_code,409)
         self.items[0]['design']['mark']='roddy-r';self.profile['revision']='next'
         self.assertEqual(self.checkout(q).status_code,409)

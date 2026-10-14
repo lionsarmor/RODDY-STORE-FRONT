@@ -19,6 +19,19 @@ test('disabled X16 artwork stays unavailable even in an old catalog or saved des
   assert.equal(restored.keycapProfiles[0].defaults.mark,'roddy-r');
   assert.ok(!restored.keycapProfiles[0].marks.includes('commander-x16'));
   assert.deepEqual(validateCatalog(restored),[]);
+  for(const mark of ['roddy-x','pixel-rainbow-x']){
+    const stale={...profile,marks:[...profile.marks,mark],defaults:{...profile.defaults,mark}};
+    assert.equal(defaultDesign(stale).mark,'roddy-r');
+    assert.ok(!availableMarks(stale).includes(mark));
+    assert.throws(()=>generatePreview(stale,{...defaultDesign(stale),mark}));
+  }
+});
+test('Delete uses outlined navigation lettering and Analog X is available in the preview',()=>{
+  assert.ok(MARKS['analog-x']);
+  const out=generatePreview(profile,{...defaultDesign(profile),mark:'analog-x'});
+  assert.ok(out.keys.some(k=>k.label==='delete' && k.shapes.length===1));
+  assert.ok(!out.keys.some(k=>k.label==='del'));
+  assert.equal(out.keys.find((k,i)=>template.keys[i].commander).shapes.length,6);
 });
 test('customer preview retains all 87 v6 key appearances without Yuzu manufacturing fields',()=>{
   const out=generatePreview(profile,defaultDesign(profile));
@@ -44,11 +57,11 @@ test('preview choices preserve PETSCII artwork and fixed swatches for every symb
 test('cart persists two designs separately and quantity/removal touches only the selected design',()=>{
   const saved=new Map();globalThis.localStorage={getItem:k=>saved.get(k),setItem:(k,v)=>saved.set(k,v)};
   setActivePinia(createPinia());const cart=useCartStore();cart.clear();
-  const a=defaultDesign(profile),b={...a,mark:'roddy-x'};
+  const a=defaultDesign(profile),b={...a,mark:'analog-x'};
   cart.add('x16-keycaps',1,99,'',a);cart.add('x16-keycaps',2,99,'',b);cart.add('x16-keycaps',1,99,'',{...a});
   assert.equal(cart.items.length,2);assert.equal(cart.items[0].qty,2);assert.notEqual(cartLineKey('x16-keycaps','',a),cartLineKey('x16-keycaps','',b));
-  cart.setQty('x16-keycaps',3,'',b);cart.remove('x16-keycaps','',a);assert.equal(cart.items.length,1);assert.equal(cart.items[0].qty,3);assert.equal(cart.items[0].design.mark,'roddy-x');
-  assert.equal(JSON.parse(saved.get('roddy:cart'))[0].design.mark,'roddy-x');
+  cart.setQty('x16-keycaps',3,'',b);cart.remove('x16-keycaps','',a);assert.equal(cart.items.length,1);assert.equal(cart.items[0].qty,3);assert.equal(cart.items[0].design.mark,'analog-x');
+  assert.equal(JSON.parse(saved.get('roddy:cart'))[0].design.mark,'analog-x');
 });
 test('profiles and revisions reject stale designs and invalid publishing settings',()=>{
   const stale={...defaultDesign(profile),revision:'old'};assert.ok(designError(stale,profile));

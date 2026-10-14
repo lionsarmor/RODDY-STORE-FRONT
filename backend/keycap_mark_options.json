@@ -7,7 +7,8 @@
     "label": "OtterX X"
   },
   "roddy-x": {
-    "label": "RODDY flight X"
+    "label": "RODDY flight X",
+    "enabled": false
   },
   "roddy-r": {
     "label": "RODDY R + dot"
@@ -18,7 +19,8 @@
   },
   "pixel-rainbow-x": {
     "label": "Pixel rainbow X",
-    "inspiration": "Macintosh inspired · pixel variant"
+    "inspiration": "Macintosh inspired · pixel variant",
+    "enabled": false
   },
   "tandy-x": {
     "label": "Micro red X",
@@ -31,5 +33,9 @@
   "packard-bell-x": {
     "label": "Twin ribbon X",
     "inspiration": "Packard Bell inspired"
+  },
+  "analog-x": {
+    "label": "Analog X",
+    "inspiration": "70s curves · 80s racing stripes"
   }
 }

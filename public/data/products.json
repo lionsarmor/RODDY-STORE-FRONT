@@ -117,12 +117,12 @@
       },
       "images": [
         "img/products/x16-v06-roddy-keycap-pile.png",
-        "img/products/x16-v06-roddy-desk-setup.png",
+        "img/products/x16-v06-roddy-desk-setup-v2.png",
         "img/products/x16-v06-roddy-collection.png"
       ],
       "status": "coming-soon",
       "type": "physical",
-      "coverImage": "img/products/x16-v06-roddy-desk-setup.png",
+      "coverImage": "img/products/x16-v06-roddy-desk-setup-v2.png",
       "tags": [
         "new-tag-2",
         "new-tag-3"
@@ -2972,15 +2972,14 @@
     {
       "id": "x16-compatible",
       "name": "X16 compatible",
-      "revision": "v06.2-rdot",
+      "revision": "v06.3-analog",
       "templateId": "x16-v06-cherry-tkl",
       "description": "V6 PETSCII artwork, 16 number-row color swatches and a Commander key with character. Start with the original palette or make the colors your own.",
       "marks": [
         "otter-x",
-        "roddy-x",
+        "analog-x",
         "roddy-r",
         "rainbow-x",
-        "pixel-rainbow-x",
         "tandy-x",
         "ibm-x",
         "packard-bell-x"
