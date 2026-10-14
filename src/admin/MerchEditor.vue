@@ -1,5 +1,6 @@
 <script setup>
 import { computed, ref } from 'vue';
+import { shippingCountries } from '../shipping-destinations.js';
 import { priceLabel, variantLabel, shippingFor, money, sortSizes, compareSizes } from '../merch.js';
 const props = defineProps({product: Object, liveProduct: Object});
 const search = ref('');
@@ -20,14 +21,9 @@ function updateBase() {
 function live(v) { return props.liveProduct?.variants.find(x => x.id === v.providerVariantId); }
 function cost(v) { const cents = live(v)?.costCents; return Number.isFinite(cents) ? cents / 100 : null; }
 function margin(v) { return cost(v) === null || !v.price ? '—' : `${Math.round((v.price-cost(v))/v.price*100)}%`; }
-function toggleCountry(country) {
-  const countries = props.product.merch.shippingCountries;
-  if (countries.includes(country)) countries.splice(countries.indexOf(country),1);
-  else countries.push(country);
-}
 const shippingRows = computed(() => {
   const rows = new Map();
-  for (const country of props.product.merch.shippingCountries) {
+  for (const country of shippingCountries(props.product)) {
     for (const v of props.product.merch.variants.filter(v => v.enabled)) {
       const r = shippingFor(props.product,v,country);
       const key=JSON.stringify([country,r?.firstItem,r?.additionalItem]);
@@ -63,12 +59,12 @@ const usd = n => Number.isFinite(n) ? `$${n.toFixed(2)}` : 'Unavailable';
     </div>
     <p class="help-copy">Gross profit excludes payment fees, taxes, returns and shipping. Production costs are read privately from Printify and are not published in the storefront catalog.</p>
     <h3>Customer shipping</h3>
-    <div class="admin-actions"><label v-for="country in ['US','CA']" :key="country" class="check"><input type="checkbox" :checked="product.merch.shippingCountries.includes(country)" @change="toggleCountry(country)" />{{ country === 'US' ? 'United States' : 'Canada' }}</label></div>
+
     <p v-if="product.merch.shippingWarning" class="notice">{{ product.merch.shippingWarning }}</p>
     <div class="table-scroll"><table class="admin-table"><thead><tr><th>Country</th><th>Sizes</th><th>First item</th><th>Additional item</th></tr></thead><tbody>
       <tr v-for="row in shippingRows" :key="JSON.stringify([row.country,row.first,row.additional])"><td>{{ row.country }}</td><td>{{ sortSizes([...row.sizes]).join(', ') }}</td><td>{{ usd(row.first) }}</td><td>{{ usd(row.additional) }}</td></tr>
     </tbody></table></div>
     <p class="help-copy">USD standard shipping rates imported from Printify for the matching variants. These are estimates; final checkout needs an address-specific quote. Missing rates are shown as unavailable, never free.</p>
-    <p class="notice">Merchandise payment and automatic production are not enabled yet. Publish these options to let customers browse and save their selections.</p>
+    <p class="notice">Paid orders appear in Orders. Connected production starts after verified payment; review each item’s options and shipping before publishing.</p>
   </section>
 </template>

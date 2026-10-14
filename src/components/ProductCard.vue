@@ -7,6 +7,7 @@ import {
   useCatalogStore,
 } from "../stores/catalog";
 import { priceLabel } from "../merch.js";
+import { shippingLabel } from '../shipping-destinations.js';
 import ProductTags from "./ProductTags.vue";
 import ProductArtwork from "./ProductArtwork.vue";
 defineProps({ product: { type: Object, required: true } });
@@ -62,7 +63,7 @@ const catalog = useCatalogStore();
     <div class="product-card-body">
       <h3>{{ product.name }}</h3>
       <p>{{ product.shortDescription || product.description }}</p>
-      <ProductTags :ids="product.tags" />
+      <ProductTags :ids="product.tags" /><p v-if="product.type === 'physical'" class="shipping-destinations">{{ shippingLabel(product) }}</p>
       <div class="product-card-bottom">
         <span
           >{{

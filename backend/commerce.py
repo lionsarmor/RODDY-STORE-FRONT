@@ -141,7 +141,7 @@ class Commerce:
                 raise HTTPException(409, "An item is unavailable. Refresh your cart.")
             if line.get("design") and not p.get("keycaps"):
                 raise HTTPException(400, "This product does not accept a keycap design.")
-            if country and p.get('type') == 'physical' and p.get('shippingCountries') and country not in p['shippingCountries']:
+            if country and p.get('type') == 'physical' and 'shippingCountries' in p and country not in p['shippingCountries']:
                 raise HTTPException(409, 'This item does not ship to the selected country.')
             if p.get("supplier") and (not isinstance(p["supplier"], dict) or p["supplier"].get("fulfillment") not in {"office","manual"} or p.get("merch") or p["supplier"].get("provider") not in {"mouser", "aliexpress"}):
                 raise HTTPException(409, "This item is temporarily unavailable. Please contact RODDY.")

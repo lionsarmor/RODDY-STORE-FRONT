@@ -133,7 +133,7 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
         pcb_upload = re.fullmatch(r'/admin/pcb/projects/[a-f0-9-]+/files/[a-z]+', request.url.path)
         if request.method == "POST" and not pcb_upload:
             body = await request.body()
-            limit = 65536 if (request.url.path.startswith("/admin/newsletters/") or request.url.path == "/admin/suppliers/preferences") else 262144 if request.url.path in {"/quote", "/checkout", "/admin/catalog-sourcing"} else 32768 if request.url.path.startswith('/admin/pcb/') else 8192
+            limit = 65536 if (request.url.path.startswith("/admin/newsletters/") or request.url.path == "/admin/suppliers/preferences") else 262144 if request.url.path in {"/quote", "/checkout", "/admin/catalog-sourcing"} else 32768 if request.url.path.startswith('/admin/pcb/') or request.url.path == '/admin/suppliers/directory' else 8192
             if len(body) > limit:
                 return JSONResponse({"error": "Request too large."}, status_code=413)
         response = await call_next(request)

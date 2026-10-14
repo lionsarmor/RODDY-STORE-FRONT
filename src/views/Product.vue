@@ -8,6 +8,7 @@ import {
   productImageUrl,
 } from "../stores/catalog";
 import { merchVariants, optionValues, findVariant, priceLabel, shippingFor } from "../merch.js";
+import { shippingCountries, shippingLabel } from '../shipping-destinations.js';
 import { safeLink } from "../catalog-model.js";
 import { useCartStore } from "../stores/cart";
 import { useUiStore } from "../stores/ui";
@@ -34,6 +35,7 @@ const state = computed(() =>
 const selectedColor = ref("");
 const selectedSize = ref("");
 const destination = ref("US");
+watch(product, p => { if (p && !shippingCountries(p).includes(destination.value)) destination.value = shippingCountries(p)[0] || "US"; }, {immediate: true});
 const variants = computed(() => merchVariants(product.value));
 const colors = computed(() => optionValues(product.value, "color"));
 const sizes = computed(() => optionValues(product.value, "size"));
@@ -278,7 +280,7 @@ async function buyNow() {
           <p v-if="selectedVariant?.available === false" class="notice" role="status">This color and size is out of stock. Please choose another combination.</p>
           <p v-else-if="selectedVariant?.available !== true" class="notice">Availability needs confirmation before ordering.</p>
           <label class="merch-destination">Ship to
-            <select v-model="destination"><option v-for="country in product.merch.shippingCountries" :key="country" :value="country">{{ country === 'US' ? 'United States' : country === 'CA' ? 'Canada' : country }}</option></select>
+            <select v-model="destination"><option v-for="country in shippingCountries(product)" :key="country" :value="country">{{ country === 'US' ? 'United States' : country === 'CA' ? 'Canada' : country }}</option></select>
           </label>
           <p class="merch-shipping" v-if="selectedShipping">Standard shipping estimate: <strong>{{ formatPrice(selectedShipping.firstItem) }}</strong> for the first item; {{ formatPrice(selectedShipping.additionalItem) }} per additional item. USD. Final shipping depends on the delivery address.</p>
           <p v-else class="merch-shipping">Shipping estimate unavailable for this selection and destination. Shipping will be confirmed before payment.</p>
@@ -304,7 +306,7 @@ async function buyNow() {
                 : stockLabel(product)
           }}
         </p>
-        <p v-if="product.type === 'physical' && product.shippingCountries?.length" class="release-note">Ships to {{ product.shippingCountries.map(c => c === 'US' ? 'the United States' : c === 'CA' ? 'Canada' : c).join(' and ') }}.</p>
+        <p v-if="product.type === 'physical'" class="release-note">{{ shippingLabel(product) }}.</p>
         <div v-if="purchasable" class="purchase-actions">
           <a
             v-if="freeDownload"

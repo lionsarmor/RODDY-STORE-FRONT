@@ -11,6 +11,7 @@ import { useCartStore } from "../stores/cart";
 import { useCheckoutStore } from "../stores/checkout";
 import { useUiStore } from "../stores/ui";
 import { estimateShipping, variantLabel, cartLineKey } from "../merch.js";
+import { shippingCountries } from '../shipping-destinations.js';
 import {profileFor,designError,designLabel} from '../keycaps.js';
 const address = reactive({first_name: "", last_name: "", email: "", phone: "", country: "US", region: "", address1: "", address2: "", city: "", zip: ""});
 const destination = computed(() => address.country);
@@ -34,7 +35,7 @@ const shipping = computed(() =>
   physical.value ? estimateShipping(items.value, destination.value) : 0,
 );
 function itemError(item) {
-  if (item.product.type === 'physical' && item.product.shippingCountries?.length && !item.product.shippingCountries.includes(destination.value)) return 'This item does not ship to the selected country. Choose another destination or remove it.';
+  if (item.product.type === 'physical' && !shippingCountries(item.product).includes(destination.value)) return 'This item does not ship to the selected country. Choose another destination or remove it.';
   if (["soon", "out"].includes(stockState(item.product)) || item.product.pricePending) return 'This item is not available to buy.';
   if (item.product.keycaps) {
     const error = designError(item.design, profileFor(catalog, item.product));

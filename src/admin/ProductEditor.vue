@@ -2,6 +2,7 @@
 import { computed, ref } from "vue";
 import KeycapProductEditor from './KeycapProductEditor.vue';
 import OfficeShipping from "./OfficeShipping.vue";
+import ShippingDestinations from "./ShippingDestinations.vue";
 import MerchEditor from "./MerchEditor.vue";
 import MediaEditor from "./MediaEditor.vue";
 import ProductTags from "../components/ProductTags.vue";
@@ -209,7 +210,7 @@ function toggleTag(id) {
       </p>
     </div>
     <div v-if="tab === 'keyboard profile'" class="editor-content"><KeycapProductEditor :product="product" :catalog="catalog" /></div>
-    <div v-if="tab === 'options & shipping'" class="editor-content"><KeycapProductEditor v-if="product.keycaps" :product="product" :catalog="catalog" /><MerchEditor v-else-if="product.merch" :product="product" /><OfficeShipping v-else :product="product" /></div>
+    <div v-if="tab === 'options & shipping'" class="editor-content"><ShippingDestinations :product="product" /><KeycapProductEditor v-if="product.keycaps" :product="product" :catalog="catalog" /><MerchEditor v-else-if="product.merch" :product="product" /><OfficeShipping v-else :product="product" /></div>
     <div v-if="tab === 'supplier' && product.supplier" class="editor-content">
       <h3>{{ product.supplier.provider === 'mouser' ? 'Mouser Electronics' : 'AliExpress' }}</h3>
       <p class="help-copy">Listing {{ product.supplier.supplierSku }} · Variant {{ product.supplier.variantId || 'not applicable' }}</p>

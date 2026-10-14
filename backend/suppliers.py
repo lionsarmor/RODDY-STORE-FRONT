@@ -14,6 +14,7 @@ from fastapi import HTTPException, Request
 from .newsletter_mail import text
 from .supplier_clients import AliExpress, Mouser, MouserOrdering, link
 from .aliexpress_auth import register_aliexpress_auth
+from .supplier_directory import register_supplier_directory
 
 PROVIDERS = {'mouser', 'aliexpress'}
 
@@ -52,6 +53,7 @@ def write_connections(path, data):
 
 
 def register_suppliers(app, connect, require_admin, config_path, public_url, site, rate_limit):
+    register_supplier_directory(app, connect, require_admin)
     config_lock = threading.Lock()
     query_lock = threading.Lock()
     with connect() as db:

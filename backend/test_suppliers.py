@@ -48,6 +48,32 @@ class SupplierTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200, response.text)
         return response
 
+    def test_private_directory_saved_settings_conflicts_and_no_purchasing(self):
+        self.assertEqual(self.client.get('/admin/suppliers/directory').status_code, 401)
+        self.assertEqual(self.admin('GET', '/directory', login='other').status_code, 403)
+        self.connect()
+        data = self.admin('GET', '/directory').json()
+        self.assertEqual({s['provider'] for s in data['suppliers']}, {'mouser', 'aliexpress', 'yuzu', 'pcbway', 'printify'})
+        self.assertNotIn('private-search-key', json.dumps(data))
+        pcb = next(s for s in data['suppliers'] if s['provider'] == 'pcbway')
+        settings = pcb['settings']
+        settings.update(contact='Test account manager', countries=['US'], services=['Bare PCBs'], dispatch='self', agreementStatus='requested')
+        with patch('backend.supplier_clients.httpx.post') as purchase:
+            result = self.admin('POST', '/directory', {'provider':'pcbway', 'revision':0, 'settings':settings})
+            self.assertEqual(result.status_code, 200, result.text)
+            self.assertFalse(result.json()['orderPlaced'])
+            purchase.assert_not_called()
+        self.assertEqual(self.admin('POST', '/directory', {'provider':'pcbway','revision':0,'settings':settings}).status_code, 409)
+        self.assertEqual(next(s for s in self.admin('GET','/directory').json()['suppliers'] if s['provider']=='pcbway')['settings']['dispatch'], 'self')
+        settings['agreementStatus']='confirmed'
+        self.assertEqual(self.admin('POST','/directory',{'provider':'pcbway','revision':1,'settings':settings}).status_code,400)
+        settings['agreementEvidence']='Example manager confirmed neutral boxes, test date; no order sent.'
+        self.assertEqual(self.admin('POST','/directory',{'provider':'pcbway','revision':1,'settings':settings}).status_code,200)
+        self.assertEqual(self.admin('GET').json()['preferences']['revision'],1)
+        for bad in [{**settings,'apiKey':'must-not-be-stored'}, {**settings,'countries':['GB']}, {**settings,'services':['Automatic purchasing']}, {**settings,'omitPriceReceipts':'yes'}]:
+            self.assertEqual(self.admin('POST','/directory',{'provider':'pcbway','revision':2,'settings':bad}).status_code,400)
+        self.assertEqual(next(s for s in self.admin('GET','/directory').json()['suppliers'] if s['provider']=='mouser')['revision'],0)
+
     def test_connection_updates_preserve_private_file_ownership(self):
         from backend.suppliers import write_connections
         path=self.root/'suppliers.json'

@@ -1334,7 +1334,7 @@ function syncPrintify(source, targetId) {
           </template>
           <template v-if="tab === 'pcb'"><PcbWizard :endpoint="catalog.settings.checkoutEndpoint" :token="form.token" :connected="connected" :products="catalog.products" /></template>
           <template v-if="tab === 'orders'"><OrderManager :refresh-key="ordersRefresh" :endpoint="catalog.settings.checkoutEndpoint" :token="form.token" :connected="connected" /></template>
-          <div v-show="tab === 'suppliers'"><SupplierManager :catalog="catalog" :token="form.token" :connected="connected" @import-products="catalog.products.push(...$event)" @edit-product="selected = $event; tab = 'products'" /></div>
+          <div v-show="tab === 'suppliers'"><SupplierManager @navigate="tab = $event" :catalog="catalog" :token="form.token" :connected="connected" @import-products="catalog.products.push(...$event)" @edit-product="selected = $event; tab = 'products'" /></div>
           <div v-show="tab === 'newsletters'"><NewsletterManager :endpoint="catalog.settings.checkoutEndpoint" :token="form.token" :connected="connected" :github="form" :library="library" :products="catalog.products" /></div>
           <template v-if="tab === 'forum'"><ForumManager :endpoint="catalog.settings.checkoutEndpoint" :token="form.token" :connected="connected" /></template>
 

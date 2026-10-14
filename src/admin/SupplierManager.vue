@@ -1,9 +1,10 @@
 <script setup>
 import { computed, nextTick, reactive, ref, watch } from 'vue';
+import SupplierDirectory from './SupplierDirectory.vue';
 import { commerceRequest } from './commerce-api';
 import { priceEstimate, supplierDraft, supplierIdentity } from './supplier-model';
 const props = defineProps({catalog: Object, token: String, connected: Boolean});
-const emit = defineEmits(['import-products', 'edit-product']);
+const emit = defineEmits(['import-products', 'edit-product', 'navigate']);
 const state = ref(null);
 const preferences = ref({favorites: [], revision: 1});
 const credentials = reactive({searchKey: '', orderKey:'', appKey: '', appSecret: '', accessToken: ''});
@@ -168,6 +169,7 @@ function importSelected() {
 </script>
 <template>
   <div class="supplier-manager">
+    <SupplierDirectory :endpoint="catalog.settings.checkoutEndpoint" :token="token" :connected="connected" @navigate="emit('navigate', $event)" @connection="async p => { provider=p; await nextTick(); connectionsPanel.open=true; connectionsPanel.scrollIntoView({block:'start'}); }" />
     <section class="admin-section">
       <p class="eyebrow">DISCOVER · CHOOSE · REVIEW · PUBLISH</p>
       <h2>Suppliers & product imports</h2>

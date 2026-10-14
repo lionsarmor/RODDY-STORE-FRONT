@@ -87,3 +87,5 @@ class ManualSupplierOrderTests(unittest.TestCase):
         self.product['shippingCountries']=['CA']
         result=self.checkout(q.json());self.assertEqual(result.status_code,409)
         self.assertEqual(self.provider.created,[])
+        self.product['shippingCountries']=[]
+        self.assertEqual(self.quote().status_code,409)

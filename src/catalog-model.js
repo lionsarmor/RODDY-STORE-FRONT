@@ -1,3 +1,4 @@
+import { shippingCountries } from './shipping-destinations.js';
 import {catalogColorId} from './keycap-palette.js';
 import { KEYCAP_PREVIEWS, MARKS, DISABLED_MARKS, ARROWS, NUMBER_ROWS, defaultDesign, designError } from './keycaps.js';
 
@@ -176,6 +177,12 @@ export function validateCatalog(data) {
         if (!Array.isArray(rate.variantIds) || !Array.isArray(rate.countries) || [rate.firstItem, rate.additionalItem].some(n => !Number.isFinite(n) || n < 0))
           errors.push(`${p.name}: invalid merchandise shipping rates.`);
       }
+    }
+    if (p.type === 'physical' && p.active && p.status === 'available') {
+      const countries = shippingCountries(p);
+      if (!countries.length) errors.push(`${p.name}: enable at least one shipping destination.`);
+      const liveShipping = p.merch || (p.supplier?.provider === 'aliexpress' && p.supplier.fulfillment === 'manual') || (!p.supplier && p.fulfillment === 'manual');
+      if (!liveShipping && countries.some(c => !p.officeShipping?.[c])) errors.push(`${p.name}: add a shipping rate for each enabled destination.`);
     }
     if (p.downloadUrl && !safeLink(p.downloadUrl))
       errors.push(`${p.name}: download must be an HTTP(S) URL.`);
