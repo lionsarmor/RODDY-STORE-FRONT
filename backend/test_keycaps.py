@@ -43,7 +43,7 @@ class KeycapOrderTests(unittest.TestCase):
                         'officeShipping':{'US':{'firstItem':10,'additionalItem':3}}}
         self.catalog['products'].append(self.product)
         self.design = {'profileId':'x16-compatible','revision':'v06.1','alpha':'#F7F7F5','modifiers':'#50545E',
-                       'accents':'#7FAFD3','mark':'commander-x16','arrows':'small-black'}
+                       'accents':'#7FAFD3','mark':'roddy-r','arrows':'small-black'}
         self.items = [{'id':'custom-keys','qty':1,'design':copy.deepcopy(self.design)}]
         self.packets = self.app.state.order_packets
 
@@ -74,13 +74,13 @@ class KeycapOrderTests(unittest.TestCase):
                     self.assertIn(MARKS[mark],label(design))
 
     def test_two_designs_share_shipping_group_and_paid_packet_has_both_jsons(self):
-        self.items.append({'id':'custom-keys','qty':2,'design':{**self.design,'mark':'roddy-r','arrows':'bold-white'}})
+        self.items.append({'id':'custom-keys','qty':2,'design':{**self.design,'mark':'otter-x','arrows':'bold-white'}})
         q = self.quote(); self.assertEqual(q.status_code,200,q.text)
         self.assertEqual(q.json()['subtotal'],29997); self.assertEqual(q.json()['shipping'],1600)
         result = self.paid_order(); order = self.order(result['sessionId'])
         details, files = packet(order)
         self.assertEqual(len(files),3);self.assertEqual(details['delivery'],commerce_tests.ADDRESS)
-        self.assertEqual({i['selection']['mark']:i['quantity'] for i in details['items']},{'commander-x16':1,'roddy-r':2})
+        self.assertEqual({i['selection']['mark']:i['quantity'] for i in details['items']},{'roddy-r':1,'otter-x':2})
         self.assertEqual(details['squareOrderId'],'provider-order')
         self.assertEqual(self.supplier.submitted,[])
         self.assertNotIn('custom-keys',[i['id'] for i in self.app.state.commerce.inventory()])
@@ -115,7 +115,7 @@ class KeycapOrderTests(unittest.TestCase):
         self.assertEqual(self.admin('POST',path,{'action':'download'}).status_code,409)
 
     def test_tampered_stale_missing_or_foreign_designs_are_rejected(self):
-        for changes in [{'mark':'plain-x'},{'arrows':'secret'},{'accents':'#000'},{'revision':'old'},{'profileId':'other'},{'price':.01}]:
+        for changes in [{'mark':'commander-x16'},{'mark':'plain-x'},{'arrows':'secret'},{'accents':'#000'},{'revision':'old'},{'profileId':'other'},{'price':.01}]:
             items=[{'id':'custom-keys','qty':1,'design':{**self.design,**changes}}]
             self.assertIn(self.quote(items).status_code,[400,409])
         self.assertEqual(self.quote([{'id':'custom-keys','qty':1}]).status_code,400)
@@ -123,12 +123,18 @@ class KeycapOrderTests(unittest.TestCase):
         self.assertEqual(self.quote(self.items*2).status_code,400)
         self.assertEqual(self.provider.created,[])
 
+    def test_disabled_mark_is_rejected_even_when_an_old_catalog_allows_it(self):
+        self.profile['marks'].append('commander-x16')
+        self.items[0]['design']['mark']='commander-x16'
+        self.assertEqual(self.quote().status_code,400)
+        self.assertEqual(self.provider.created,[])
+
     def test_shipping_must_be_configured_and_changed_quote_cannot_buy_another_design(self):
         self.product['officeShipping']={};self.assertEqual(self.quote().status_code,409)
         self.product['officeShipping']={'US':{'firstItem':10,'additionalItem':3}}
         q=self.quote().json();self.items[0]['design']['mark']='roddy-x'
         self.assertEqual(self.checkout(q).status_code,409)
-        self.items[0]['design']['mark']='commander-x16';self.profile['revision']='next'
+        self.items[0]['design']['mark']='roddy-r';self.profile['revision']='next'
         self.assertEqual(self.checkout(q).status_code,409)
         self.assertEqual(self.provider.created,[])
 

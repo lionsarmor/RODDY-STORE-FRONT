@@ -1,6 +1,6 @@
 <script setup>
 import {computed,ref,watch} from 'vue';
-import {ARROWS,MARKS,MARK_DESCRIPTIONS,KEYCAP_PREVIEWS,DEFAULT_COLORS,defaultDesign,designError,generatePreview} from '../keycaps';
+import {ARROWS,MARKS,availableMarks,MARK_DESCRIPTIONS,KEYCAP_PREVIEWS,DEFAULT_COLORS,defaultDesign,designError,generatePreview} from '../keycaps';
 import KeycapPreview from './KeycapPreview.vue';
 const props=defineProps({profile:Object,profiles:Array,products:Array});
 const emit=defineEmits(['change','save']);
@@ -26,7 +26,7 @@ function preset(p){for(const [k] of colorFields)selection.value[k]=p[k];}
           <fieldset><legend>01 / Set the palette</legend><div class="preset-list"><button v-for="p in presets" :key="p.name" type="button" @click="preset(p)"><span class="preset-swatches"><i :style="{background:p.alpha}" /><i :style="{background:p.modifiers}" /><i :style="{background:p.accents}" /></span>{{p.name}}</button></div>
             <label v-for="[id,label] in colorFields" :key="id" class="color-choice"><span>{{label}}<small>{{selection[id]}}</small></span><input v-model="selection[id]" type="color" :aria-label="label" @input="selection[id]=selection[id].toUpperCase()" /></label>
           </fieldset>
-          <fieldset><legend>02 / Choose your Commander key</legend><div class="symbol-list"><button v-for="id in profile.marks || Object.keys(MARKS)" :key="id" :aria-pressed="selection.mark===id" @click="selection.mark=id"><svg viewBox="0 0 1250 1000" aria-hidden="true"><rect width="1250" height="1000" rx="90" :fill="selection.accents" /><path v-for="l in template.marks[id]" :key="l.path" :d="l.path" :fill="l.fill" /></svg><span>{{MARKS[id]}}</span><small v-if="MARK_DESCRIPTIONS[id]">{{MARK_DESCRIPTIONS[id]}}</small></button></div></fieldset>
+          <fieldset><legend>02 / Choose your Commander key</legend><div class="symbol-list"><button v-for="id in availableMarks(profile)" :key="id" :aria-pressed="selection.mark===id" @click="selection.mark=id"><svg viewBox="0 0 1250 1000" aria-hidden="true"><rect width="1250" height="1000" rx="90" :fill="selection.accents" /><path v-for="l in template.marks[id]" :key="l.path" :d="l.path" :fill="l.fill" /></svg><span>{{MARKS[id]}}</span><small v-if="MARK_DESCRIPTIONS[id]">{{MARK_DESCRIPTIONS[id]}}</small></button></div></fieldset>
           <fieldset><legend>03 / Pick your arrows</legend><div class="arrow-list"><button v-for="id in profile.arrows || Object.keys(ARROWS)" :key="id" :aria-pressed="selection.arrows===id" @click="selection.arrows=id"><span :class="id" aria-hidden="true">↑</span>{{ARROWS[id]}}</button></div></fieldset>
           <div class="studio-actions"><button class="button primary" :disabled="!!error" @click="$emit('save')">Save design to cart +</button><button class="text-button" @click="selection=defaultDesign(profile)">Reset to profile defaults</button></div>
           <p v-if="error" role="alert" class="notice">{{error}}</p>

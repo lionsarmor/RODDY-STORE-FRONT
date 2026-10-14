@@ -3,11 +3,23 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {setActivePinia,createPinia} from 'pinia';
 import {useCartStore} from './stores/cart.js';
-import {KEYCAP_PREVIEWS,MARKS,ARROWS,defaultDesign,generatePreview,designKey,designError} from './keycaps.js';
+import {KEYCAP_PREVIEWS,MARKS,ARROWS,availableMarks,defaultDesign,generatePreview,designKey,designError} from './keycaps.js';
 import {normalizeCatalog,validateCatalog} from './catalog-model.js';
 import {cartLineKey} from './merch.js';
 const catalog=normalizeCatalog(JSON.parse(readFileSync(new URL('../public/data/products.json',import.meta.url))));
 const profile=catalog.keycapProfiles[0];const template=KEYCAP_PREVIEWS[profile.templateId];
+test('disabled X16 artwork stays unavailable even in an old catalog or saved design',()=>{
+  const old={...profile,marks:[...profile.marks,'commander-x16'],defaults:{...profile.defaults,mark:'commander-x16'}};
+  assert.equal(defaultDesign(old).mark,'roddy-r');
+  assert.ok(!availableMarks(old).includes('commander-x16'));
+  assert.ok(!MARKS['commander-x16']);
+  assert.ok(MARKS['otter-x']);
+  assert.throws(()=>generatePreview(old,{...defaultDesign(old),mark:'commander-x16'}));
+  const restored=normalizeCatalog({...catalog,keycapProfiles:[old]});
+  assert.equal(restored.keycapProfiles[0].defaults.mark,'roddy-r');
+  assert.ok(!restored.keycapProfiles[0].marks.includes('commander-x16'));
+  assert.deepEqual(validateCatalog(restored),[]);
+});
 test('customer preview retains all 87 v6 key appearances without Yuzu manufacturing fields',()=>{
   const out=generatePreview(profile,defaultDesign(profile));
   assert.equal(out.keys.length,87);

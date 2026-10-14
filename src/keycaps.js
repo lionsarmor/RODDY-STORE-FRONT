@@ -4,16 +4,21 @@ import x16 from './keycap-previews/x16-v06-cherry-tkl.json' with {type: 'json'};
 // One validated template per physical layout. Profiles are catalog data and
 // can share a layout while offering different defaults and allowed options.
 export const KEYCAP_PREVIEWS = {[x16.id]: x16};
-export const MARKS = Object.fromEntries(Object.entries(markOptions).map(([id,option])=>[id,option.label]));
+export const DISABLED_MARKS = Object.keys(markOptions).filter(id=>markOptions[id].enabled===false);
+export const MARKS = Object.fromEntries(Object.entries(markOptions).filter(([,option])=>option.enabled!==false).map(([id,option])=>[id,option.label]));
 export const MARK_DESCRIPTIONS = Object.fromEntries(Object.entries(markOptions).map(([id,option])=>[id,option.inspiration || '']));
 export const ARROWS = {'small-black':'Small black arrows','bold-white':'Bold white arrows'};
 export const DEFAULT_COLORS = {alpha:'#F7F7F5',modifiers:'#50545E',accents:'#7FAFD3'};
-export const DEFAULT_SELECTION = {...DEFAULT_COLORS,mark:'commander-x16',arrows:'small-black'};
+export const DEFAULT_SELECTION = {...DEFAULT_COLORS,mark:'roddy-r',arrows:'small-black'};
+export const availableMarks = profile => (profile?.marks || Object.keys(MARKS)).filter(id=>MARKS[id]);
 export function profileFor(catalog, product) {
   return catalog.keycapProfiles?.find(p=>p.id===product?.keycaps?.profileId) || null;
 }
 export function defaultDesign(profile) {
-  return {profileId:profile.id,revision:profile.revision,...DEFAULT_SELECTION,...profile.defaults};
+  const design={profileId:profile.id,revision:profile.revision,...DEFAULT_SELECTION,...profile.defaults};
+  const marks=availableMarks(profile);
+  if(!marks.includes(design.mark))design.mark=marks.includes(DEFAULT_SELECTION.mark)?DEFAULT_SELECTION.mark:marks[0];
+  return design;
 }
 export function designKey(design) {
   return design ? JSON.stringify(['profileId','revision','alpha','modifiers','accents','mark','arrows'].map(k=>design[k] || '')) : '';
@@ -22,7 +27,7 @@ export function designError(design, profile) {
   if (!profile || !KEYCAP_PREVIEWS[profile.templateId]) return 'This keyboard profile is unavailable.';
   if (!design || design.profileId!==profile.id || design.revision!==profile.revision) return 'This design needs refreshing on the product page.';
   if (!['alpha','modifiers','accents'].every(k=>/^#[0-9A-F]{6}$/.test(design[k] || ''))) return 'Choose valid key colors.';
-  if (!(profile.marks || Object.keys(MARKS)).includes(design.mark) || !(profile.arrows || Object.keys(ARROWS)).includes(design.arrows)) return 'Choose an available symbol and arrow style.';
+  if (!availableMarks(profile).includes(design.mark) || !(profile.arrows || Object.keys(ARROWS)).includes(design.arrows)) return 'Choose an available symbol and arrow style.';
   return '';
 }
 const isDark = hex => {

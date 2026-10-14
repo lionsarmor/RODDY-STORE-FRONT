@@ -1,4 +1,4 @@
-import { KEYCAP_PREVIEWS, MARKS, ARROWS, defaultDesign, designError } from './keycaps.js';
+import { KEYCAP_PREVIEWS, MARKS, DISABLED_MARKS, ARROWS, defaultDesign, designError } from './keycaps.js';
 
 export const DEFAULT_TAGS = [
   { id: "esp32", label: "ESP32", color: "#b9e6f5" },
@@ -57,7 +57,11 @@ export function normalizeCatalog(data) {
   return {
     ...data,
     schemaVersion: 2,
-    keycapProfiles: Array.isArray(data.keycapProfiles) ? data.keycapProfiles : [],
+    keycapProfiles: Array.isArray(data.keycapProfiles) ? data.keycapProfiles.map(profile=>{
+      const clean={...profile,marks:profile.marks?.filter(id=>!DISABLED_MARKS.includes(id))};
+      if(DISABLED_MARKS.includes(clean.defaults?.mark))clean.defaults={...clean.defaults,mark:defaultDesign(clean).mark};
+      return clean;
+    }) : [],
     categories: Array.isArray(data.categories) ? data.categories : [],
     products: (data.products || []).map(normalizeProduct),
     tags: Array.isArray(data.tags) ? data.tags : structuredClone(DEFAULT_TAGS),

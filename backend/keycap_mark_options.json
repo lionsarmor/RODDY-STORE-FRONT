@@ -1,6 +1,7 @@
 {
   "commander-x16": {
-    "label": "Commander X16 butterfly"
+    "label": "Commander X16 butterfly",
+    "enabled": false
   },
   "otter-x": {
     "label": "OtterX X"
