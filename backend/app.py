@@ -31,6 +31,7 @@ from .keycaps import packet_zip
 from .suppliers import register_suppliers
 from .newsletter import register_newsletter
 from .forum import register_forum
+from .customers import register_customers
 from .pcb_projects import register_pcb_projects
 from .catalog_sourcing import register_catalog_sourcing
 
@@ -621,7 +622,8 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
         return Response(packet_zip(order), media_type="application/zip", headers={"Cache-Control": "no-store", "Content-Disposition": f'attachment; filename="RODDY-{reference}-keycaps.zip"'})
 
     sourcing=register_catalog_sourcing(app,require_admin,os.getenv("CATALOG_SOURCING",str(database.parent/"catalog-sourcing.json")))
-    register_forum(app, connect, require_admin, rate_limit, origins)
+    account_auth = register_forum(app, connect, require_admin, rate_limit, origins)
+    register_customers(app, connect, account_auth, require_admin, rate_limit)
     register_newsletter(app, connect, require_admin, rate_limit, origins)
     supplier_services = register_suppliers(app, connect, require_admin, os.getenv("SUPPLIERS_CONFIG", str(database.parent / "suppliers.json")), public_url, site, rate_limit)
     commerce.supplier_quote_factory=supplier_quote_factory or (lambda kind:supplier_quote_client(kind,supplier_services['buyer']() if kind=='aliexpress' else supplier_services['mouser'](),supplier_services['reserve']))

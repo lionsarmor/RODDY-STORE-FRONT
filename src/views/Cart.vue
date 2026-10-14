@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref, reactive, watch } from "vue";
+import { computed, ref, reactive, watch, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import {
   useCatalogStore,
@@ -13,16 +13,53 @@ import { useUiStore } from "../stores/ui";
 import { estimateShipping, variantLabel, cartLineKey } from "../merch.js";
 import { shippingCountries } from '../shipping-destinations.js';
 import {profileFor,designError,designLabel} from '../keycaps.js';
+import {useCustomerStore} from '../stores/customer';
+import {emptyAddress} from '../customer-api';
+import AddressFields from '../components/AddressFields.vue';
 const address = reactive({first_name: "", last_name: "", email: "", phone: "", country: "US", region: "", address1: "", address2: "", city: "", zip: ""});
 const destination = computed(() => address.country);
 const quote = ref(null);
 const quoting = ref(false);
 const quoteError = ref("");
 const route = useRoute();
+const customer = useCustomerStore();
+const guestMode = ref(route.query.guest === '1');
+const savedAddressId = ref('');
+const saveForLater = ref(false);
+const addressLabel = ref('Home');
+const accountMessage = ref('');
 const catalog = useCatalogStore();
 const cart = useCartStore();
 const checkout = useCheckoutStore();
 const ui = useUiStore();
+async function loadCustomer() {
+  if (!catalog.settings.checkoutEndpoint) return;
+  try {
+    await customer.load();
+    if (!guestMode.value && JSON.stringify(address)===JSON.stringify(emptyAddress())) {
+      const saved=customer.addresses.find(a=>a.default);
+      if(saved){savedAddressId.value=saved.id;Object.assign(address,saved.address);}
+    }
+  } catch {accountMessage.value='Saved addresses could not load. You can enter an address and check out as a guest.';}
+}
+function chooseAddress() {
+  const saved=customer.addresses.find(a=>a.id===savedAddressId.value);
+  Object.assign(address,saved ? saved.address : {...emptyAddress(),email:customer.profile?.email || ''});
+  saveForLater.value=false;
+}
+function useGuest() {
+  guestMode.value=true;saveForLater.value=false;savedAddressId.value='';
+  Object.assign(address,emptyAddress());accountMessage.value='Guest checkout selected. This address will only be used for this order.';
+}
+onMounted(loadCustomer);
+watch(()=>catalog.settings.checkoutEndpoint,loadCustomer);
+watch(()=>route.query.guest,value=>{if(value==='1')useGuest();});
+watch(()=>customer.session?.token,(token,previous)=>{
+  if(previous && token!==previous && savedAddressId.value){
+    savedAddressId.value='';saveForLater.value=false;Object.assign(address,emptyAddress());
+    accountMessage.value='Your account changed. Choose or enter a delivery address again.';
+  }
+});
 const items = computed(() => cart.hydrated(catalog));
 const missing = computed(() => cart.items.filter((i) => !catalog.byId(i.id)));
 const total = computed(() =>
@@ -73,7 +110,15 @@ async function getQuote() {
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || "Could not calculate shipping.");
-    if (fingerprint === JSON.stringify([cart.items, address])) quote.value = data;
+    if (fingerprint === JSON.stringify([cart.items, address])) {
+      quote.value = data;
+      if(customer.signedIn && !guestMode.value && saveForLater.value) {
+        try {
+          savedAddressId.value=await customer.saveAddress({label:addressLabel.value,address:{...address},default:!customer.addresses.length});
+          saveForLater.value=false;accountMessage.value='Address saved to your account.';
+        } catch(e) {accountMessage.value='Shipping is ready, but your address was not saved: '+e.message;}
+      }
+    }
   } catch (e) { quoteError.value = e.message; }
   finally { quoting.value = false; }
 }
@@ -174,23 +219,19 @@ function updateQty(item, value) {
       </div>
       <section class="self-start border border-border bg-panel p-6">
         <h2 class="mb-6 font-mono text-base">ORDER SUMMARY</h2>
+        <div class="checkout-account">
+          <template v-if="customer.signedIn && !guestMode"><p>Shopping as <strong>{{customer.profile.handle}}</strong></p><RouterLink to="/account?return=cart" class="text-button">Manage account</RouterLink> · <button class="text-button" @click="useGuest">Use guest checkout</button></template>
+          <template v-else><p><strong>Guest checkout.</strong> No account needed.</p><RouterLink to="/account?return=cart" class="text-button">Sign in or create an account</RouterLink><button v-if="customer.signedIn" class="text-button" @click="guestMode=false;accountMessage=''">Use my saved addresses</button></template>
+          <p v-if="accountMessage" class="text-xs mt-2" role="status">{{accountMessage}}</p>
+        </div>
         <div class="mb-4 flex justify-between text-sm">
           <span>Subtotal</span><span>{{ formatPrice(total) }}</span>
         </div>
         <form v-if="physical" class="shipping-form mb-6" @submit.prevent="getQuote">
           <h3 class="font-mono mb-4">DELIVERY ADDRESS</h3>
-          <div class="shipping-fields">
-            <label>First name<input v-model="address.first_name" autocomplete="given-name" maxlength="80" required /></label>
-            <label>Last name<input v-model="address.last_name" autocomplete="family-name" maxlength="80" required /></label>
-            <label class="wide">Email<input v-model="address.email" type="email" autocomplete="email" maxlength="254" required /></label>
-            <label class="wide">Phone<input v-model="address.phone" type="tel" autocomplete="tel" maxlength="30" required /></label>
-            <label class="wide">Address<input v-model="address.address1" autocomplete="address-line1" maxlength="150" required /></label>
-            <label class="wide">Apartment / suite (optional)<input v-model="address.address2" autocomplete="address-line2" maxlength="150" /></label>
-            <label class="wide">City<input v-model="address.city" autocomplete="address-level2" maxlength="100" required /></label>
-            <label>Country<select v-model="address.country" autocomplete="country"><option value="US">United States</option><option value="CA">Canada</option></select></label>
-            <label>State / province code<input v-model="address.region" autocomplete="address-level1" placeholder="CA / ON" minlength="2" maxlength="2" required /></label>
-            <label class="wide">ZIP / postal code<input v-model="address.zip" autocomplete="postal-code" maxlength="12" required /></label>
-          </div>
+          <label v-if="customer.signedIn && !guestMode && customer.addresses.length" class="saved-address-picker">Use a saved address<select v-model="savedAddressId" @change="chooseAddress"><option value="">Enter another address</option><option v-for="saved in customer.addresses" :key="saved.id" :value="saved.id">{{saved.label}} — {{saved.address.city}}{{saved.default?' (default)':''}}</option></select></label>
+          <AddressFields :address="address" />
+          <div v-if="customer.signedIn && !guestMode && customer.addresses.length<10" class="save-address-choice"><label><input v-model="saveForLater" type="checkbox" /> Save this as a new address for next time</label><label v-if="saveForLater">Address label<input v-model="addressLabel" maxlength="40" required placeholder="Home, work…" /></label></div>
           <button class="button w-full mt-4" type="submit" :disabled="quoting || invalid || catalog.preview">{{ quoting ? 'Calculating…' : 'Calculate shipping' }}</button>
           <p v-if="quoteError" class="release-note" role="alert">{{ quoteError }}</p>
           <p v-if="quote" class="text-xs mt-3">Shipping confirmed for this address. Quote valid for 15 minutes.</p>
@@ -225,7 +266,7 @@ function updateQty(item, value) {
           "
           @click="checkoutAll"
         >
-          {{ checkout.loading ? "Opening checkout…" : "Secure checkout ↗" }}
+          {{ checkout.loading ? "Opening checkout…" : customer.signedIn && !guestMode ? "Secure checkout ↗" : "Checkout as guest ↗" }}
         </button>
         <p v-if="!catalog.settings.checkoutEnabled" class="release-note">
           Checkout is getting ready. Your cart is saved on this device.
@@ -242,6 +283,7 @@ function updateQty(item, value) {
 </template>
 
 <style scoped>
+.checkout-account{padding:16px;border:1px solid var(--color-border);border-radius:8px;margin-bottom:24px;font-size:13px;line-height:1.7}.saved-address-picker{display:grid;gap:8px;font-size:13px;margin-bottom:20px}.saved-address-picker select,.save-address-choice input:not([type=checkbox]){width:100%;min-width:0;padding:10px;background:var(--color-panel);border:1px solid var(--color-border);color:inherit}.save-address-choice{display:grid;gap:10px;font-size:12px;margin-top:16px}.save-address-choice label{display:flex;gap:8px;align-items:center}
 .shipping-fields { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
 .shipping-fields label { display:grid; gap:6px; min-width:0; font-size:12px; }
 .shipping-fields .wide { grid-column:1/-1; }

@@ -60,18 +60,18 @@ def register_forum(app, connect, require_admin, rate_limit, origins):
 
     def write_origin(request):
         if request.headers.get("origin") not in origins:
-            raise HTTPException(403, "Start from the RODDY contact page.")
+            raise HTTPException(403, "Start from the RODDY website.")
 
     def member(request):
         header = request.headers.get("authorization", "")
         token = header.removeprefix("Bearer ")
         if not header.startswith("Bearer ") or not re.fullmatch(r"[A-Za-z0-9_-]{43}", token):
-            raise HTTPException(401, "Sign in to your forum handle first.")
+            raise HTTPException(401, "Sign in to your RODDY account first.")
         digest = hashlib.sha256(token.encode()).hexdigest()
         with connect() as db:
             row = db.execute("SELECT u.* FROM forum_sessions s JOIN forum_users u ON u.id=s.user WHERE s.digest=? AND s.expires>? AND u.banned=0", (digest, int(time.time()))).fetchone()
         if not row:
-            raise HTTPException(401, "Your forum session expired. Sign in again.")
+            raise HTTPException(401, "Your session expired. Sign in again.")
         return dict(row)
 
     def sign_in(db, user):
@@ -281,3 +281,5 @@ def register_forum(app, connect, require_admin, rate_limit, origins):
             db.execute("UPDATE forum_users SET banned=? WHERE id=?", (int(body["banned"]), user_id))
             db.execute("DELETE FROM forum_sessions WHERE user=?", (user_id,))
         return {"saved": True}
+
+    return {"member": member, "write_origin": write_origin, "sign_in": sign_in}

@@ -1,43 +1,38 @@
 <script setup>
 import {computed, nextTick, onMounted, reactive, ref, watch} from "vue";
 import {useCatalogStore} from "../stores/catalog";
+import {useCustomerStore} from "../stores/customer";
+import {useRouter, useRoute} from "vue-router";
 import {SUPPORT_EMAIL, SALES_EMAIL, contactRecipient, contactMailto, forumRequest} from "../forum-api.js";
 import CommunityHero from "../components/CommunityHero.vue";
 import RoddyLogo from "../components/RoddyLogo.vue";
 
 const catalog = useCatalogStore();
+const customer = useCustomerStore(), router = useRouter(), route = useRoute();
 const endpoint = computed(() => catalog.settings.checkoutEndpoint);
 const topics = ref([]), selected = ref(null), replies = ref([]);
 const moreTopics = ref(false), moreReplies = ref(false);
 const loading = ref(false), busy = ref(false), error = ref(""), notice = ref("");
-const token = ref(""), handle = ref(""), register = ref(true);
-const credentials = reactive({handle: "", password: ""});
+const token = computed(() => customer.session?.token || "");
+const handle = computed(() => customer.signedIn ? customer.profile.handle : "");
 const draft = reactive({title: "", body: ""});
 const reply = ref(""), composing = ref(false);
-const authDialog = ref(null), emailDialog = ref(null), threadHeading = ref(null);
+const emailDialog = ref(null), threadHeading = ref(null);
 const email = reactive({category: "Issue", subject: "", name: "", body: ""});
 const emailRecipient = computed(() => contactRecipient(email.category));
 const copied = ref("");
 const boardHeading = ref(null);
-const SESSION_KEY = "roddy:forum:session";
+let restoredReturn = false;
 let sequence = 0;
 const date = value => new Date(value * 1000).toLocaleString();
 const request = (path, body) => forumRequest(endpoint.value, path, token.value, body);
 
-function storeSession(data) {
-  token.value = data?.token || "";
-  handle.value = data?.handle || "";
-  try {
-    if (data) localStorage.setItem(SESSION_KEY, JSON.stringify(data));
-    else localStorage.removeItem(SESSION_KEY);
-  } catch { /* Posting still works when persistent storage is unavailable. */ }
-}
 async function action(fn) {
   busy.value = true; error.value = ""; notice.value = "";
   try { await fn(); }
   catch (e) {
     error.value = e.message;
-    if (e.status === 401 && token.value) storeSession(null);
+    if (e.status === 401 && token.value) customer.remember(null);
     if (e.status === 404) { selected.value = null; replies.value = []; }
   } finally { busy.value = false; }
 }
@@ -52,9 +47,12 @@ async function loadBoard() {
   loading.value = true; error.value = "";
   try {
     await loadTopics();
-    if (token.value) {
-      try { handle.value = (await request("/forum/me")).handle; }
-      catch (e) { if (e.status === 401) storeSession(null); }
+    try { await customer.load(); } catch { /* Visitors can still read public topics. */ }
+    if (!restoredReturn && route.query.board === '1') {
+      restoredReturn = true;
+      if (/^[1-9][0-9]{0,14}$/.test(route.query.topic || '')) await openTopic(Number(route.query.topic), false, false);
+      else if (route.query.compose === '1' && handle.value) composing.value = true;
+      await nextTick(); jumpToBoard();
     }
   }
   catch (e) { error.value = e.message; }
@@ -79,24 +77,14 @@ async function openTopic(id, append = false, focus = true) {
 function back() {
   sequence++; selected.value = null; replies.value = []; reply.value = ""; error.value = "";
 }
-function openAuth() {
-  credentials.password = ""; error.value = "";
-  authDialog.value.showModal();
-}
-function authenticate() {
-  return action(async () => {
-    const data = await request(register.value ? "/forum/register" : "/forum/login", credentials);
-    storeSession(data); credentials.password = "";
-    authDialog.value.close(); notice.value = `Signed in as @${data.handle}.`;
-  });
+function openAuth(compose = false) {
+  compose = compose === true;
+  router.push({path:'/account', query:{return:'community', ...(selected.value ? {topic:String(selected.value.id)} : compose ? {compose:'1'} : {})}});
 }
 function logout() {
   return action(async () => {
-    try { await request("/forum/logout", {}); }
-    finally {
-      storeSession(null); draft.title = ""; draft.body = ""; reply.value = "";
-      notice.value = "Signed out on this browser.";
-    }
+    await customer.logout(); draft.title = ''; draft.body = ''; reply.value = ''; composing.value = false;
+    notice.value = 'Signed out of your RODDY account on this browser.';
   });
 }
 function createTopic() {
@@ -137,11 +125,6 @@ async function copyMessage() {
   } catch { copied.value = `Copy your message manually and email ${emailRecipient.value}.`; }
 }
 onMounted(async () => {
-  try {
-    const session = JSON.parse(localStorage.getItem(SESSION_KEY) || "null");
-    if (session?.expiresAt > Date.now() / 1000 && session.token) storeSession(session);
-    else storeSession(null);
-  } catch { storeSession(null); }
   if (endpoint.value) await loadBoard();
 });
 watch(endpoint, async value => {
@@ -179,7 +162,7 @@ watch(endpoint, async value => {
 
     <section class="contact-intro" aria-label="Choose how to get in touch">
       <div class="contact-margin-note"><span>01 / FIND YOUR PEOPLE</span><span>GOOD COMPANY.<br />SHARED CURIOSITY.</span></div>
-      <div><h2>A little community corner.</h2><p>Show us your build. Ask the question you’ve been sitting on. Make a handle and join the General board for all things RODDY.</p><button class="text-button" @click="jumpToBoard">Take a look around ↓</button></div>
+      <div><h2>A little community corner.</h2><p>Show us your build. Ask the question you’ve been sitting on. Join the General board with the same RODDY account you use in the shop.</p><button class="text-button" @click="jumpToBoard">Take a look around ↓</button></div>
       <div><h2>Some things are personal.</h2><p>Need a hand with a product or an existing order? <a :href="`mailto:${SUPPORT_EMAIL}`">{{SUPPORT_EMAIL}}</a>.</p><p>Sales, new-order inquiries or a collaboration? <a :href="`mailto:${SALES_EMAIL}`">{{SALES_EMAIL}}</a>.</p><button class="text-button" @click="openEmail">Open the contact form ↗</button></div>
     </section>
 
@@ -188,13 +171,13 @@ watch(endpoint, async value => {
       <div class="forum-toolbar">
         <div><p class="eyebrow">02 / THE COMMUNITY / GENERAL</p><h2 id="forum-heading" ref="boardHeading" tabindex="-1">THE NOTICEBOARD<span>.</span></h2></div>
         <div class="forum-actions">
-          <template v-if="handle"><span class="forum-handle">@{{handle}}</span><button class="text-button" :disabled="busy" @click="logout">Sign out</button></template>
-          <button v-else class="button" @click="openAuth">Make a handle / Sign in</button>
+          <template v-if="handle"><RouterLink to="/account" class="forum-handle">@{{handle}} · My account</RouterLink><button class="text-button" :disabled="busy" @click="logout">Sign out</button></template>
+          <button v-else class="button" @click="openAuth">Create account / Sign in</button>
           <button class="button" :disabled="loading || busy" @click="action(() => selected ? openTopic(selected.id, false, false) : loadTopics())">Refresh</button>
         </div>
       </div>
-      <p class="forum-guideline">Posts are public. Be kind, stay curious, and keep passwords, order numbers and personal details out of the board. Use private email for those.</p>
-      <p v-if="error && !authDialog?.open" class="notice" role="alert">{{error}}</p>
+      <p class="forum-guideline">One RODDY account for the shop and noticeboard. Only your handle appears here; your saved addresses stay private. Posts are public. Be kind, stay curious, and keep passwords, order numbers and personal details out of the board. Use private email for those.</p>
+      <p v-if="error" class="notice" role="alert">{{error}}</p>
       <p v-if="notice" class="notice" role="status">{{notice}}</p>
       <p v-if="loading" class="empty-state" role="status">Loading the community board…</p>
       <template v-else-if="selected">
@@ -217,10 +200,10 @@ watch(endpoint, async value => {
           <label>Reply as @{{handle}}<textarea v-model="reply" rows="5" maxlength="1800" required placeholder="Join the conversation…" /></label>
           <div class="forum-form-footer"><small>{{reply.length}} / 1800 · public reply</small><button class="button primary" :disabled="busy || !reply.trim()">{{busy ? 'Posting…' : 'Post reply'}}</button></div>
         </form>
-        <p v-else-if="!handle && !selected.locked" class="forum-signin-prompt"><button class="text-button" @click="openAuth">Make a handle or sign in</button> to reply.</p>
+        <p v-else-if="!handle && !selected.locked" class="forum-signin-prompt"><button class="text-button" @click="openAuth">Create an account or sign in</button> to reply.</p>
       </template>
       <template v-else>
-        <div class="forum-new-topic"><div><h3>Every good idea starts somewhere.</h3><p>A question, a build, a bit of feedback. Make yourself at home.</p></div><button class="button primary" :disabled="busy" @click="handle ? composing = !composing : openAuth()">{{composing ? 'Close draft' : 'Start a topic +'}}</button></div>
+        <div class="forum-new-topic"><div><h3>Every good idea starts somewhere.</h3><p>A question, a build, a bit of feedback. Make yourself at home.</p></div><button class="button primary" :disabled="busy" @click="handle ? composing = !composing : openAuth(true)">{{composing ? 'Close draft' : 'Start a topic +'}}</button></div>
         <form v-if="composing && handle" class="forum-form" @submit.prevent="createTopic">
           <div class="forum-compose-heading"><p class="eyebrow">NEW TOPIC / PUBLIC CONVERSATION</p><h3>Put an idea out there.</h3></div>
           <label>Topic title<input v-model="draft.title" maxlength="100" required placeholder="What would you like to talk about?" /></label>
@@ -233,7 +216,7 @@ watch(endpoint, async value => {
             <span><strong>{{topic.title}}</strong><small>@{{topic.handle}} <b v-if="topic.owner">· RODDY</b> · {{date(topic.created)}}</small></span><span class="forum-topic-count">{{topic.replyCount}} {{topic.replyCount === 1 ? 'reply' : 'replies'}}<small v-if="topic.locked">Closed</small><span aria-hidden="true">↗</span></span>
           </button>
         </div>
-        <div v-else-if="!error" class="forum-empty"><span class="forum-empty-mark" aria-hidden="true">✳</span><p class="eyebrow">A BLANK PAGE IS A BEGINNING.</p><h3>Room for the<br /><em>first good question.</em></h3><p>No topics yet. Make a handle and say hello.</p><button class="text-button" @click="openAuth">Make a handle ↗</button></div>
+        <div v-else-if="!error" class="forum-empty"><span class="forum-empty-mark" aria-hidden="true">✳</span><p class="eyebrow">A BLANK PAGE IS A BEGINNING.</p><h3>Room for the<br /><em>first good question.</em></h3><p>No topics yet. Say hello with your RODDY account.</p><button class="text-button" @click="handle ? composing = true : openAuth(true)">{{handle ? 'Start the first topic ↗' : 'Create account / Sign in ↗'}}</button></div>
         <button v-if="moreTopics" class="button" :disabled="busy" @click="action(() => loadTopics(true))">Load older topics</button>
       </template>
     </section>
@@ -244,22 +227,6 @@ watch(endpoint, async value => {
       <div><p class="eyebrow">03 / KEEP A LITTLE SIGNAL IN YOUR INBOX</p><h2 id="contact-postcards-heading">FROM OUR WORKBENCH.<br /><em>TO YOUR WORLD.</em></h2><p>New builds, new releases and the occasional shop special. Postcards from our corner of the future, only when there’s something to share.</p><RouterLink to="/newsletter" class="button primary">Postcards from RODDY ↗</RouterLink></div>
       <div class="contact-postcards-seal"><RoddyLogo kind="full_logo" /><span>LOW FREQUENCY.<br />HIGH CURIOSITY.</span><small>NO NEED TO KEEP UP.<br />JUST KEEP WONDERING.</small></div>
     </section>
-
-    <dialog ref="authDialog" class="contact-dialog" aria-labelledby="handle-heading" @click="e => e.target === authDialog && authDialog.close()" @close="credentials.password = ''; error = ''">
-      <div class="dialog-heading"><p class="eyebrow">COMMUNITY / YOUR HANDLE</p><button class="dialog-close" aria-label="Close handle dialog" @click="authDialog.close()">×</button></div>
-      <div class="dialog-brand"><RoddyLogo kind="badge" /><span>{{register ? 'A LITTLE CORNER. YOUR OWN NAME.' : 'YOUR CORNER IS STILL HERE.'}}</span></div>
-      <h2 id="handle-heading">{{register ? 'Make yourself at home.' : 'Welcome back.'}}</h2>
-      <p>{{register ? 'Choose a public handle and a password to keep it yours. No email required.' : 'Sign in with your forum handle and password.'}}</p>
-      <form class="forum-form" @submit.prevent="authenticate">
-        <label>Handle<input v-model="credentials.handle" autocomplete="username" minlength="3" maxlength="24" pattern="[A-Za-z0-9_]{3,24}" required placeholder="Your_handle" /></label>
-        <small>3–24 letters, numbers or underscores. Your handle appears on your posts.</small>
-        <label>Password<input v-model="credentials.password" type="password" :autocomplete="register ? 'new-password' : 'current-password'" minlength="8" maxlength="128" required /></label>
-        <small v-if="register">Keep your password safe. Email-based password recovery is not available yet. Stay signed in on this browser for up to 30 days; sign out on a shared device.</small>
-        <p v-if="error" class="notice" role="alert">{{error}}</p>
-        <button class="button primary" :disabled="busy">{{busy ? 'Please wait…' : register ? 'Create my handle' : 'Sign in'}}</button>
-        <button type="button" class="text-button" :disabled="busy" @click="register = !register; error = ''; credentials.password = ''">{{register ? 'Already have a handle? Sign in' : 'New here? Make a handle'}}</button>
-      </form>
-    </dialog>
 
     <dialog ref="emailDialog" class="contact-dialog" aria-labelledby="email-heading" @click="e => e.target === emailDialog && emailDialog.close()">
       <div class="dialog-heading"><p class="eyebrow">A DIRECT LINE / PRIVATE EMAIL</p><button class="dialog-close" aria-label="Close contact dialog" @click="emailDialog.close()">×</button></div>

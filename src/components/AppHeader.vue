@@ -57,6 +57,7 @@ function isNavLinkActive(link) {
       </nav>
 
       <div class="flex flex-shrink-0 items-center gap-2">
+        <RouterLink to="/account" class="inline-flex items-center gap-1 border border-border px-3 py-2 font-mono text-xs uppercase tracking-wide transition-colors hover:bg-accent hover:text-accent-text">Account</RouterLink>
         <button
           type="button"
           class="inline-flex items-center gap-1 border border-border px-3 py-2 font-mono text-xs uppercase tracking-wide transition-colors hover:bg-accent hover:text-accent-text"

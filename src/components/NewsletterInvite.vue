@@ -1,8 +1,10 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { useCatalogStore } from '../stores/catalog';
+import { useRoute } from 'vue-router';
 import NewsletterSignup from './NewsletterSignup.vue';
 const catalog = useCatalogStore();
+const route = useRoute();
 const JOINED_KEY = 'roddy:newsletter:joined';
 function alreadyJoined() {
   try { return localStorage.getItem(JOINED_KEY) === 'yes'; } catch { return false; }
@@ -14,7 +16,7 @@ function joined() { subscribed.value = true; }
 function syncJoined(event) {
   if (event.key === JOINED_KEY || event.key === null) subscribed.value = alreadyJoined();
 }
-const visible = computed(() => !subscribed.value && !dismissed.value && !catalog.preview);
+const visible = computed(() => !['/account','/cart'].includes(route.path) && !subscribed.value && !dismissed.value && !catalog.preview);
 // X closes this page visit only. Successful signup hides it on future visits.
 function close() { dismissed.value = true; }
 onMounted(() => {

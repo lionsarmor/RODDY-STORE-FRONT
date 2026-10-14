@@ -1,0 +1,20 @@
+RODDY customer accounts
+
+One account uses the existing forum handle/password and session infrastructure.
+Guest checkout remains available without signing in. Customer contact email is
+not verified and never authorizes account recovery or access to guest orders.
+No historical guest orders are linked by matching email addresses.
+
+Customer profiles and up to ten saved addresses live in private SQLite tables
+on the droplet, never in the public GitHub catalog. The owner can review them
+under Admin > Customers. Existing order address snapshots are unchanged.
+
+Recovery codes are random, hashed at rest and single-use. Password changes and
+recovery revoke all existing sessions and invalidate the previous recovery code.
+No email delivery service is required.
+
+Backend migration is additive (customer_profiles and customer_addresses tables,
+indexes only). Deploy customers.py, forum.py and app.py together. Back up the
+SQLite database with sqlite3.backup first; keep existing environment, order
+records and supplier configurations. On rollback restore previous code only;
+do not overwrite the live database with an old backup.
