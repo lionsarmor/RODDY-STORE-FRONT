@@ -2918,6 +2918,54 @@
       "pricePending": true,
       "officeShipping": {},
       "supplier": null
+    },
+    {
+      "id": "aliexpress-1005013106610419-12000060285444831",
+      "sku": "AE-1005013106610419-12000060285444831",
+      "name": "AULA F87 Pro Wireless Mechanical Keyboard TKL 87Keys Hot Swap Gasket RGB PBT Keycaps TriMode 2.4G BT USB‑C Gaming Keyboard — Blue-Black-White / Gray Switch",
+      "category": "merch",
+      "type": "physical",
+      "status": "available",
+      "active": true,
+      "featured": false,
+      "price": 99.99,
+      "pricePending": false,
+      "stock": 3,
+      "trackStock": true,
+      "description": "AULA F87 Pro Wireless Mechanical Keyboard TKL 87Keys Hot Swap Gasket RGB PBT Keycaps TriMode 2.4G BT USB‑C Gaming Keyboard",
+      "shortDescription": "",
+      "images": [
+        "img/products/roddy-41df339e-d69b-485b-ae7c-a1e355d03143.jpg",
+        "img/products/roddy-7b817797-d599-40e5-a10b-0b5c32e023ad.jpg",
+        "img/products/roddy-93862dd8-01d0-422e-8821-f25733c924a4.jpg"
+      ],
+      "coverImage": "img/products/roddy-93862dd8-01d0-422e-8821-f25733c924a4.jpg",
+      "tags": [],
+      "specs": {
+        "Variant": "Blue-Black-White / Gray Switch"
+      },
+      "supplier": {
+        "provider": "aliexpress",
+        "supplierSku": "1005013106610419",
+        "variantId": "12000060285444831",
+        "productUrl": "https://www.aliexpress.com/item/1005013106610419.html",
+        "manufacturer": "",
+        "manufacturerPartNumber": "",
+        "sellerId": "1105270003",
+        "sellerName": "ClickMaster Store",
+        "fulfillment": "pending",
+        "checkedAt": 1791972998,
+        "minimumQuantity": 1,
+        "orderMultiple": 1
+      },
+      "officeShipping": {},
+      "releaseNote": "Supplier fulfillment and shipping are being prepared. Not available for purchase yet.",
+      "compareAtPrice": 0,
+      "story": "",
+      "documentationUrl": "",
+      "downloadUrl": "",
+      "githubUrl": "",
+      "merch": null
     }
   ],
   "keycapProfiles": [
