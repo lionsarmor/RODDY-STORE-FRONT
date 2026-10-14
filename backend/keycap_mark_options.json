@@ -1,0 +1,34 @@
+{
+  "commander-x16": {
+    "label": "Commander X16 butterfly"
+  },
+  "otter-x": {
+    "label": "OtterX X"
+  },
+  "roddy-x": {
+    "label": "RODDY flight X"
+  },
+  "roddy-r": {
+    "label": "RODDY R + dot"
+  },
+  "rainbow-x": {
+    "label": "Rainbow X",
+    "inspiration": "Macintosh inspired"
+  },
+  "pixel-rainbow-x": {
+    "label": "Pixel rainbow X",
+    "inspiration": "Macintosh inspired · pixel variant"
+  },
+  "tandy-x": {
+    "label": "Micro red X",
+    "inspiration": "Tandy inspired"
+  },
+  "ibm-x": {
+    "label": "Mainframe X",
+    "inspiration": "IBM inspired · eight bars"
+  },
+  "packard-bell-x": {
+    "label": "Twin ribbon X",
+    "inspiration": "Packard Bell inspired"
+  }
+}

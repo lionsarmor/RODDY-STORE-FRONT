@@ -8,7 +8,7 @@ from unittest.mock import patch
 import zipfile
 
 from backend import test_commerce as commerce_tests
-from backend.keycaps import snapshot, packet
+from backend.keycaps import snapshot, packet, MARKS, label
 
 
 class KeycapOrderTests(unittest.TestCase):
@@ -29,14 +29,14 @@ class KeycapOrderTests(unittest.TestCase):
         self.template = {'id':'x16-v06-cherry-tkl','revision':'fixture-1','compatibility':'Synthetic test fixture; not a manufacturing design.',
                          'base':{'name':'Test','keys':keys,'layoutKeys':[{'id':k} for k in keys]},
                          'meta':{'test-commander':{'group':'accents','sourceKey':'COMMANDER'},'test-arrow':{'group':'accents','sourceKey':'UP'}},
-                         'marks':{name:[layer('M100 100H200V200H100Z')] for name in ['commander-x16','otter-x','roddy-x','roddy-r']},
+                         'marks':{name:[layer('M100 100H200V200H100Z')] for name in MARKS},
                          'arrows':{'test-arrow':[layer('M100 100H300V300H100Z','#FFFFFF')]}}
         (self.templates/'x16-v06-cherry-tkl.json').write_text(json.dumps(self.template))
         template_patch = patch('backend.keycaps.TEMPLATES', self.templates)
         template_patch.start()
         self.addCleanup(template_patch.stop)
         self.profile = {'id':'x16-compatible','name':'X16 compatible','revision':'v06.1','templateId':'x16-v06-cherry-tkl',
-                        'marks':['commander-x16','otter-x','roddy-x','roddy-r'],'arrows':['small-black','bold-white']}
+                        'marks':list(MARKS),'arrows':['small-black','bold-white']}
         self.catalog['keycapProfiles'] = [self.profile]
         self.product = {'id':'custom-keys','name':'Custom keys','price':99.99,'type':'physical','active':True,
                         'status':'available','trackStock':False,'keycaps':{'profileId':'x16-compatible'},
@@ -61,6 +61,17 @@ class KeycapOrderTests(unittest.TestCase):
         self.assertTrue(frozen['json']['layoutKeys'] == template['base']['layoutKeys'])
         self.profile['name'] = 'Changed later'
         self.assertEqual(frozen['profile']['name'],'X16 compatible')
+
+    def test_every_available_mark_and_arrow_style_is_frozen_into_manufacturing_json(self):
+        from backend.keycaps import ARROWS
+        for mark in MARKS:
+            for arrows in ARROWS:
+                with self.subTest(mark=mark, arrows=arrows):
+                    design={**self.design,'mark':mark,'arrows':arrows}
+                    frozen=snapshot(self.catalog,self.product,design)
+                    self.assertEqual(frozen['selection'],design)
+                    self.assertEqual(frozen['json']['keys']['test-commander']['layers'],self.template['marks'][mark])
+                    self.assertIn(MARKS[mark],label(design))
 
     def test_two_designs_share_shipping_group_and_paid_packet_has_both_jsons(self):
         self.items.append({'id':'custom-keys','qty':2,'design':{**self.design,'mark':'roddy-r','arrows':'bold-white'}})

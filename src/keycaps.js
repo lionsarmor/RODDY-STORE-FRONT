@@ -1,9 +1,11 @@
+import markOptions from '../backend/keycap_mark_options.json' with {type: 'json'};
 import x16 from './keycap-previews/x16-v06-cherry-tkl.json' with {type: 'json'};
 
 // One validated template per physical layout. Profiles are catalog data and
 // can share a layout while offering different defaults and allowed options.
 export const KEYCAP_PREVIEWS = {[x16.id]: x16};
-export const MARKS = {'commander-x16':'Commander X16 butterfly','otter-x':'OtterX X','roddy-x':'RODDY flight X','roddy-r':'RODDY R + dot'};
+export const MARKS = Object.fromEntries(Object.entries(markOptions).map(([id,option])=>[id,option.label]));
+export const MARK_DESCRIPTIONS = Object.fromEntries(Object.entries(markOptions).map(([id,option])=>[id,option.inspiration || '']));
 export const ARROWS = {'small-black':'Small black arrows','bold-white':'Bold white arrows'};
 export const DEFAULT_COLORS = {alpha:'#F7F7F5',modifiers:'#50545E',accents:'#7FAFD3'};
 export const DEFAULT_SELECTION = {...DEFAULT_COLORS,mark:'commander-x16',arrows:'small-black'};

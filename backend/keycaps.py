@@ -11,7 +11,7 @@ import zipfile
 from fastapi import HTTPException
 
 TEMPLATES = Path(os.getenv('KEYCAP_TEMPLATES_DIR', '/var/lib/roddy-store/keycap-templates'))
-MARKS = {'commander-x16': 'Commander X16 butterfly', 'otter-x': 'OtterX X', 'roddy-x': 'RODDY flight X', 'roddy-r': 'RODDY R + dot'}
+MARKS = {ident: option['label'] for ident, option in json.loads(Path(__file__).with_name('keycap_mark_options.json').read_text()).items()}
 ARROWS = {'small-black': 'Small black arrows', 'bold-white': 'Bold white arrows'}
 FIELDS = {'profileId', 'revision', 'alpha', 'modifiers', 'accents', 'mark', 'arrows'}
 

@@ -123,3 +123,17 @@ final price, physical-checkout configuration and destination shipping rate.
 Customer JSON export is disabled. Manufacturing packet downloads require owner
 authentication and a paid keycap order. The public preview necessarily displays
 the artwork, and older published assets/repository revisions cannot be recalled.
+
+## Retro X marks
+
+The symbol catalog in `backend/keycap_mark_options.json` supplies labels to the
+storefront and server validation. The X16 profile additionally offers smooth and
+pixel rainbow X marks (Macintosh inspired), Micro red X (Tandy inspired), Mainframe
+X with eight bars (IBM inspired), and Twin ribbon X (Packard Bell inspired). These
+are original X designs, not replicas of those brands' logos.
+
+Native artwork is in `src/keycap-artwork/retro-x-marks.json`; display-only shapes
+are in the preview recipe. Manufacturing paths live only in the private droplet
+recipe, transformed to a 9 mm artwork width with at least 2 mm rectangular mask
+clearance. Existing v6 artwork and previously frozen paid-order files are retained.
+Additive choices preserve saved selections and the default Commander butterfly.
