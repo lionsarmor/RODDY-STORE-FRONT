@@ -101,7 +101,17 @@
     {
       "id": "new-tag-6",
       "label": "Video",
-      "color": "#5fdd74"
+      "color": "#f7855f"
+    },
+    {
+      "id": "new-tag-7",
+      "label": "Merch",
+      "color": "#436284"
+    },
+    {
+      "id": "new-tag-8",
+      "label": "Accessory",
+      "color": "#2a661e"
     }
   ],
   "products": [
@@ -563,7 +573,9 @@
       "status": "available",
       "featured": true,
       "active": true,
-      "tags": [],
+      "tags": [
+        "new-tag-7"
+      ],
       "pricePending": false,
       "shortDescription": "The RODDY desk mat. Black, cream curves and a red dot, in three sizes: 12 × 18, 12 × 22 and 16 × 32 inches.",
       "description": "# RODDY Desk Mat\n\n**Your desk. Your workspace. Your world.**\n\nWhether you're writing code, designing circuits, building your next big project, or spending the night exploring your favorite retro games, the **RODDY Desk Mat** gives your workspace a place to call home.\n\nCreated for developers, makers, gamers, engineers, and anyone who appreciates a great desk setup, the RODDY Desk Mat brings together everyday functionality and a clean, technology-inspired aesthetic.\n\nIts generous surface provides room for your keyboard, mouse, and other desktop essentials, helping create a comfortable, organized workspace for whatever you're working on.\n\n### Built for the Way You Work\n\nFrom modern development environments to vintage computers, electronics workbenches, and gaming stations, the RODDY Desk Mat fits naturally into almost any setup.\n\nThe smooth fabric surface is designed for comfortable mouse movement and everyday use, while the protective mat helps keep your desktop free from the wear and scratches of daily activity.\n\nWhether you're working with a mechanical keyboard, programming a microcontroller, designing your next PCB, or firing up a Commander X16, it's a practical addition to your workspace.\n\n### More Than Just a Desk Accessory\n\nRODDY is about curiosity, creativity, and the freedom to build things simply because they're interesting.\n\nOur projects span software, games, retro computing, electronics, and original hardware. The RODDY Desk Mat brings that same spirit to the place where those ideas begin.\n\nIt's not about having the most expensive setup. It's about having a workspace that inspires you to sit down, experiment, create, and keep building.\n\n### Highlights\n\n- **Spacious Desktop Coverage** — Room for your keyboard, mouse, and everyday essentials.\n- **Smooth Fabric Surface** — Designed for comfortable mouse movement and precise control.\n- **Workspace Protection** — Helps protect your desk from everyday scratches and wear.\n- **Versatile Design** — Perfect for programming, gaming, electronics, creative work, and retro computing.\n- **Original RODDY Branding** — A simple way to bring the RODDY maker spirit to your desk.\n\n### Why We Made It\n\nEverything we build at RODDY starts somewhere, usually at a desk covered in keyboards, circuit boards, coffee cups, and half-finished ideas.\n\nWe wanted something that belonged in that environment. Not another piece of disposable merchandise, but a useful everyday accessory that represents the people who love making things.\n\nThe RODDY Desk Mat is for the builders, the tinkerers, the programmers, and the people who never quite stop experimenting.\n\n**Make something. Break something. Learn something. Build again.**\n\n*RODDY — Made for Makers.*",
@@ -685,7 +697,9 @@
       "status": "available",
       "featured": true,
       "active": true,
-      "tags": [],
+      "tags": [
+        "new-tag-7"
+      ],
       "pricePending": false,
       "shortDescription": "The RODDY logo hoodie. 10 colors and sizes S–5XL, with color availability varying by size.",
       "description": "# RODDY Hoodie\n\n**Stay comfortable. Stay curious. Keep building.**\n\nWhether you're writing code late into the night, working on your latest electronics project, exploring retro computers, or just taking a break from creating something new, the **RODDY Hoodie** is made for the people who never stop making things.\n\nFeaturing original RODDY branding and a clean, everyday style, this hoodie brings the spirit of our workshop into something you can wear anywhere.\n\nFrom your home workspace to the gaming room, the makerspace, or wherever your next project takes you, it's a comfortable way to represent a community built around curiosity, creativity, and technology.\n\n### Made for Makers\n\nRODDY is about more than software, hardware, and games. It's about the satisfaction of turning an idea into something real.\n\nWe believe in experimenting, learning by doing, and building things simply because they're interesting. The RODDY Hoodie represents that philosophy without needing to say too much.\n\nWhether you're a programmer, engineer, gamer, retro computing enthusiast, or someone who just loves figuring out how things work, you're part of the crowd we made this for.\n\n### Everyday Comfort, Maker Spirit\n\nDesigned as a versatile addition to your everyday wardrobe, the RODDY Hoodie is equally at home during long coding sessions, weekend projects, gaming marathons, or casual adventures.\n\nIt's simple, practical, and unmistakably RODDY.\n\n**Make something. Break something. Learn something. Build again.**\n\n*RODDY — Made for Makers.*",
@@ -3279,7 +3293,9 @@
         "img/products/usb-c-power/usb-c-connector.jpg"
       ],
       "coverImage": "img/products/usb-c-power/adapter-and-cable.jpg",
-      "tags": [],
+      "tags": [
+        "new-tag-8"
+      ],
       "shippingCountries": [
         "US",
         "CA"
