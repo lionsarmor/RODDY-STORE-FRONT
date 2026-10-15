@@ -3315,7 +3315,7 @@
       "status": "coming-soon",
       "tags": [],
       "images": [
-        "img/products/last-starfighter-vhs.svg"
+        "img/products/last-starfighter-vhs-render.webp"
       ],
       "compareAtPrice": 0,
       "downloadUrl": "",
@@ -3340,7 +3340,7 @@
         "Packaging": "Actual edition and sleeve to be confirmed"
       },
       "story": "A little space. A lot of adventure. RODDY VIDEO is our shelf for films worth keeping, formats worth playing, and the small ritual of choosing something good to watch.",
-      "coverImage": "img/products/last-starfighter-vhs.svg",
+      "coverImage": "img/products/last-starfighter-vhs-render.webp",
       "availabilityLabel": "Sourcing a copy",
       "cardImage": "img/products/last-starfighter-vhs-render.webp",
       "cardImageNote": "VHS mockup · Actual sleeve and copy to be confirmed"
@@ -3355,7 +3355,7 @@
       "status": "coming-soon",
       "tags": [],
       "images": [
-        "img/products/plan-9-video.svg"
+        "img/products/plan-9-vhs-render.webp"
       ],
       "compareAtPrice": 0,
       "downloadUrl": "",
@@ -3380,7 +3380,7 @@
         "Green-phosphor X16": "Experimental remix using X16 Media Studio"
       },
       "story": "A midnight movie for your little computer. Keep the original black-and-white picture, queue up the classic X16 edition, or give the saucers a green-phosphor glow. Same strange invasion, three different movie nights.\n\nThe movie conversions and phosphor remix are still in preparation.",
-      "coverImage": "img/products/plan-9-video.svg",
+      "coverImage": "img/products/plan-9-vhs-render.webp",
       "projectCredit": {
         "name": "Anthony Henry",
         "url": "https://cx16forum.com/forum/viewtopic.php?p=35595#p35595",

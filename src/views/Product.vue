@@ -202,6 +202,10 @@ async function buyNow() {
           }}</span>
         </div>
         <div class="detail-image">
+          <div v-if="product.category === 'video'" class="video-sleeve-heading">
+            <span>RODDY<br><b>VIDEO.</b></span>
+            <div><strong>{{ product.sku }}</strong><small>{{ product.type === 'physical' ? 'THE TAPE SHELF' : 'THE DIGITAL LIBRARY' }}</small><span aria-hidden="true">▶</span></div>
+          </div>
           <button
             v-if="images.length"
             class="image-expand"
@@ -214,6 +218,10 @@ async function buyNow() {
             /><span>⤢ Enlarge</span>
           </button>
           <ProductArtwork v-else :product="product" />
+          <div v-if="product.category === 'video'" class="video-sleeve-footer">
+            <strong>{{ product.type === 'physical' ? 'BE KIND. REWIND.' : 'LOAD THE POPCORN.' }}</strong>
+            <span>{{ product.cardImageNote }}</span>
+          </div>
         </div>
         <div class="plate-annotation">
           <span>{{
