@@ -177,6 +177,22 @@ button:disabled {
 .hero-exhibit:hover .hero-product-image {
   transform: rotate(-3deg) translateY(-5px);
 }
+/* Keep the full Keychain Kreatures campaign and its lettering in view. */
+.hero-campaign .hero-product-image {
+  width: 90%;
+  max-width: none;
+  aspect-ratio: auto;
+  object-fit: contain;
+  border-radius: 6px;
+  transform: none;
+  margin: 70px 0 130px;
+}
+.hero-campaign:hover .hero-product-image {
+  transform: translateY(-5px);
+}
+.hero-campaign .exhibit-sticker {
+  display: none;
+}
 .orbital-ring {
   position: absolute;
   width: 87%;

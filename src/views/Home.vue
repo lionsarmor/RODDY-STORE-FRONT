@@ -48,6 +48,7 @@ const divisions = computed(() =>
       v-if="spotlight"
       :to="`/product/${spotlight.id}`"
       class="hero-exhibit"
+      :class="{ 'hero-campaign': spotlight.id === 'keychain-kreatures' && !settings.heroImage }"
       :aria-label="`Discover ${spotlight.name}`"
     >
       <div class="exhibit-top">
