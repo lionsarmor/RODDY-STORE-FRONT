@@ -3348,47 +3348,51 @@
     {
       "category": "video",
       "price": 0,
-      "pricePending": true,
+      "pricePending": false,
       "stock": 0,
       "active": true,
       "featured": false,
-      "status": "coming-soon",
+      "status": "available",
       "tags": [],
       "images": [
         "img/products/plan-9-vhs-render.webp"
       ],
       "compareAtPrice": 0,
-      "downloadUrl": "",
-      "documentationUrl": "",
+      "downloadUrl": "https://store-api.143-244-168-180.sslip.io/public-downloads/plan-9/v1/plan-9-from-outer-space-1959-original-bw.webm",
+      "documentationUrl": "https://store-api.143-244-168-180.sslip.io/public-downloads/plan-9/v1/PLAN-9-README.txt",
       "githubUrl": "",
-      "fulfillment": "pending",
+      "fulfillment": "public-download",
       "id": "plan-9-original-and-x16",
       "sku": "V-002",
       "name": "PLAN 9 FROM OUTER SPACE — X16 MOVIE COLLECTION",
       "type": "digital",
       "trackStock": false,
       "designOrigin": "community",
-      "shortDescription": "One invasion. Three ways to watch: original black and white, classic Commander X16, and a green-phosphor remix. Bring popcorn.",
-      "description": "Flying saucers! Graveyard visitors! A plan so ambitious it needed eight practice runs!\n\nThis planned collection pairs the original black-and-white film with two Commander X16 editions: the classic feature and a playful green-phosphor remix. Pick your picture, load the popcorn, and give your little computer a gloriously strange night off.",
-      "releaseNote": "Coming soon · Original preserved · X16 conversion and full bundle in preparation.",
+      "shortDescription": "Free movie night: the original black-and-white film, a Commander X16 edition, and green-phosphor versions for both.",
+      "description": "Flying saucers! Graveyard visitors! A plan so ambitious it needed eight practice runs!\n\nDownload the complete original black-and-white movie, take it for a spin on your Commander X16, or give movie night a green-phosphor glow. All four downloads are free. No checkout, no account—just bring popcorn.\n\nThe X16 editions use X16 Media Studio conversion and playback tools. Each ZIP includes the full movie, its player and SD-card instructions.",
+      "releaseNote": "Four free downloads · Original film, X16 edition, and green-phosphor versions for desktop and X16.",
       "specs": {
-        "Collection": "Original film + classic X16 + green-phosphor X16",
+        "Collection": "Original WebM + green MP4 + two X16 ZIP packages",
         "Original film": "Unaltered black-and-white WebM",
         "Original runtime": "1 hour 18 minutes",
         "X16 playback project": "X16 Media Studio",
-        "Delivery": "Digital download bundle — coming soon",
-        "Green-phosphor X16": "Experimental remix using X16 Media Studio"
+        "X16 video": "320 × 240 · 16 shades · 15 fps target · embedded mono audio",
+        "X16 requirements": "ROM r49 or newer · contiguous files on FAT32 SD card",
+        "X16 emulator": "SD-card image required for SPI video; HostFS is not supported",
+        "Delivery": "Free direct downloads · no checkout",
+        "Green-phosphor desktop": "Full-length MP4 · H.264 / AAC"
       },
-      "story": "A midnight movie for your little computer. Keep the original black-and-white picture, queue up the classic X16 edition, or give the saucers a green-phosphor glow. Same strange invasion, three different movie nights.\n\nThe movie conversions and phosphor remix are still in preparation.",
+      "story": "A midnight movie for your little computer. Keep the original black-and-white picture or give the saucers a green-phosphor glow. Pick your screen, download your edition, and settle in.\n\nThe original is preserved byte for byte. Every conversion is a separate file, so you can always return to the original picture.",
       "coverImage": "img/products/plan-9-vhs-render.webp",
       "projectCredit": {
         "name": "Anthony Henry",
         "url": "https://cx16forum.com/forum/viewtopic.php?p=35595#p35595",
-        "description": "Creator of X16 Movie Maker, now part of X16 Media Studio. His conversion and playback tools make both planned X16 editions possible, including the green-phosphor experiment.",
+        "description": "Creator of X16 Movie Maker, now part of X16 Media Studio. His conversion and playback tools power both X16 editions, including the green-phosphor experiment.",
         "projectName": "X16 Media Studio",
         "forumHandle": "ahenry3068",
         "onlineAlias": "Tony3068",
-        "identitySourceUrl": "https://theoasisbbs.com/commander-x16-video-playback-demo-by-anthony-henry/"
+        "discordHandle": "Tony3068",
+        "identitySourceUrl": "https://cx16forum.com/forum/viewtopic.php?p=35595#p35595"
       },
       "videoEditions": [
         {
@@ -3397,34 +3401,67 @@
           "format": "BLACK & WHITE / WEBM",
           "screenLabel": "THE ORIGINAL PICTURE",
           "description": "The original film, preserved just as supplied. Black-and-white picture, original sound, absolutely no green aliens added.",
-          "status": "Original preserved · bundle coming soon",
+          "status": "Full movie · free download",
           "credit": "Edward D. Wood Jr.",
-          "creditRole": "Original film by"
+          "creditRole": "Original film by",
+          "downloads": [
+            {
+              "label": "Download original movie",
+              "url": "https://store-api.143-244-168-180.sslip.io/public-downloads/plan-9/v1/plan-9-from-outer-space-1959-original-bw.webm",
+              "format": "WEBM",
+              "size": "633 MB"
+            }
+          ]
         },
         {
           "id": "x16",
           "name": "The little-computer feature",
-          "format": "COMMANDER X16",
+          "format": "COMMANDER X16 / SD CARD",
           "screenLabel": "LOAD THE POPCORN",
           "description": "The little-computer feature, made possible by X16 Media Studio. All the saucers, all the strangeness, one very happy Commander X16.",
-          "status": "X16 edition in preparation",
+          "status": "Full movie + player · free download",
           "credit": "X16 Media Studio",
-          "creditRole": "Conversion & playback tools"
+          "creditRole": "Conversion & playback tools",
+          "downloads": [
+            {
+              "label": "Download X16 edition",
+              "url": "https://store-api.143-244-168-180.sslip.io/public-downloads/plan-9/v1/plan-9-from-outer-space-1959-x16-bw.zip",
+              "format": "X16 ZIP",
+              "size": "1.11 GB"
+            }
+          ]
         },
         {
           "id": "phosphor",
-          "name": "The green-phosphor X16 remix",
-          "format": "COMMANDER X16 / GREEN PHOSPHOR",
+          "name": "The green-phosphor edition",
+          "format": "DESKTOP MP4 / COMMANDER X16",
           "screenLabel": "SIGNAL FROM OUTER SPACE",
-          "description": "An extra-terrestrial glow-up! A playful X16 edition based on X16 Media Studio, with a separate green-phosphor treatment. The original film stays untouched.",
-          "status": "X16 remix planned · visual experiment prepared",
+          "description": "An extra-terrestrial glow-up! Pick the full-length desktop movie or the X16 Media Studio-powered edition for your little computer. The original film stays untouched.",
+          "status": "Desktop + X16 · both free",
           "credit": "X16 Media Studio",
-          "creditRole": "Conversion & playback tools"
+          "creditRole": "X16 conversion & playback tools",
+          "downloads": [
+            {
+              "label": "Download green-phosphor movie",
+              "url": "https://store-api.143-244-168-180.sslip.io/public-downloads/plan-9/v1/plan-9-from-outer-space-1959-green-phosphor.mp4",
+              "format": "MP4",
+              "size": "613 MB"
+            },
+            {
+              "label": "Download green X16 edition",
+              "url": "https://store-api.143-244-168-180.sslip.io/public-downloads/plan-9/v1/plan-9-from-outer-space-1959-x16-green-phosphor.zip",
+              "format": "X16 ZIP",
+              "size": "1.11 GB"
+            }
+          ]
         }
       ],
-      "availabilityLabel": "Coming soon",
+      "availabilityLabel": "Free downloads",
       "cardImage": "img/products/plan-9-vhs-render.webp",
-      "cardImageNote": "Digital collection · VHS-style cover art"
+      "cardImageNote": "Digital collection · VHS-style cover art",
+      "downloadLabel": "Download original movie · FREE",
+      "checksumsUrl": "https://store-api.143-244-168-180.sslip.io/public-downloads/plan-9/v1/SHA256SUMS.txt",
+      "videoReleaseNote": "All four downloads are free, with no account or checkout. X16 playback is spot-tested in the emulator; physical hardware testing is pending. Read the included SD-card instructions before playing."
     }
   ],
   "keycapProfiles": [

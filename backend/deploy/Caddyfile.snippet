@@ -1,6 +1,14 @@
 # ADD this site to the existing Caddyfile. Preserve Desk Commander's sites.
 # Use api.roddy.world instead once that DNS name points to the droplet.
 store-api.143-244-168-180.sslip.io {
+    # Public, free releases only. Never point this at the private order files.
+    handle_path /public-downloads/* {
+        root * /srv/roddy-public-downloads
+        header Content-Disposition "attachment"
+        header Cache-Control "public, max-age=86400"
+        header X-Content-Type-Options "nosniff"
+        file_server
+    }
     handle /admin/pcb/projects/*/files/* {
         request_body {
             max_size 20971520

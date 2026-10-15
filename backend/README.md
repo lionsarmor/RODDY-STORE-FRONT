@@ -64,6 +64,17 @@ the deployed service. A sandbox purchase through Square remains required.
    Prefer `api.roddy.world` once its DNS points to the droplet; update
    `STORE_PUBLIC_URL` and the storefront endpoint together.
 
+## Free movie downloads
+
+Public Plan 9 releases are served by Caddy at
+`/public-downloads/plan-9/v1/` from `/srv/roddy-public-downloads/plan-9/v1/`.
+These files are free and require neither an order nor a download ticket.
+Stage uploads outside that directory, verify their SHA-256 hashes, then move
+completed files into place. Caddy serves attachment headers and byte ranges
+for resumable downloads; directory browsing is disabled. The public directory
+is separate from `/var/lib/roddy-store/files/`, which remains private.
+Update the product's edition links and sizes only after the files are available.
+
 ## Connect Square securely
 
 Create a US seller account and payout bank connection at

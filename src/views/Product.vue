@@ -139,6 +139,11 @@ watch(
   },
 );
 function openKeycapDesigner() { document.getElementById("keycap-studio-title")?.scrollIntoView({behavior:"smooth",block:"center"}); }
+function viewVideoEditions() {
+  const heading = document.getElementById("edition-heading");
+  heading?.focus({ preventScroll: true });
+  heading?.scrollIntoView({ block: "start" });
+}
 function move(dir) {
   if (images.value.length)
     activeIndex.value =
@@ -263,7 +268,7 @@ async function buyNow() {
         <a v-if="creatorUrl" :href="creatorUrl" target="_blank" rel="noopener noreferrer" class="movie-creator-banner">
           <span>{{ product.projectCredit.projectName }} · CREATED BY</span>
           <strong>{{ product.projectCredit.name }} ↗</strong>
-          <span>FORUM: {{ product.projectCredit.forumHandle }} · ALSO KNOWN AS {{ product.projectCredit.onlineAlias }}</span>
+          <span>FORUM: {{ product.projectCredit.forumHandle }} · DISCORD: {{ product.projectCredit.discordHandle }}</span>
           <span>EXPLORE THE ORIGINAL PROJECT ↗</span>
         </a>
         <p class="eyebrow">
@@ -343,7 +348,7 @@ async function buyNow() {
             target="_blank"
             rel="noopener noreferrer"
             class="button primary"
-            >↓ Free download <span>↗</span></a
+            >↓ {{ product.downloadLabel || 'Free download' }} <span>↗</span></a
           >
           <template v-else>
             <label class="quantity-field"
@@ -367,6 +372,7 @@ async function buyNow() {
               {{ checkout.loading ? "Opening checkout…" : "Buy now ↗" }}
             </button>
           </template>
+          <button v-if="freeDownload && product.videoEditions?.length" class="button" @click="viewVideoEditions">All free downloads ↓</button>
         </div>
         <p
           v-if="
