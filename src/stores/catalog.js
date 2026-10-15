@@ -25,9 +25,7 @@ export const useCatalogStore = defineStore("catalog", {
       if (this.loaded) return;
       this.error = null;
       try {
-        // In prod, read straight from GitHub instead of this site's own
-        // (possibly stale, pre-rebuild) copy — see CATALOG_URL in config.js.
-        const url = import.meta.env.DEV ? `${import.meta.env.BASE_URL}data/products.json` : CATALOG_URL;
+        const url = CATALOG_URL;
         let source;
         if (new URLSearchParams(location.search).get('preview') === '1') {
           const draft = sessionStorage.getItem('roddy:preview');

@@ -1,23 +1,11 @@
 // Deploy /backend to the droplet, then configure its HTTPS base URL in
 // Admin → Checkout & Square (catalog.settings.checkoutEndpoint).
 
-// Where the live product catalog actually lives. The admin page commits
-// straight to public/data/products.json in this repo, but GitHub Pages only
-// serves the *built* dist/ copy, which stays stale until the next Actions
-// rebuild finishes. Reading raw.githubusercontent.com instead means a
-// Publish shows up on the storefront within moments, not after a rebuild.
-// Update these if this repo is ever forked or renamed.
-const CATALOG_OWNER = "lionsarmor";
-const CATALOG_REPO = "RODDY-STORE-FRONT";
-const CATALOG_BRANCH = "main";
-const CATALOG_RAW_BASE = `https://raw.githubusercontent.com/${CATALOG_OWNER}/${CATALOG_REPO}/refs/heads/${CATALOG_BRANCH}/public/`;
+// Customer assets stay on the storefront. Admin publication becomes visible
+// after the Pages deployment completes, together with its matching images.
+export const CATALOG_URL = `${import.meta.env.BASE_URL}data/products.json`;
 
-export const CATALOG_URL = `${CATALOG_RAW_BASE}data/products.json`;
-
-/** Resolves a product image path (e.g. "img/products/starfall.jpg") the same
-    way in dev and prod: same-origin while running locally so hand-edited or
-    admin-staged files show up immediately, raw GitHub content in production
-    so a published photo shows up without waiting on a rebuild. */
+/** Resolve public assets on this site, without exposing repository links. */
 export function rawAssetUrl(path) {
-  return `${CATALOG_RAW_BASE}${path}`;
+  return `${import.meta.env.BASE_URL}${path}`;
 }

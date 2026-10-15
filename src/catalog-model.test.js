@@ -6,6 +6,8 @@ import {
   normalizeProduct,
   validateCatalog,
   safeLink,
+  customerLink,
+  pdfDocumentation,
 } from "./catalog-model.js";
 const data = JSON.parse(
   readFileSync(new URL("../public/data/products.json", import.meta.url)),
@@ -16,6 +18,22 @@ test("published catalog is valid without requiring obsolete starter content", ()
   // Admin owns names, prices, availability and product count. Editing those
   // should not break the build's tests against an old six-product seed.
   assert.equal(c.products.length, data.products.length);
+});
+test('customer links exclude GitHub hosts and Labs documentation uses PDFs', () => {
+  for (const url of ['https://github.com/owner/repo', 'https://api.github.com/repos/owner/repo', 'https://raw.githubusercontent.com/owner/repo/main/file.pdf', 'https://owner.github.io/manual.pdf']) {
+    assert.equal(customerLink(url), '');
+  }
+  assert.equal(pdfDocumentation('https://roddy.world/downloads/manual.pdf'), 'https://roddy.world/downloads/manual.pdf');
+  assert.equal(pdfDocumentation('https://roddy.world/manual'), '');
+  const catalog = normalizeCatalog(structuredClone(data));
+  const lab = catalog.products.find(p => p.category === 'labs');
+  lab.documentationUrl = 'https://roddy.world/manual';
+  assert.ok(validateCatalog(catalog).some(e => e.includes('Labs documentation')));
+  for (const p of data.products) {
+    assert.equal(p.githubUrl || '', '');
+    if(p.downloadUrl) assert.ok(customerLink(p.downloadUrl));
+    if(p.category === 'labs' && p.active) assert.ok(pdfDocumentation(p.documentationUrl));
+  }
 });
 test('available products need final pricing and supported shipping destinations',()=>{
   const c=normalizeCatalog(structuredClone(data)),p=c.products.find(p=>p.active && p.status==='available');

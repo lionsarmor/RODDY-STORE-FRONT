@@ -226,30 +226,19 @@ function toggleTag(id) {
     </div>
     <div v-if="tab === 'links'" class="editor-content">
       <label
-        >Documentation / schematics URL<input
+        >Documentation PDF URL<input
           v-model="product.documentationUrl"
           type="url"
-          placeholder="https://example.com/project/docs"
+          placeholder="https://roddy.world/downloads/docs/project-guide.pdf"
         /><small
-          >Links to manuals, schematics or repair information from the product's
-          documentation section. Leave blank until available.</small
-        ></label
-      >
-      <label
-        >GitHub repository<input
-          v-model="product.githubUrl"
-          type="url"
-          placeholder="https://github.com/yourname/project"
-        /><small
-          >Appears as an “Explore on GitHub” button beside the
-          description.</small
+          >Use a customer PDF hosted on the storefront. Labs projects require a direct PDF link. Leave blank until available.</small
         ></label
       >
       <label
         >Free download URL<input
           v-model="product.downloadUrl"
           type="url"
-          placeholder="https://github.com/yourname/project/releases/latest"
+          placeholder="https://roddy.world/downloads/project.zip"
         /><small
           >For an available $0 product with announced pricing, this becomes a
           direct “Free download” button. It bypasses checkout.</small

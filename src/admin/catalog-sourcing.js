@@ -1,6 +1,7 @@
 export function publicCatalog(catalog,references={}) {
  const out=JSON.parse(JSON.stringify(catalog));
  for(const p of out.products){
+  p.githubUrl=''; // Repository links are private; never restore them from an older admin draft.
   if(p.specs)p.specs=Object.fromEntries(Object.entries(p.specs).filter(([key])=>!/supplier|print provider|fulfillment/i.test(key)));
   if(references[p.id])p.fulfillmentRef=references[p.id];
   if(p.supplier){p.fulfillment=p.supplier.fulfillment;p.supplier=null;}

@@ -1,0 +1,331 @@
+[
+  {
+    "file": "link-commander-guide.pdf",
+    "title": "LINK COMMANDER",
+    "edition": "REV E / REV F · 15 OCT 2026",
+    "pages": [
+      {
+        "title": "LINK COMMANDER",
+        "blocks": [
+          {
+            "title": "Modern inputs. A classic computer.",
+            "paragraphs": [
+              "An RP2040-based keyboard and mouse interface being developed for the Commander X16. The current board revisions share a compact layout and a common snap-fit enclosure."
+            ]
+          },
+          {
+            "title": "Engineering prototype",
+            "paragraphs": [
+              "Hardware is in development. The CAD has passed saved connectivity and design-rule checks; a working bridge firmware release and physical functional testing are still required. This guide is a project reference, not a claim of tested peripheral compatibility."
+            ]
+          }
+        ],
+        "image": "img/products/link-commander/rev-e-cad.png"
+      },
+      {
+        "title": "Know your board",
+        "blocks": [
+          {
+            "title": "Front and rear",
+            "paragraphs": [
+              "Front: two six-pin mini-DIN PS/2 sockets, for keyboard and mouse connections to the target computer. Use straight-through six-pin male-to-male PS/2 cables; the historical seven-pin DIN cable does not apply.",
+              "Rear: two USB-A inputs and the board USB-C power connector. The removable RP2040 module also has its own inset USB-C programming socket; it is not the rear power input."
+            ]
+          },
+          {
+            "title": "Shared mechanical layout",
+            "paragraphs": [
+              "Rev E: through-hole carrier components with socketed chips and leaded passives. Rev F: SMT components with through-hole connectors. Both use a 100 × 75 mm PCB outline. The current shell is 113.6 × 88.6 × 30 mm.",
+              "A green power indicator sits at the board edge. It indicates power, not firmware readiness or USB compatibility."
+            ]
+          },
+          {
+            "title": "Power and service",
+            "paragraphs": [
+              "Use a regulated 5 V supply through the rear USB-C power connector. Do not apply a higher voltage. Current requirements depend on the actual peripherals and must be verified during prototype testing.",
+              "Disconnect power and cables before opening the case or moving the module. Remove JP1 before connecting the module’s USB programming supply as required by the board service instructions. Do not assume that combining both USB power sources is safe."
+            ]
+          },
+          {
+            "title": "What is still being tested",
+            "paragraphs": [
+              "Connector and cable fit, exact module dimensions, printed latch fit, USB behavior, temperatures and receiver compatibility need physical validation. Wireless support means compatible external USB receiver dongles; there is no onboard radio."
+            ]
+          },
+          {
+            "title": "Print the enclosure",
+            "paragraphs": [
+              "Download the free enclosure files from the Link Commander enclosure listing on roddy.world. Its separate PDF explains print orientation, fit coupons and assembly. Contact support@roddy.world with your revision and question before making changes you are unsure about."
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "file": "keychain-kreatures-guide.pdf",
+    "title": "KEYCHAIN KREATURES",
+    "edition": "MAIN C.6 / POWER P.4 · 15 OCT 2026",
+    "pages": [
+      {
+        "title": "KEYCHAIN\nKREATURES",
+        "blocks": [
+          {
+            "title": "A little machine with a personality",
+            "paragraphs": [
+              "An ESP32-S3 virtual-pet and handheld-game hardware project. The current design uses a repairable through-hole main board and a separate power board."
+            ]
+          },
+          {
+            "title": "Current design at a glance",
+            "paragraphs": [
+              "Main board: C.6, 96 × 105 × 1.6 mm. Power board: P.4, 50 × 50 × 1.6 mm. The boards require separate case supports; their mounting patterns do not match.",
+              "A 280 × 240 landscape display, nine controls, microSD storage, speaker output, vibration, infrared transmitter/receiver and RGB indication are part of the hardware design."
+            ]
+          },
+          {
+            "title": "Development status",
+            "paragraphs": [
+              "This is an engineering prototype, not a tested or certified finished toy. Physical fit, battery and case selection, power qualification and firmware are still being developed. The planned virtual pet, games, trading and update experience are not implemented or validated by this hardware release."
+            ]
+          },
+          {
+            "title": "What customers can expect next",
+            "paragraphs": [
+              "Availability and final specifications will be announced after prototype testing. This preview does not include a consumer assembly procedure or authorize connecting a battery to an unqualified board."
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Before a prototype is powered",
+        "blocks": [
+          {
+            "title": "Keep the two boards distinct",
+            "paragraphs": [
+              "The main board and power board have different assembly requirements. The power module includes charging, protection and regulated outputs; it requires qualified assembly and independent testing before connection to the main board."
+            ]
+          },
+          {
+            "title": "Power precautions",
+            "paragraphs": [
+              "Never connect raw battery voltage directly to the main power input. Do not bypass the battery protection or combine programming USB and external power without the exact module’s reverse-feed behavior being qualified.",
+              "Neither speaker output is ground. Battery selection, temperature sensing and charging behavior require a documented, tested configuration."
+            ]
+          },
+          {
+            "title": "Firmware and compatibility",
+            "paragraphs": [
+              "Only firmware matched to the current ESP32-S3 hardware should be used. Historical sketches for earlier controllers and different peripheral chips are not compatible factory tests.",
+              "Radio performance, operating temperatures and simultaneous-load capacity have not been established for a finished product."
+            ]
+          },
+          {
+            "title": "Support and updates",
+            "paragraphs": [
+              "For current availability and documentation, visit the Keychain Kreatures listing on roddy.world. For prototype questions, email support@roddy.world and include the board revision. Do not send passwords or payment information."
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "file": "link-commander-enclosure-guide.pdf",
+    "title": "LINK COMMANDER ENCLOSURE",
+    "edition": "ENCLOSURE A · REAR POWER · 15 OCT 2026",
+    "pages": [
+      {
+        "title": "PRINT YOUR\nLINK COMMANDER SHELL",
+        "blocks": [
+          {
+            "title": "One shell. Two board revisions.",
+            "paragraphs": [
+              "Free print files for the current 100 × 75 mm Rev E and Rev F boards. The white finish is an example; choose your own unfilled ABS color. No circuit board, electronics, cables or printed parts are included."
+            ]
+          },
+          {
+            "title": "Start small",
+            "paragraphs": [
+              "Print and test the two snap-fit coupon pieces before the full shell. Nominal CAD fit checks passed, but the printed shell, actual components and cable boots still need physical validation."
+            ]
+          }
+        ],
+        "image": "img/products/link-commander/link-commander-white-open-v1.png"
+      },
+      {
+        "title": "Choose your files",
+        "blocks": [
+          {
+            "title": "What is in the ZIP",
+            "paragraphs": [
+              "print/BASE_print.stl and LID_print.stl: base and lid oriented for printing. Matching STEP files are also supplied.",
+              "print/COMMON_SHELL_X1C_layout.3mf: both shell pieces arranged on a plate. print/SNAP_TEST_layout.3mf: the small mating test pieces. The coupon pieces are also available as individual STL files.",
+              "cad/: neutral STEP files for the assembled shell, base and lid. Dimensions are in millimeters. The included PDF is this guide."
+            ]
+          },
+          {
+            "title": "Printer and material",
+            "paragraphs": [
+              "Designed around an enclosed Bambu X1 Carbon with a 0.4 mm nozzle and unfilled ABS. The 3MF files contain model geometry and placement, not ready-to-run G-code or calibrated machine settings. Select your actual printer, filament and build plate in Bambu Studio."
+            ]
+          },
+          {
+            "title": "Orientation",
+            "paragraphs": [
+              "Base: floor down. Lid: broad exterior face against the print plate. Preserve these orientations to give the show face the plate finish and keep support scars off the visible surfaces.",
+              "Check the X1C plate and toolhead exclusion areas in your installed slicer. Inspect every layer around the snap fingers, board supports and port windows."
+            ]
+          },
+          {
+            "title": "Fit coupon",
+            "paragraphs": [
+              "Let both pieces cool completely, then engage and release the latch with a plastic pick. Check at least 10 cycles for cracking, whitening or looseness. Do not force a tight snap. Adjust the fit before printing the full enclosure."
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Print settings & finish",
+        "blocks": [
+          {
+            "title": "Starting settings, then calibrate",
+            "paragraphs": [
+              "0.4 mm nozzle; 0.16 mm layers; 0.20 mm initial layer. Four walls; eight top and bottom layers; 15% gyroid infill.",
+              "Start around 35 mm/s outer-wall speed. Place the seam at a rear corner, away from ports and snap interfaces. Start with an 8 mm outer brim and 0.10 mm brim gap; adjust for your plate.",
+              "Elephant-foot compensation starts at 0.15 mm. Avoid aggressive compensation or global scaling: they alter board fit and connector spacing."
+            ]
+          },
+          {
+            "title": "ABS profile",
+            "paragraphs": [
+              "Use the filament maker’s profile for your actual ABS and build plate, including temperatures, drying and adhesive guidance. Keep the printer enclosed and allow gradual cooling. Provide suitable ventilation without cold drafts through the chamber.",
+              "Use unfilled ABS for the flexing latches. Carbon- or glass-filled ABS is not the specified material. Do not improvise chamber heaters or disable printer protections."
+            ]
+          },
+          {
+            "title": "Reduce visible layer lines",
+            "paragraphs": [
+              "The broad, flat lid exterior prints against a smooth or satin plate. Vertical sides and rounded corners avoid shallow stepped slopes, although normal FDM side lines remain. A consistent slow outer wall and a hidden seam improve the result.",
+              "Do not apply fuzzy skin to mating surfaces, latches or openings. No chemical finishing is required; smoothing can change fit and weaken or distort latch details."
+            ]
+          },
+          {
+            "title": "Before starting",
+            "paragraphs": [
+              "Inspect for supports fused into latch clearances. Confirm short bridges and overhangs with the test pieces before accepting a full print."
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Assemble & reopen",
+        "blocks": [
+          {
+            "title": "Fit the board",
+            "paragraphs": [
+              "Disconnect all power and cables. Confirm solder tails cannot touch the plastic. Place either Rev E or Rev F component-side up on the four locating pegs. Check that the board seats freely.",
+              "Align two USB-A sockets and power USB-C with the rear openings, two PS/2 sockets with the front windows, and the green LED with the side aperture."
+            ]
+          },
+          {
+            "title": "Close the shell",
+            "paragraphs": [
+              "Lower the lid straight and press near each latch until all four engage. The seam rests on the case walls, not on electronic components. Stop if the lid contacts the module, capacitors, fuse or socketed chips."
+            ]
+          },
+          {
+            "title": "Open for service",
+            "paragraphs": [
+              "Disconnect power. Use a narrow plastic pick through each latch-release window to press the hook inward while gently lifting that corner. Do not pry on the connector shells or use a metal tool near powered electronics.",
+              "Open the lid to reach JP1 and the RP2040 programming connector. Remove JP1 as required by the board instructions before using the module’s USB programming supply."
+            ]
+          },
+          {
+            "title": "Final fit checks",
+            "paragraphs": [
+              "Insert your actual USB and both PS/2 cables. They must fully seat without loading the solder joints or forcing the case. Confirm LED visibility, underside clearance and free access to the connectors.",
+              "Check temperatures with the final firmware and intended load before regular use. No thermal qualification or ingress rating is claimed. Keep the enclosure open for early debugging if needed."
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Dimensions & adjustments",
+        "blocks": [
+          {
+            "title": "Nominal geometry",
+            "paragraphs": [
+              "Outside: 113.6 × 88.6 × 30 mm. PCB: 100 × 75 × 1.6 mm, with 90 × 65 mm mounting-hole pitch. Walls, floor and roof: 2.4 mm.",
+              "PCB underside sits 5 mm above the floor. Locating pegs are 2.6 mm for 3.2 mm board holes. Lid guide clearance is nominally 0.40 mm per side."
+            ]
+          },
+          {
+            "title": "Port openings",
+            "paragraphs": [
+              "PS/2 windows: 18.6 mm square, 20 mm center-to-center. USB-A windows: 18 mm wide. Cable boots vary; dimensions do not prove every plug will fit."
+            ]
+          },
+          {
+            "title": "Adjust locally",
+            "paragraphs": [
+              "Use the STEP geometry for changes. Avoid scaling the entire shell: it changes the distance between the board supports and ports. Change mating clearances and print the test coupon again.",
+              "Snap fingers are printed along Z in the prescribed lid orientation. Printed layer bonding and ABS shrinkage affect strength, so repeat the coupon cycle test after changes."
+            ]
+          },
+          {
+            "title": "Help",
+            "paragraphs": [
+              "For updated files, return to the enclosure listing on roddy.world. Email support@roddy.world with your board revision, printer, nozzle, filament and fit observations. This guide describes a prototype design, not a production-qualified enclosure."
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "file": "weather-commander-guide.pdf",
+    "title": "WEATHER COMMANDER",
+    "edition": "VERSION 0.2.1 · 15 OCT 2026",
+    "pages": [
+      {
+        "title": "WEATHER\nCOMMANDER",
+        "blocks": [
+          {
+            "title": "Install on your Commander X16",
+            "paragraphs": [
+              "Extract the ZIP and copy the entire WEATHERCMD folder to your X16 SD card, device 8. Keep every PRG and BIN together. Requires 512 KB RAM; tested on ROM r49.",
+              "At the BASIC prompt:\nDOS \"CD:WEATHERCMD\"\nLOAD \"WEATHER.PRG\",8\nRUN"
+            ]
+          },
+          {
+            "title": "Upgrade",
+            "paragraphs": [
+              "If upgrading from the older WEATHER folder, copy its WCSETUP.BIN into WEATHERCMD to retain saved preferences and personal cities. Back up your card first."
+            ]
+          },
+          {
+            "title": "Demo and controls",
+            "paragraphs": [
+              "The app starts with clearly labeled demo data when no live feed is available. Mouse selects controls; F5 opens Settings; Esc exits or goes back in setup. Demo forecasts and recorded radar are examples, not current weather."
+            ]
+          },
+          {
+            "title": "Live weather",
+            "paragraphs": [
+              "Use a compatible Serial & ESP32 card with ZiModem at IO7 ($9FE0). Open Settings → Wi-Fi and connections → Connect with a Wi-Fi card. Choose your network, enter its password, then Get my weather. Save and open weather stores preferences and personal city coordinates.",
+              "No bridge computer or API key is required. Philippine radar decoding can take about five minutes at 8 MHz while the rest of the interface remains available."
+            ]
+          },
+          {
+            "title": "Validation and support",
+            "paragraphs": [
+              "ROM r49 emulation and compiled protocol tests passed. Physical Wi-Fi card testing is pending. Unavailable or outdated radar should not be treated as live. Data provenance and licenses remain in DATA-NOTICE.TXT.",
+              "Updates and support: roddy.world · support@roddy.world"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

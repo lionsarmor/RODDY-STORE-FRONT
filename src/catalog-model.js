@@ -82,6 +82,16 @@ export function safeLink(value) {
   }
 }
 
+export function customerLink(value) {
+  if (!safeLink(value)) return "";
+  const host = new URL(value).hostname;
+  return /(^|\.)(github\.com|githubusercontent\.com|github\.io)$/i.test(host) ? "" : value;
+}
+
+export function pdfDocumentation(value) {
+  return customerLink(value) && /\.pdf$/i.test(new URL(value).pathname) ? value : "";
+}
+
 export function validateCatalog(data) {
   const errors = [];
   const skus = new Set();
@@ -186,12 +196,18 @@ export function validateCatalog(data) {
     }
     if (p.downloadUrl && !safeLink(p.downloadUrl))
       errors.push(`${p.name}: download must be an HTTP(S) URL.`);
+    else if (p.downloadUrl && !customerLink(p.downloadUrl))
+      errors.push(`${p.name}: host customer downloads on the storefront, not GitHub.`);
     if (p.downloadUrl && p.price > 0)
       errors.push(
         `${p.name}: paid products must not have a public free-download URL.`,
       );
     if (p.documentationUrl && !safeLink(p.documentationUrl))
       errors.push(`${p.name}: documentation must be an HTTP(S) URL.`);
+    else if (p.documentationUrl && !customerLink(p.documentationUrl))
+      errors.push(`${p.name}: host customer documentation on the storefront, not GitHub.`);
+    else if (p.category === 'labs' && p.documentationUrl && !pdfDocumentation(p.documentationUrl))
+      errors.push(`${p.name}: Labs documentation must link directly to a PDF.`);
     if (p.githubUrl && !/^https:\/\/github\.com\//i.test(p.githubUrl))
       errors.push(`${p.name}: use a https://github.com/ repository URL.`);
   }

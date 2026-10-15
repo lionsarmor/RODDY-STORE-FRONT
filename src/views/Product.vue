@@ -9,7 +9,7 @@ import {
 } from "../stores/catalog";
 import { merchVariants, optionValues, findVariant, priceLabel, shippingFor } from "../merch.js";
 import { shippingCountries, shippingLabel } from '../shipping-destinations.js';
-import { safeLink } from "../catalog-model.js";
+import { customerLink, pdfDocumentation } from "../catalog-model.js";
 import { useCartStore } from "../stores/cart";
 import { useUiStore } from "../stores/ui";
 import { useCheckoutStore } from "../stores/checkout";
@@ -80,12 +80,14 @@ const freeDownload = computed(
   () =>
     purchasable.value &&
     product.value.price === 0 &&
-    safeLink(product.value.downloadUrl),
+    customerLink(product.value.downloadUrl),
 );
-const githubLink = computed(() => safeLink(product.value?.githubUrl));
 const documentationLink = computed(() =>
-  safeLink(product.value?.documentationUrl),
+  product.value?.category === 'labs'
+    ? pdfDocumentation(product.value?.documentationUrl)
+    : customerLink(product.value?.documentationUrl),
 );
+const documentationIsPdf = computed(() => Boolean(pdfDocumentation(documentationLink.value)));
 const department = computed(() =>
   catalog.categoryMeta(product.value?.category),
 );
@@ -352,14 +354,10 @@ async function buyNow() {
         >
           Online checkout is getting ready. You can save this item in your cart.
         </p>
-        <div v-if="githubLink" class="resource-links">
-          <a
-            :href="githubLink"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="button"
-            >⌘ Explore on GitHub ↗</a
-          ><small>Source, documentation & project updates</small>
+        <div v-if="documentationLink" class="resource-links">
+          <a :href="documentationLink" :download="documentationIsPdf ? '' : undefined" class="button">
+            {{ documentationIsPdf ? 'Download guide (PDF) ↓' : 'Read the documentation ↗' }}
+          </a>
         </div>
         <div v-for="item in linkedProducts" :key="item.id" class="resource-links">
           <RouterLink :to="`/product/${item.id}`" class="button">
@@ -432,17 +430,17 @@ async function buyNow() {
       </section>
     </div>
     <section
-      v-if="isHardware || documentationLink || githubLink"
+      v-if="isHardware || documentationLink"
       class="product-documentation"
       aria-labelledby="documentation-heading"
     >
       <div>
-        <p class="eyebrow">THE OPEN-DOOR POLICY</p>
+        <p class="eyebrow">THE DETAILS, TO KEEP</p>
         <h2 id="documentation-heading">
           {{
             isHardware
-              ? "OPEN IT. UNDERSTAND IT. REPAIR IT."
-              : "GO BEYOND THE BOX."
+              ? "GET TO KNOW YOUR HARDWARE."
+              : "YOUR GUIDE. READY TO DOWNLOAD."
           }}
         </h2>
       </div>
@@ -450,30 +448,22 @@ async function buyNow() {
         <p>
           {{
             isHardware
-              ? "Made for human beings. Repairable by human beings. Our hardware promise: schematics, technical documentation, and repair information included. You should be able to understand the machine you own."
-              : "Curiosity should not stop at the product page. Find the project resources and get to know what makes this one tick."
+              ? "Keep the product guide handy for specifications, setup information and the current development status. Contact support if you need help with your hardware."
+              : "Save a copy of the guide for setup, use and reference."
           }}
         </p>
         <div class="documentation-actions">
           <a
             v-if="documentationLink"
             :href="documentationLink"
-            target="_blank"
-            rel="noopener noreferrer"
+            :download="documentationIsPdf ? '' : undefined"
             class="button primary"
             >{{
-              isHardware
-                ? "Documentation & schematics"
+              documentationIsPdf
+                ? "Download documentation (PDF)"
                 : "Read the documentation"
             }}
             ↗</a
-          ><a
-            v-if="githubLink"
-            :href="githubLink"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="button"
-            >Explore on GitHub ↗</a
           ><RouterLink v-if="isHardware" to="/about" class="text-button"
             >Read our promise ↗</RouterLink
           >
