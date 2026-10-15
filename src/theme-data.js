@@ -19,9 +19,9 @@ export const RODDY_THEMES = [
   { id: "field-olive", group: "FIELD", label: "Field / Olive", sub: "1970s instrumentation", logo: "muted_olive_red", swatch: ["#1b1c15", "#72784b", "#c74632"] },
   { id: "field-slate", group: "FIELD", label: "Field / Slate", sub: "portable terminals", logo: "muted_slate_red", swatch: ["#141819", "#536b79", "#c74632"] },
   { id: "field-sand", group: "FIELD", label: "Field / Sand", sub: "government electronics", logo: "muted_sand_red", swatch: ["#e7e0d1", "#a9987d", "#b94a38"] },
-  { id: "pocket-mint", group: "POCKET", label: "Pocket / Mint", sub: "Keychain Kreatures", logo: "pastel_mint_pink", swatch: ["#f3faf7", "#9ddccf", "#efa4ae"] },
-  { id: "pocket-lavender", group: "POCKET", label: "Pocket / Lavender", sub: "collectible hardware", logo: "pastel_lavender", swatch: ["#f8f4fb", "#b99acf", "#e18cb8"] },
-  { id: "pocket-peach", group: "POCKET", label: "Pocket / Peach", sub: "family-friendly games", logo: "pastel_peach_mint", swatch: ["#fbf5f1", "#f2a084", "#8fc6bd"] },
+  { id: "pocket-mint", group: "VIDEO", label: "Video / Mint", sub: "the video library", logo: "pastel_mint_pink", swatch: ["#f3faf7", "#9ddccf", "#efa4ae"] },
+  { id: "pocket-lavender", group: "VIDEO", label: "Video / Lavender", sub: "collectible tapes", logo: "pastel_lavender", swatch: ["#f8f4fb", "#b99acf", "#e18cb8"] },
+  { id: "pocket-peach", group: "VIDEO", label: "Video / Peach", sub: "movies for your shelf", logo: "pastel_peach_mint", swatch: ["#fbf5f1", "#f2a084", "#8fc6bd"] },
   { id: "collector-gold", group: "COLLECTOR", label: "Collector / Gold", sub: "limited run", logo: "gold_black", swatch: ["#0c0a04", "#f3c51b", "#f3c51b"] },
 ];
 

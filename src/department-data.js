@@ -18,11 +18,11 @@ const departments = {
     note: "A little escape. A strange new world. Find your next reason to stay for one more round.",
     motif: "arcade",
   },
-  pocket: {
-    title: "LITTLE MACHINES.\nBIG PERSONALITY.",
-    label: "The pocket universe",
-    note: "Small enough to take along. Interesting enough to get attached to. Meet the pocket-sized side of RODDY.",
-    motif: "pocket",
+  video: {
+    title: "PRESS PLAY.\nKEEP THE PICTURE.",
+    label: "The video library",
+    note: "Vintage tapes. Classic films. Movies for unexpected machines. Welcome to RODDY VIDEO.",
+    motif: "video",
   },
   computers: {
     title: "A DIFFERENT\nKIND OF PERSONAL.",

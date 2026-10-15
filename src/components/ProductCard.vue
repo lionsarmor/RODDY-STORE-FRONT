@@ -45,7 +45,7 @@ const catalog = useCatalogStore();
         DIVISION</span
       ><span :class="{ 'development-label': stockState(product) === 'soon' }">{{
         stockState(product) === "soon"
-          ? "● COMING SOON"
+          ? `● ${stockLabel(product).toUpperCase()}`
           : stockState(product) === "out"
             ? "SOLD OUT"
             : product.pricePending
@@ -73,7 +73,7 @@ const catalog = useCatalogStore();
         ><span
           >{{
             stockState(product) === "soon"
-              ? "Explore project"
+              ? product.category === 'video' ? 'View movie' : 'Explore project'
               : stockState(product) === "out"
                 ? stockLabel(product)
                 : "Take a look"

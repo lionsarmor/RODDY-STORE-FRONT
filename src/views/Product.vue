@@ -18,6 +18,7 @@ import KeycapConfigurator from '../components/KeycapConfigurator.vue';
 import {profileFor,defaultDesign,designError} from '../keycaps.js';
 import ProductTags from "../components/ProductTags.vue";
 import ProductArtwork from "../components/ProductArtwork.vue";
+import VideoEditions from "../components/VideoEditions.vue";
 import ProductCard from "../components/ProductCard.vue";
 import RoddyLogo from "../components/RoddyLogo.vue";
 import { departmentDirection } from "../department-data";
@@ -102,7 +103,7 @@ const visibleSpecifications = computed(() =>
 const isHardware = computed(
   () =>
     product.value?.type === "physical" &&
-    ["computers", "pocket", "labs", "apps"].includes(product.value?.category),
+    ["computers", "labs", "apps"].includes(product.value?.category),
 );
 const linkedProducts = computed(() =>
   (Array.isArray(product.value?.relatedProductIds) ? product.value.relatedProductIds : [])
@@ -196,7 +197,7 @@ async function buyNow() {
         <div class="plate-annotation">
           <span>{{ product.sku }} / THE EXHIBIT</span
           ><span>{{
-            state === "soon" ? "IN DEVELOPMENT" : "TAKE A CLOSER LOOK"
+            state === "soon" ? (product.availabilityLabel || "IN DEVELOPMENT") : "TAKE A CLOSER LOOK"
           }}</span>
         </div>
         <div class="detail-image">
@@ -300,8 +301,10 @@ async function buyNow() {
         <div v-if="state === 'soon'" class="coming-soon-panel">
           <span>↗</span>
           <div>
-            <strong>ON THE WORKBENCH. NOT ON THE SHELF. YET.</strong>
-            <p>
+            <strong v-if="product.category === 'video'">{{ product.type === 'physical' ? 'COMING TO THE TAPE SHELF.' : 'PLEASE STAND BY. FEATURE IN PREPARATION.' }}</strong>
+            <strong v-else>ON THE WORKBENCH. NOT ON THE SHELF. YET.</strong>
+            <p v-if="product.category === 'video'">{{ product.releaseNote }}</p>
+            <p v-else>
               Coming soon. This project is still in development and is not
               available to order. Follow its progress right here.
             </p>
@@ -382,6 +385,7 @@ async function buyNow() {
         <p>{{ value }}</p>
       </div>
     </section>
+    <VideoEditions v-if="product.category === 'video'" :product="product" />
     <div class="product-editorial">
       <section class="product-story" aria-labelledby="product-story-heading">
         <p class="eyebrow">01 / THE IDEA</p>

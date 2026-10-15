@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 750">
+  <defs>
+    <pattern id="scan" width="4" height="6" patternUnits="userSpaceOnUse"><path d="M0 5H4" stroke="#9fd5aa" stroke-opacity=".12"/></pattern>
+    <radialGradient id="glow"><stop stop-color="#253d30"/><stop offset="1" stop-color="#101913"/></radialGradient>
+  </defs>
+  <path fill="#e9dfc8" d="M0 0h1000v750H0z"/>
+  <path fill="#c7372c" d="M48 44h904v53H48z"/>
+  <g fill="#fff5df" font-family="monospace" font-size="21" font-weight="bold"><text x="70" y="78">RODDY VIDEO</text><text x="930" y="78" text-anchor="end">TRANSMISSION NO. 009</text></g>
+  <rect x="48" y="118" width="904" height="528" rx="24" fill="#292a25"/>
+  <rect x="70" y="140" width="860" height="484" rx="70" fill="url(#glow)"/>
+  <g fill="#d8e6c8" font-family="monospace" text-anchor="middle">
+    <text x="500" y="211" font-size="17" letter-spacing="7">SOMETHING STRANGE IS ON.</text>
+    <text x="470" y="420" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="191" letter-spacing="-14">PLAN 9</text>
+    <text x="500" y="468" font-size="31" letter-spacing="9">FROM OUTER SPACE</text>
+    <text x="500" y="575" font-size="16" letter-spacing="3">ORIGINAL / COMMANDER X16 / PHOSPHOR</text>
+  </g>
+  <g fill="none" stroke="#a5c4a3" stroke-width="3"><ellipse cx="780" cy="271" rx="80" ry="16" transform="rotate(-12 780 271)"/><path d="M743 265q26-58 59-12"/><path d="m155 262 17 0m-8-9v18m635 238h16m-8-8v16m-597-19h12m-6-6v12"/></g>
+  <rect x="70" y="140" width="860" height="484" rx="70" fill="url(#scan)"/>
+  <g fill="#22261f" font-family="monospace" font-weight="bold" font-size="17"><text x="50" y="697">ONE INVASION. THREE WAYS TO WATCH.</text><text x="950" y="697" text-anchor="end">▶ PRESS PLAY</text></g>
+</svg>

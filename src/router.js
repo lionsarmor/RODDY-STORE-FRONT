@@ -15,7 +15,12 @@ const router = createRouter({
   },
   routes: [
     { path: "/", name: "home", component: Home },
-    { path: "/shop", name: "shop", component: Shop },
+    {
+      path: "/shop", name: "shop", component: Shop,
+      beforeEnter: to => to.query.cat === "pocket"
+        ? { path: "/shop", query: { ...to.query, cat: "video" }, replace: true }
+        : true,
+    },
     { path: "/product/:id", name: "product", component: Product, props: true },
     { path: "/cart", name: "cart", component: Cart },
     { path: "/account", name: "account", component: () => import('./views/Account.vue') },

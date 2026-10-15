@@ -32,9 +32,9 @@
       "code": "ENTER ANOTHER WORLD"
     },
     {
-      "id": "pocket",
-      "name": "Pocket",
-      "code": "LITTLE MACHINES. BIG LIVES."
+      "id": "video",
+      "name": "Video",
+      "code": "RODDY VIDEO"
     },
     {
       "id": "computers",
@@ -3304,6 +3304,112 @@
       "keycaps": null,
       "merch": null,
       "designOrigin": "selected"
+    },
+    {
+      "category": "video",
+      "price": 19.99,
+      "pricePending": false,
+      "stock": 0,
+      "active": true,
+      "featured": false,
+      "status": "coming-soon",
+      "tags": [],
+      "images": [
+        "img/products/last-starfighter-vhs.svg"
+      ],
+      "compareAtPrice": 0,
+      "downloadUrl": "",
+      "documentationUrl": "",
+      "githubUrl": "",
+      "fulfillment": "pending",
+      "id": "the-last-starfighter-vhs",
+      "sku": "V-001",
+      "name": "THE LAST STARFIGHTER — VHS",
+      "type": "physical",
+      "trackStock": true,
+      "designOrigin": "selected",
+      "shortDescription": "Be kind. Rewind. Save the galaxy.",
+      "description": "Your VCR has been waiting for this. The Last Starfighter joins the RODDY VIDEO tape shelf: a vintage sci-fi adventure made for a proper movie night. Pop the tape in, dim the lights, and leave the planet for a while.\n\nPhysical VHS tape. We are sourcing a copy; ordering will open after the edition, tape format and condition have been checked. Display artwork is an illustration, not a photograph of the copy for sale.",
+      "releaseNote": "Sourcing a copy · $19.99 · Not yet available to order.",
+      "specs": {
+        "Media": "Physical VHS tape",
+        "Price": "$19.99 USD",
+        "Availability": "Sourcing a copy",
+        "Condition sought": "New / excellent; actual copy to be inspected",
+        "Tape format": "To be confirmed",
+        "Packaging": "Actual edition and sleeve to be confirmed"
+      },
+      "story": "A little space. A lot of adventure. RODDY VIDEO is our shelf for films worth keeping, formats worth playing, and the small ritual of choosing something good to watch.",
+      "coverImage": "img/products/last-starfighter-vhs.svg",
+      "availabilityLabel": "Sourcing a copy"
+    },
+    {
+      "category": "video",
+      "price": 0,
+      "pricePending": true,
+      "stock": 0,
+      "active": true,
+      "featured": false,
+      "status": "coming-soon",
+      "tags": [],
+      "images": [
+        "img/products/plan-9-video.svg"
+      ],
+      "compareAtPrice": 0,
+      "downloadUrl": "",
+      "documentationUrl": "",
+      "githubUrl": "",
+      "fulfillment": "pending",
+      "id": "plan-9-original-and-x16",
+      "sku": "V-002",
+      "name": "PLAN 9 FROM OUTER SPACE — X16 MOVIE COLLECTION",
+      "type": "digital",
+      "trackStock": false,
+      "designOrigin": "community",
+      "shortDescription": "One invasion. Three ways to watch. A cult movie night for your Commander X16.",
+      "description": "Flying saucers! Graveyard visitors! A plan so ambitious it needed eight practice runs! Plan 9 from Outer Space lands on the RODDY VIDEO shelf as a multi-edition digital collection.\n\nThe planned bundle brings together the original black-and-white movie, a Commander X16 playback edition, and an optional green-phosphor experiment. Keep the original for a classic movie night, then give your little computer something gloriously unexpected to do.",
+      "releaseNote": "Coming soon · Original preserved · X16 conversion and full bundle in preparation.",
+      "specs": {
+        "Collection": "Original + Commander X16 + optional phosphor edition",
+        "Original film": "Unaltered black-and-white WebM",
+        "Original runtime": "1 hour 18 minutes",
+        "X16 playback project": "X16 Media Studio",
+        "Delivery": "Digital download bundle — coming soon"
+      },
+      "story": "The movie is by Edward D. Wood Jr. The X16 playback project credit belongs to X16 Media Studio. RODDY is preparing this movie collection using that community project; the original playback technology is their work. Visit the project below, applaud the ingenuity, and bring popcorn.",
+      "coverImage": "img/products/plan-9-video.svg",
+      "projectCredit": {
+        "name": "X16 Media Studio",
+        "url": "https://cx16forum.com/forum/viewtopic.php?p=35595#p35595",
+        "description": "The community project behind the planned Commander X16 playback edition. Credit for the original playback technology belongs to X16 Media Studio. RODDY is preparing the movie editions and collection."
+      },
+      "videoEditions": [
+        {
+          "id": "original",
+          "name": "The original picture",
+          "format": "BLACK & WHITE / WEBM",
+          "screenLabel": "THE ORIGINAL PICTURE",
+          "description": "The original film, preserved just as supplied. Black-and-white picture, original sound, absolutely no green aliens added.",
+          "status": "Original preserved · bundle coming soon"
+        },
+        {
+          "id": "x16",
+          "name": "The little-computer feature",
+          "format": "COMMANDER X16",
+          "screenLabel": "LOAD THE POPCORN",
+          "description": "A movie night for your Commander X16, built around X16 Media Studio. Conversion, packaging and hardware playback checks are still ahead.",
+          "status": "X16 edition in preparation"
+        },
+        {
+          "id": "phosphor",
+          "name": "The midnight-green experiment",
+          "format": "OPTIONAL / GREEN PHOSPHOR",
+          "screenLabel": "SIGNAL FROM OUTER SPACE",
+          "description": "A separate green-phosphor treatment for that late-night terminal glow. An experimental alternate look; your original stays untouched.",
+          "status": "Preview experiment prepared"
+        }
+      ],
+      "availabilityLabel": "Coming soon"
     }
   ],
   "keycapProfiles": [

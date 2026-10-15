@@ -24,7 +24,7 @@
   );
   --catalog-pattern-size: 32px 32px;
 }
-[data-motif="pocket"] {
+[data-motif="video"] {
   --catalog-pattern: radial-gradient(
     circle,
     var(--catalog-grid-line) 3px,
@@ -410,7 +410,7 @@
 .product-card[data-department="games"] .product-plate-head {
   border-top: 3px solid var(--color-brand);
 }
-.product-card[data-department="pocket"] .product-card-image {
+.product-card[data-department="video"] .product-card-image {
   background-size: 16px 16px;
 }
 .product-card[data-department="merch"] .product-card-image {

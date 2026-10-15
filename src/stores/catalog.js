@@ -87,7 +87,7 @@ export function stockState(product) {
 
 export function stockLabel(product) {
   const state = stockState(product);
-  if (state === 'soon') return 'Coming soon';
+  if (state === 'soon') return product.availabilityLabel || 'Coming soon';
   if (state === "out") return "Sold out";
   if (state === "low") return `Only ${product.stock} left`;
   return product.merch || product.keycaps ? "Made to order" : "In stock";

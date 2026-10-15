@@ -17,7 +17,9 @@ import RoddyLogo from "../components/RoddyLogo.vue";
 const route = useRoute();
 const catalog = useCatalogStore();
 const activeCat = computed(() =>
-  typeof route.query.cat === "string" ? route.query.cat : "all",
+  route.query.cat === "pocket"
+    ? "video"
+    : typeof route.query.cat === "string" ? route.query.cat : "all",
 );
 const direction = computed(() => departmentDirection(activeCat.value));
 const category = computed(() => catalog.categoryMeta(activeCat.value));
