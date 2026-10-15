@@ -1,9 +1,7 @@
 <script setup>
 import { computed } from 'vue';
-import { safeLink } from '../catalog-model.js';
 const props = defineProps({ product: { type: Object, required: true } });
 const editions = computed(() => Array.isArray(props.product.videoEditions) ? props.product.videoEditions : []);
-const creditLink = computed(() => safeLink(props.product.projectCredit?.url));
 </script>
 
 <template>
@@ -23,15 +21,6 @@ const creditLink = computed(() => safeLink(props.product.projectCredit?.url));
         <span class="edition-status">{{ edition.status }}</span>
       </article>
     </div>
-    <aside v-if="product.projectCredit && creditLink" class="video-project-credit">
-      <div>
-        <p class="eyebrow">THE CREATOR IN THE SPOTLIGHT</p>
-        <h3>{{ product.projectCredit.name }}</h3>
-        <p class="creator-handles"><strong>Forum: {{ product.projectCredit.forumHandle }}</strong><br>Also known as {{ product.projectCredit.onlineAlias }} · Creator of {{ product.projectCredit.projectName }}</p>
-        <p>{{ product.projectCredit.description }}</p>
-      </div>
-      <a :href="creditLink" target="_blank" rel="noopener noreferrer" class="button">Explore X16 Media Studio ↗</a>
-    </aside>
     <p class="edition-footnote">Original film: Edward D. Wood Jr. The X16 editions are in preparation; the original film stays black and white.</p>
   </section>
 </template>

@@ -252,6 +252,12 @@ async function buyNow() {
         </p>
       </div>
       <div class="product-information">
+        <a v-if="creatorUrl" :href="creatorUrl" target="_blank" rel="noopener noreferrer" class="movie-creator-banner">
+          <span>{{ product.projectCredit.projectName }} · CREATED BY</span>
+          <strong>{{ product.projectCredit.name }} ↗</strong>
+          <span>FORUM: {{ product.projectCredit.forumHandle }} · ALSO KNOWN AS {{ product.projectCredit.onlineAlias }}</span>
+          <span>EXPLORE THE ORIGINAL PROJECT ↗</span>
+        </a>
         <p class="eyebrow">
           {{ product.sku }} / {{ product.category }} DIVISION
         </p>

@@ -37,6 +37,7 @@ const catalog = useCatalogStore();
       />
       <ProductArtwork v-else :product="product" />
     </div>
+    <p v-if="product.cardImageNote" class="movie-artwork-note">{{ product.cardImageNote }}</p>
     <div class="product-plate-caption">
       <span
         >{{

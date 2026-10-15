@@ -3342,7 +3342,8 @@
       "story": "A little space. A lot of adventure. RODDY VIDEO is our shelf for films worth keeping, formats worth playing, and the small ritual of choosing something good to watch.",
       "coverImage": "img/products/last-starfighter-vhs.svg",
       "availabilityLabel": "Sourcing a copy",
-      "cardImage": "img/products/last-starfighter-card.svg"
+      "cardImage": "img/products/last-starfighter-vhs-render.webp",
+      "cardImageNote": "VHS mockup · Actual sleeve and copy to be confirmed"
     },
     {
       "category": "video",
@@ -3422,7 +3423,8 @@
         }
       ],
       "availabilityLabel": "Coming soon",
-      "cardImage": "img/products/plan-9-card.svg"
+      "cardImage": "img/products/plan-9-vhs-render.webp",
+      "cardImageNote": "Digital collection · VHS-style cover art"
     }
   ],
   "keycapProfiles": [
