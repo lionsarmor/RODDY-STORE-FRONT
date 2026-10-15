@@ -2793,7 +2793,8 @@
       "fulfillmentRef": "",
       "keycaps": null,
       "relatedProductIds": [
-        "link-commander-snap-fit-enclosure"
+        "link-commander-snap-fit-enclosure",
+        "usb-c-power-supply-5v-3a"
       ],
       "safetyNotice": "POWER: Use only the rear USB-C socket marked 5V POWER. The internal RP2040 USB port and JP1 jumper are service-only. Do not open the case or change the jumper for normal use. Disconnect all power before connecting or disconnecting PS/2 cables."
     },
@@ -3218,6 +3219,70 @@
         "US"
       ],
       "fulfillmentRef": "7c3a7d224ddc6f590bde923b832902ba2bb4a4a6df8284244e2e97b8bc06fa14"
+    },
+    {
+      "id": "usb-c-power-supply-5v-3a",
+      "sku": "RODDY-PWR-5V3A-US",
+      "name": "5V / 3A USB-C Power Adapter + Cable",
+      "category": "computers",
+      "type": "physical",
+      "status": "available",
+      "active": true,
+      "featured": false,
+      "price": 14.99,
+      "pricePending": false,
+      "stock": 17,
+      "trackStock": false,
+      "shortDescription": "15W wall power with an attached 1.5 m USB-C cable. US plug, ready for your desk.",
+      "description": "A compact black wall adapter delivering a fixed 5V DC at up to 3A. The attached 1.5 m USB-C cable is included, so there is no separate cable to buy.\n\nIncludes one power adapter with a US Type A plug and its permanently attached USB-C cable. Supports 100–240V AC, 50/60Hz input. Ships to the United States and Canada.\n\nFor devices requiring a 5V USB-C power input of up to 3A. This is a fixed-voltage power supply; it does not provide higher-voltage USB Power Delivery charging for laptops.\n\nFor LINK COMMANDER, use the rear socket marked 5V POWER. The electrical rating matches the planned requirement; verification with the physical Link Commander prototype is still pending. Adapter sold separately.",
+      "specs": {
+        "Manufacturer": "DFRobot",
+        "Model": "FIT0640",
+        "Output": "5V DC / 3A maximum (15W)",
+        "Input": "100–240V AC, 50/60Hz",
+        "Wall plug": "US Type A (two flat pins)",
+        "Cable": "1.5 m, permanently attached",
+        "Device connector": "USB-C",
+        "Color": "Black",
+        "Adapter dimensions": "72 × 43 × 30 mm",
+        "Protection": "Short-circuit and overcurrent protection",
+        "Included": "1 power adapter with attached USB-C cable"
+      },
+      "images": [
+        "img/products/usb-c-power/adapter-and-cable.jpg",
+        "img/products/usb-c-power/adapter-front.jpg",
+        "img/products/usb-c-power/usb-c-connector.jpg"
+      ],
+      "coverImage": "img/products/usb-c-power/adapter-and-cable.jpg",
+      "tags": [],
+      "shippingCountries": [
+        "US",
+        "CA"
+      ],
+      "officeShipping": {
+        "US": {
+          "firstItem": 15,
+          "additionalItem": 15
+        },
+        "CA": {
+          "firstItem": 25,
+          "additionalItem": 25
+        }
+      },
+      "fulfillment": "manual",
+      "fulfillmentRef": "25ead206bb2745fe5440c90bff614c97745a47351ced9126ba90d99fcf792523",
+      "relatedProductIds": [
+        "new-product"
+      ],
+      "releaseNote": "Available to order. US plug; attached USB-C cable included. Shipping calculated at checkout.",
+      "compareAtPrice": 0,
+      "story": "",
+      "documentationUrl": "",
+      "downloadUrl": "",
+      "githubUrl": "",
+      "supplier": null,
+      "keycaps": null,
+      "merch": null
     }
   ],
   "keycapProfiles": [
