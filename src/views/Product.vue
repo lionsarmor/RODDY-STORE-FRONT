@@ -101,12 +101,17 @@ const isHardware = computed(
     product.value?.type === "physical" &&
     ["computers", "pocket", "labs", "apps"].includes(product.value?.category),
 );
+const linkedProducts = computed(() =>
+  (Array.isArray(product.value?.relatedProductIds) ? product.value.relatedProductIds : [])
+    .map(id => catalog.byId(id)).filter(Boolean),
+);
 const related = computed(() =>
   catalog
     .byCategory("all")
     .filter((p) => p.id !== props.id)
     .sort(
       (a, b) =>
+        Number(linkedProducts.value.includes(b)) - Number(linkedProducts.value.includes(a)) ||
         Number(b.category === product.value?.category) -
           Number(a.category === product.value?.category) ||
         Number(b.featured) - Number(a.featured),
@@ -210,7 +215,7 @@ async function buyNow() {
             state === "soon"
               ? "COMING SOON / NOT YET FOR SALE"
               : product.type === "digital"
-                ? "FROM THE RODDY SOFTWARE LIBRARY"
+                ? "FROM THE RODDY DIGITAL LIBRARY"
                 : "FROM THE RODDY COLLECTION"
           }}</span
           ><span aria-hidden="true">+ + +</span>
@@ -355,6 +360,12 @@ async function buyNow() {
             class="button"
             >⌘ Explore on GitHub ↗</a
           ><small>Source, documentation & project updates</small>
+        </div>
+        <div v-for="item in linkedProducts" :key="item.id" class="resource-links">
+          <RouterLink :to="`/product/${item.id}`" class="button">
+            {{ item.name }} ↗
+          </RouterLink>
+          <small>{{ item.type === 'digital' && item.price === 0 ? 'Free download' : 'Explore the companion project' }}</small>
         </div>
         <p class="launch-signoff">INDEPENDENT IDEAS. A VERY PERSONAL FUTURE.</p>
       </div>

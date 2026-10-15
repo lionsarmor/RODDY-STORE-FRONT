@@ -27,7 +27,7 @@ const catalog = useCatalogStore();
           stockState(product) === "soon"
             ? "LAB PREVIEW"
             : product.type === "digital"
-              ? "SOFTWARE LIBRARY"
+              ? "DIGITAL LIBRARY"
               : "RODDY ORIGINAL"
         }}
         <span aria-hidden="true">↗</span></span
