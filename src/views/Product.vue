@@ -255,6 +255,7 @@ async function buyNow() {
         <h1>{{ product.name }}</h1>
         <ProductTags :ids="product.tags" />
         <p class="detail-short">{{ product.shortDescription }}</p>
+        <p v-if="product.safetyNotice" class="notice" role="note">{{ product.safetyNotice }}</p>
         <div class="detail-price">
           {{
             selectedVariant && !product.pricePending

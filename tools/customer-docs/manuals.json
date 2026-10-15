@@ -42,8 +42,9 @@
           {
             "title": "Power and service",
             "paragraphs": [
-              "Use a regulated 5 V supply through the rear USB-C power connector. Do not apply a higher voltage. Current requirements depend on the actual peripherals and must be verified during prototype testing.",
-              "Disconnect power and cables before opening the case or moving the module. Remove JP1 before connecting the module’s USB programming supply as required by the board service instructions. Do not assume that combining both USB power sources is safe."
+              "Use ONLY the rear USB-C power socket marked 5V POWER, with a qualified regulated 5 V supply. Do not use the USB-C connector on the internal RP2040 module as a power inlet. Never apply a higher voltage.",
+              "The planned assembled edition arrives with the module installed and programmed and JP1 fitted for normal operation. Customers do not need to program, remove or connect directly to the module, or change a jumper.",
+              "The module USB and JP1 are internal service features. Do not open the case or alter them for normal use. Disconnect all power before connecting or disconnecting PS/2 cables. Contact RODDY for service."
             ]
           },
           {
@@ -133,7 +134,7 @@
   {
     "file": "link-commander-enclosure-guide.pdf",
     "title": "LINK COMMANDER ENCLOSURE",
-    "edition": "ENCLOSURE A · REAR POWER · 15 OCT 2026",
+    "edition": "ENCLOSURE A.1 · GUARDED SERVICE USB · 15 OCT 2026",
     "pages": [
       {
         "title": "PRINT YOUR\nLINK COMMANDER SHELL",
@@ -231,14 +232,15 @@
           {
             "title": "Close the shell",
             "paragraphs": [
-              "Lower the lid straight and press near each latch until all four engage. The seam rests on the case walls, not on electronic components. Stop if the lid contacts the module, capacitors, fuse or socketed chips."
+              "Lower the lid straight and press near each latch until all four engage. The seam rests on the case walls, not on electronic components. Stop if the lid contacts the module, capacitors, fuse or socketed chips.",
+              "The lid now has an integral guard in front of the module USB socket. Check clearance against the real module; it must not touch or press on the connector. The rear 5V POWER label identifies the customer power inlet."
             ]
           },
           {
             "title": "Open for service",
             "paragraphs": [
               "Disconnect power. Use a narrow plastic pick through each latch-release window to press the hook inward while gently lifting that corner. Do not pry on the connector shells or use a metal tool near powered electronics.",
-              "Open the lid to reach JP1 and the RP2040 programming connector. Remove JP1 as required by the board instructions before using the module’s USB programming supply."
+              "JP1 and the module USB are for authorized service only. Disconnect every cable and supply, remove the lid, then remove JP1 before connecting programming USB. Disconnect programming USB before refitting JP1. The plastic guard does not provide electrical isolation."
             ]
           },
           {
@@ -276,7 +278,8 @@
           {
             "title": "Help",
             "paragraphs": [
-              "For updated files, return to the enclosure listing on roddy.world. Email support@roddy.world with your board revision, printer, nozzle, filament and fit observations. This guide describes a prototype design, not a production-qualified enclosure."
+              "For updated files, return to the enclosure listing on roddy.world. Email support@roddy.world with your board revision, printer, nozzle, filament and fit observations. This guide describes a prototype design, not a production-qualified enclosure.",
+              "For the planned assembled product, the module is installed and programmed and JP1 fitted before the enclosure is closed. Customers use the rear power socket and do not adjust JP1 or handle the module. Firmware and physical qualification remain release requirements."
             ]
           }
         ]

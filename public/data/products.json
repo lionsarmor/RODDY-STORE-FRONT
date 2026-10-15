@@ -2750,7 +2750,7 @@
       "stock": 0,
       "active": true,
       "featured": true,
-      "description": "# LINK COMMANDER\n\n**Modern peripherals. Classic computers. One connection.**\n\nYour favorite retro computer deserves a modern keyboard and mouse.\n\n**LINK COMMANDER** is a retro peripheral interface designed to bridge the gap between modern input devices and classic computer hardware. Built for enthusiasts who love their vintage machines but appreciate the convenience of today's peripherals, LINK COMMANDER aims to make connecting your favorite keyboard and mouse easier than ever.\n\nNo need to hunt down aging keyboards, struggle with unreliable adapters, or sacrifice your preferred desktop setup just to enjoy classic computing.\n\n### Bridge Two Generations of Technology\n\nDesigned around a flexible peripheral interface, LINK COMMANDER brings together modern USB connectivity, legacy PS/2 interfaces, and support for retro-computer connections.\n\nWith two USB ports and two PS/2 ports, the device is being developed to accommodate a variety of input configurations, including support for compatible wireless receiver dongles.\n\nWhether you're restoring a vintage system, building a modern retro computer setup, or experimenting with new hardware, LINK COMMANDER is designed to help old and new technology work together.\n\n### Built for Retro Enthusiasts\n\nLINK COMMANDER is part of RODDY's growing collection of original hardware projects, developed with a simple philosophy: classic computers should remain useful, accessible, and enjoyable.\n\nWe're exploring compatibility with systems such as the Commander X16 and other retro platforms, with an emphasis on flexible connections, practical functionality, and a clean, compact design.\n\n### Planned Features\n\n- **2× USB-A ports** for compatible modern input devices and wireless receivers.\n- **2× PS/2 ports** for legacy keyboard and mouse connectivity.\n- **Retro-computer connectivity** through system-specific interfaces and adapters.\n- **Wireless peripheral support** for compatible 2.4 GHz receiver-based devices.\n- **Compact desktop design** that fits naturally alongside vintage hardware.\n- **Expandable compatibility** as development continues.\n\n### Modern Convenience. Retro Soul.\n\nWe love classic computers for their simplicity, personality, and the unique experience they offer. LINK COMMANDER is being built to preserve that experience while removing some of the frustrations of connecting modern peripherals.\n\nBecause enjoying yesterday's computers shouldn't mean giving up today's conveniences.\n\n**LINK COMMANDER — Connect the Generations.**\n\n*RODDY — Made for Makers.*\n\n### Release / Availability\n\n**Coming Soon — In Development**\n\nLINK COMMANDER is an original RODDY hardware project currently in development. Hardware specifications, supported systems, compatibility, and availability are subject to change as prototyping and testing continue.",
+      "description": "Planned assembled edition: the RP2040 module will be installed and programmed, with JP1 fitted for normal operation before the case is closed. No customer flashing, module handling or jumper changes will be required. The product remains in development pending working bridge firmware and physical qualification.\n\nPOWER: Use only the rear USB-C socket marked 5V POWER. The internal RP2040 USB port and JP1 jumper are service-only. Do not open the case or change the jumper for normal use. Disconnect all power before connecting or disconnecting PS/2 cables.\n\n# LINK COMMANDER\n\n**Modern peripherals. Classic computers. One connection.**\n\nYour favorite retro computer deserves a modern keyboard and mouse.\n\n**LINK COMMANDER** is a retro peripheral interface designed to bridge the gap between modern input devices and classic computer hardware. Built for enthusiasts who love their vintage machines but appreciate the convenience of today's peripherals, LINK COMMANDER aims to make connecting your favorite keyboard and mouse easier than ever.\n\nNo need to hunt down aging keyboards, struggle with unreliable adapters, or sacrifice your preferred desktop setup just to enjoy classic computing.\n\n### Bridge Two Generations of Technology\n\nDesigned around a flexible peripheral interface, LINK COMMANDER brings together modern USB connectivity, legacy PS/2 interfaces, and support for retro-computer connections.\n\nWith two USB ports and two PS/2 ports, the device is being developed to accommodate a variety of input configurations, including support for compatible wireless receiver dongles.\n\nWhether you're restoring a vintage system, building a modern retro computer setup, or experimenting with new hardware, LINK COMMANDER is designed to help old and new technology work together.\n\n### Built for Retro Enthusiasts\n\nLINK COMMANDER is part of RODDY's growing collection of original hardware projects, developed with a simple philosophy: classic computers should remain useful, accessible, and enjoyable.\n\nWe're exploring compatibility with systems such as the Commander X16 and other retro platforms, with an emphasis on flexible connections, practical functionality, and a clean, compact design.\n\n### Planned Features\n\n- **2× USB-A ports** for compatible modern input devices and wireless receivers.\n- **2× PS/2 ports** for legacy keyboard and mouse connectivity.\n- **Retro-computer connectivity** through system-specific interfaces and adapters.\n- **Wireless peripheral support** for compatible 2.4 GHz receiver-based devices.\n- **Compact desktop design** that fits naturally alongside vintage hardware.\n- **Expandable compatibility** as development continues.\n\n### Modern Convenience. Retro Soul.\n\nWe love classic computers for their simplicity, personality, and the unique experience they offer. LINK COMMANDER is being built to preserve that experience while removing some of the frustrations of connecting modern peripherals.\n\nBecause enjoying yesterday's computers shouldn't mean giving up today's conveniences.\n\n**LINK COMMANDER — Connect the Generations.**\n\n*RODDY — Made for Makers.*\n\n### Release / Availability\n\n**Coming Soon — In Development**\n\nLINK COMMANDER is an original RODDY hardware project currently in development. Hardware specifications, supported systems, compatibility, and availability are subject to change as prototyping and testing continue.",
       "specs": {
         "Board": "100 × 75 mm · common Rev E / F outline",
         "Rear connections": "2 × USB-A inputs · USB-C power",
@@ -2759,14 +2759,17 @@
         "Controller": "Removable RP2040-Zero module",
         "Indicator": "Green power LED at the board edge",
         "Enclosure": "Common snap-fit shell · free print files",
-        "Development stage": "Engineering prototype · firmware and physical testing pending"
+        "Development stage": "Engineering prototype · firmware and physical testing pending",
+        "Customer power": "Rear USB-C marked 5V POWER only",
+        "Internal service": "Guarded RP2040 USB · JP1 factory-fitted for normal operation"
       },
       "images": [
         "img/products/link-commander/link-commander-board-v1.png",
         "img/products/link-commander/link-commander-white-open-v1.png",
         "img/products/link-commander/link-commander-white-closed-v1.png",
         "img/products/link-commander/rev-e-cad.png",
-        "img/products/link-commander/enclosure-rear-cad.png"
+        "img/products/link-commander/enclosure-rear-cad-a1.png",
+        "img/products/link-commander/enclosure-service-guard-a1.png"
       ],
       "status": "coming-soon",
       "type": "physical",
@@ -2791,7 +2794,8 @@
       "keycaps": null,
       "relatedProductIds": [
         "link-commander-snap-fit-enclosure"
-      ]
+      ],
+      "safetyNotice": "POWER: Use only the rear USB-C socket marked 5V POWER. The internal RP2040 USB port and JP1 jumper are service-only. Do not open the case or change the jumper for normal use. Disconnect all power before connecting or disconnecting PS/2 cables."
     },
     {
       "id": "link-commander-snap-fit-enclosure",
@@ -2812,12 +2816,13 @@
         "new-tag-2"
       ],
       "shortDescription": "Print a home for Link Commander. Free snap-fit shell files for Rev E and Rev F.",
-      "description": "A compact, two-piece enclosure for the current Link Commander Rev E through-hole and Rev F SMT boards. Download the files, print the fit coupon, then make the shell in your favorite color. The white case shown is a CAD-based illustration of one finish.\n\nThe ZIP includes base and lid STL files, editable STEP geometry, geometry-only 3MF plate layouts, snap-fit test pieces and printing and assembly instructions. Designed around unfilled ABS, an enclosed Bambu X1 Carbon and a 0.4 mm nozzle.\n\nThis is a digital file download. No printed case, circuit board, electronics, cables or printer is included. The common shell is an engineering prototype: check the fit coupon, your actual board and cable clearances before printing or assembling the full case.",
+      "description": "A compact, two-piece enclosure for the current Link Commander Rev E through-hole and Rev F SMT boards. Download the files, print the fit coupon, then make the shell in your favorite color. The white case shown is a CAD-based illustration of one finish.\n\nThe ZIP includes base and lid STL files, editable STEP geometry, geometry-only 3MF plate layouts, snap-fit test pieces and printing and assembly instructions. Designed around unfilled ABS, an enclosed Bambu X1 Carbon and a 0.4 mm nozzle.\n\nThis is a digital file download. No printed case, circuit board, electronics, cables or printer is included. The common shell is an engineering prototype: check the fit coupon, your actual board and cable clearances before printing or assembling the full case.\n\nEnclosure A.1 adds an integral lid guard ahead of the internal programming port and a recessed 5V POWER marking above the correct rear socket. JP1 remains internal; assembled units are intended to arrive configured for normal operation.",
       "story": "One shell for both ways to build Link Commander. Print it yourself, inspect the design, and keep the hardware easy to open and work on.",
       "images": [
         "img/products/link-commander/link-commander-white-open-v1.png",
         "img/products/link-commander/link-commander-white-closed-v1.png",
-        "img/products/link-commander/enclosure-rear-cad.png"
+        "img/products/link-commander/enclosure-rear-cad-a1.png",
+        "img/products/link-commander/enclosure-service-guard-a1.png"
       ],
       "coverImage": "img/products/link-commander/link-commander-white-open-v1.png",
       "specs": {
@@ -2829,10 +2834,10 @@
         "First print": "Included snap-fit coupon",
         "3MF contents": "Model geometry and plate placement; not pre-sliced G-code",
         "Included hardware": "None — digital files only",
-        "Version": "Enclosure A · rear USB-C layout · v0.6.0-proto.1",
+        "Version": "Enclosure A.1 · internal service USB guard · rear power legend",
         "Fit status": "Nominal CAD checks passed; physical print validation pending"
       },
-      "downloadUrl": "https://roddy.world/downloads/3d-print/LINK_COMMANDER_ENCLOSURE_A.zip",
+      "downloadUrl": "https://roddy.world/downloads/3d-print/LINK_COMMANDER_ENCLOSURE_A1.zip",
       "githubUrl": "",
       "documentationUrl": "https://roddy.world/downloads/docs/link-commander-enclosure-guide.pdf",
       "releaseNote": "Instant free download. Images are CAD-based previews with example electronics. Print and check the snap-fit coupon first. No account or checkout required.",
@@ -2844,7 +2849,8 @@
       "fulfillment": "",
       "fulfillmentRef": "",
       "keycaps": null,
-      "merch": null
+      "merch": null,
+      "safetyNotice": "Includes an internal guard for the RP2040 service USB and a rear 5V POWER marking. Fit-test the printed guard against your actual module. The guard is not electrical isolation; disconnect all power before opening the shell."
     },
     {
       "id": "aula-f87-pro",
