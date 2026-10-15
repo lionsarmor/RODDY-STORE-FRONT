@@ -1,4 +1,5 @@
 import { shippingCountries } from './shipping-destinations.js';
+import { PRODUCT_ORIGINS } from './product-origin.js';
 import {catalogColorId} from './keycap-palette.js';
 import { KEYCAP_PREVIEWS, MARKS, DISABLED_MARKS, ARROWS, NUMBER_ROWS, defaultDesign, designError } from './keycaps.js';
 
@@ -35,6 +36,7 @@ export const DEFAULT_SETTINGS = {
 export function normalizeProduct(p) {
   return {
     ...p,
+    designOrigin: p.designOrigin || 'selected',
     status: p.status || "available",
     type: p.type || "physical",
     images: Array.isArray(p.images) ? p.images : p.image ? [p.image] : [],
@@ -118,6 +120,7 @@ export function validateCatalog(data) {
     if (designError(defaultDesign(profile),profile)) errors.push(`${profile.name}: check profile defaults.`);
   }
   for (const p of data.products) {
+    if (p.designOrigin && !PRODUCT_ORIGINS.some(origin => origin.id === p.designOrigin)) errors.push(`${p.name}: choose a supported design credit.`);
     if (p.keycaps && (p.type !== 'physical' || p.merch || p.supplier || p.trackStock !== false || !(data.keycapProfiles || []).some(profile=>profile.id===p.keycaps.profileId))) errors.push(`${p.name}: choose a valid keyboard profile, physical product and made-to-order stock mode.`);
     if (!p.sku?.trim() || skus.has(p.sku.trim().toLowerCase()))
       errors.push(`${p.name}: SKU must be present and unique.`);

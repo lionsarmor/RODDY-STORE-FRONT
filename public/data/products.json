@@ -152,7 +152,8 @@
         "profileId": "x16-compatible"
       },
       "fulfillment": "",
-      "fulfillmentRef": ""
+      "fulfillmentRef": "",
+      "designOrigin": "design"
     },
     {
       "id": "standard-keycaps",
@@ -205,7 +206,8 @@
         "profileId": "standard-ansi87"
       },
       "fulfillment": "",
-      "fulfillmentRef": ""
+      "fulfillmentRef": "",
+      "designOrigin": "design"
     },
     {
       "id": "weather-commander-x16",
@@ -265,7 +267,8 @@
       "supplier": null,
       "fulfillment": "",
       "fulfillmentRef": "",
-      "keycaps": null
+      "keycaps": null,
+      "designOrigin": "original"
     },
     {
       "id": "shadow-over-space",
@@ -330,7 +333,8 @@
       "supplier": null,
       "fulfillment": "",
       "fulfillmentRef": "",
-      "keycaps": null
+      "keycaps": null,
+      "designOrigin": "original"
     },
     {
       "id": "desk-commander",
@@ -399,7 +403,8 @@
       "supplier": null,
       "fulfillment": "",
       "fulfillmentRef": "",
-      "keycaps": null
+      "keycaps": null,
+      "designOrigin": "original"
     },
     {
       "id": "iknowwhatisaw",
@@ -454,7 +459,8 @@
       "supplier": null,
       "fulfillment": "",
       "fulfillmentRef": "",
-      "keycaps": null
+      "keycaps": null,
+      "designOrigin": "original"
     },
     {
       "id": "keychain-kreatures",
@@ -504,7 +510,8 @@
       "supplier": null,
       "fulfillment": "",
       "fulfillmentRef": "",
-      "keycaps": null
+      "keycaps": null,
+      "designOrigin": "original"
     },
     {
       "id": "kestrel-computer",
@@ -536,7 +543,8 @@
       "supplier": null,
       "fulfillment": "",
       "fulfillmentRef": "",
-      "keycaps": null
+      "keycaps": null,
+      "designOrigin": "original"
     },
     {
       "id": "desk-mat",
@@ -657,7 +665,8 @@
       "supplier": null,
       "fulfillmentRef": "a4cb14f91b6c5148465f8bec442365ec52b732330fa3c7409e91e7024845b0d8",
       "fulfillment": "",
-      "keycaps": null
+      "keycaps": null,
+      "designOrigin": "design"
     },
     {
       "id": "hoodie",
@@ -2739,7 +2748,8 @@
       "supplier": null,
       "fulfillmentRef": "7b0f25d26e853eaf4b5c5b69fbd23269c1b8f6da1646a26a37716a4b4c0121fe",
       "fulfillment": "",
-      "keycaps": null
+      "keycaps": null,
+      "designOrigin": "design"
     },
     {
       "id": "link-commander-e",
@@ -2796,7 +2806,8 @@
         "link-commander-snap-fit-enclosure",
         "usb-c-power-supply-5v-3a"
       ],
-      "safetyNotice": "POWER: Use only the rear USB-C socket marked 5V POWER. The internal RP2040 USB port and JP1 jumper are service-only. Do not open the case or change the jumper for normal use. Disconnect all power before connecting or disconnecting PS/2 cables."
+      "safetyNotice": "POWER: Use only the rear USB-C socket marked 5V POWER. The internal RP2040 USB port and JP1 jumper are service-only. Do not open the case or change the jumper for normal use. Disconnect all power before connecting or disconnecting PS/2 cables.",
+      "designOrigin": "original"
     },
     {
       "id": "link-commander-snap-fit-enclosure",
@@ -2843,7 +2854,7 @@
       "documentationUrl": "https://roddy.world/downloads/docs/link-commander-enclosure-guide.pdf",
       "releaseNote": "Instant free download. Images are CAD-based previews with example electronics. Print and check the snap-fit coupon first. No account or checkout required.",
       "relatedProductIds": [
-        "new-product"
+        "link-commander-e"
       ],
       "officeShipping": {},
       "supplier": null,
@@ -2851,7 +2862,8 @@
       "fulfillmentRef": "",
       "keycaps": null,
       "merch": null,
-      "safetyNotice": "Includes an internal guard for the RP2040 service USB and a rear 5V POWER marking. Fit-test the printed guard against your actual module. The guard is not electrical isolation; disconnect all power before opening the shell."
+      "safetyNotice": "Includes an internal guard for the RP2040 service USB and a rear 5V POWER marking. Fit-test the printed guard against your actual module. The guard is not electrical isolation; disconnect all power before opening the shell.",
+      "designOrigin": "original"
     },
     {
       "id": "aula-f87-pro",
@@ -2894,7 +2906,8 @@
       "keycaps": null,
       "shippingCountries": [
         "US"
-      ]
+      ],
+      "designOrigin": "selected"
     },
     {
       "id": "roddy-de10-nano",
@@ -2966,7 +2979,8 @@
       "fulfillment": "manual",
       "fulfillmentRef": "0260e8ad6f8f8a6eb447ffbb3a27488f7cad5f78e4d6c9abe6490a19c765f7df",
       "keycaps": null,
-      "merch": null
+      "merch": null,
+      "designOrigin": "selected"
     },
     {
       "id": "mister-sdram-128mb",
@@ -3008,7 +3022,8 @@
       "fulfillment": "pending",
       "keycaps": null,
       "merch": null,
-      "fulfillmentRef": ""
+      "fulfillmentRef": "",
+      "designOrigin": "community"
     },
     {
       "id": "mister-usb-hub",
@@ -3050,7 +3065,8 @@
       "fulfillment": "pending",
       "keycaps": null,
       "merch": null,
-      "fulfillmentRef": ""
+      "fulfillmentRef": "",
+      "designOrigin": "community"
     },
     {
       "id": "mister-analog-io",
@@ -3095,7 +3111,8 @@
       "fulfillment": "pending",
       "keycaps": null,
       "merch": null,
-      "fulfillmentRef": ""
+      "fulfillmentRef": "",
+      "designOrigin": "community"
     },
     {
       "id": "mister-rtc",
@@ -3136,7 +3153,8 @@
       "fulfillment": "pending",
       "keycaps": null,
       "merch": null,
-      "fulfillmentRef": ""
+      "fulfillmentRef": "",
+      "designOrigin": "community"
     },
     {
       "id": "mister-usb-bridge",
@@ -3177,7 +3195,8 @@
       "fulfillment": "pending",
       "keycaps": null,
       "merch": null,
-      "fulfillmentRef": ""
+      "fulfillmentRef": "",
+      "designOrigin": "community"
     },
     {
       "id": "mister-classic-case",
@@ -3218,7 +3237,8 @@
       "shippingCountries": [
         "US"
       ],
-      "fulfillmentRef": "7c3a7d224ddc6f590bde923b832902ba2bb4a4a6df8284244e2e97b8bc06fa14"
+      "fulfillmentRef": "7c3a7d224ddc6f590bde923b832902ba2bb4a4a6df8284244e2e97b8bc06fa14",
+      "designOrigin": "selected"
     },
     {
       "id": "usb-c-power-supply-5v-3a",
@@ -3272,7 +3292,7 @@
       "fulfillment": "manual",
       "fulfillmentRef": "25ead206bb2745fe5440c90bff614c97745a47351ced9126ba90d99fcf792523",
       "relatedProductIds": [
-        "new-product"
+        "link-commander-e"
       ],
       "releaseNote": "Available to order. US plug; attached USB-C cable included. Shipping calculated at checkout.",
       "compareAtPrice": 0,
@@ -3282,7 +3302,8 @@
       "githubUrl": "",
       "supplier": null,
       "keycaps": null,
-      "merch": null
+      "merch": null,
+      "designOrigin": "selected"
     }
   ],
   "keycapProfiles": [

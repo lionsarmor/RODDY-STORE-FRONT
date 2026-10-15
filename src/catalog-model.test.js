@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
+import { productOrigin } from './product-origin.js';
 import {
   normalizeCatalog,
   normalizeProduct,
@@ -12,6 +13,19 @@ import {
 const data = JSON.parse(
   readFileSync(new URL("../public/data/products.json", import.meta.url)),
 );
+test('design credit requires explicit authorship and survives catalog editing', () => {
+  for (const product of [{}, { type: 'physical', status: 'available' }, { category: 'labs', status: 'coming-soon' }, { type: 'digital' }]) {
+    assert.equal(normalizeProduct(product).designOrigin, 'selected');
+    assert.equal(productOrigin(product).label, 'RODDY SELECT');
+  }
+  const c = normalizeCatalog(structuredClone(data));
+  const p = c.products[0];
+  p.designOrigin = 'original';
+  assert.equal(productOrigin(normalizeCatalog(JSON.parse(JSON.stringify(c))).products[0]).label, 'RODDY ORIGINAL');
+  p.designOrigin = 'invalid';
+  assert.equal(productOrigin(p).label, 'RODDY SELECT');
+  assert.ok(validateCatalog(c).some(e => e.includes('design credit')));
+});
 test("published catalog is valid without requiring obsolete starter content", () => {
   const c = normalizeCatalog(data);
   assert.deepEqual(validateCatalog(c), []);

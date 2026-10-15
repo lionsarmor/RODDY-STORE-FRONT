@@ -7,6 +7,7 @@ import MerchEditor from "./MerchEditor.vue";
 import MediaEditor from "./MediaEditor.vue";
 import ProductTags from "../components/ProductTags.vue";
 import { specsToText, textToSpecs } from "./utils";
+import { PRODUCT_ORIGINS, productOrigin } from '../product-origin.js';
 const props = defineProps({ product: Object, catalog: Object, library: Array });
 defineEmits(["close", "duplicate", "delete", "media-busy"]);
 const tab = ref("details");
@@ -77,6 +78,9 @@ function toggleTag(id) {
             <option value="physical">Physical / shipped</option>
             <option value="digital">Digital / software</option>
           </select></label
+        ><label class="full">Design credit<select v-model="product.designOrigin">
+          <option v-for="origin in PRODUCT_ORIGINS" :key="origin.id" :value="origin.id">{{ origin.label }}</option>
+        </select><small>{{ productOrigin(product).description }} This label appears on product cards and the product page.</small></label
         ><label class="full"
           >Short description<input
             v-model="product.shortDescription"
@@ -88,7 +92,7 @@ function toggleTag(id) {
             rows="7"
           /></label
         ><label class="full"
-          >Why we made it (optional)<textarea
+          >Product story (optional)<textarea
             v-model="product.story"
             rows="5"
             placeholder="The idea, the constraints, and the reason this product exists."

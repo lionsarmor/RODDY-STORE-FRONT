@@ -10,6 +10,7 @@ import {
 import { merchVariants, optionValues, findVariant, priceLabel, shippingFor } from "../merch.js";
 import { shippingCountries, shippingLabel } from '../shipping-destinations.js';
 import { customerLink, pdfDocumentation } from "../catalog-model.js";
+import { productOrigin } from '../product-origin.js';
 import { useCartStore } from "../stores/cart";
 import { useUiStore } from "../stores/ui";
 import { useCheckoutStore } from "../stores/checkout";
@@ -253,6 +254,7 @@ async function buyNow() {
           {{ product.sku }} / {{ product.category }} DIVISION
         </p>
         <h1>{{ product.name }}</h1>
+        <p class="release-note product-origin"><strong>{{ productOrigin(product).label }}</strong> · {{ productOrigin(product).description }}</p>
         <ProductTags :ids="product.tags" />
         <p class="detail-short">{{ product.shortDescription }}</p>
         <p v-if="product.safetyNotice" class="notice" role="note">{{ product.safetyNotice }}</p>
@@ -390,7 +392,7 @@ async function buyNow() {
           {{ product.description || product.shortDescription }}
         </p>
         <template v-if="product.story"
-          ><h3>WHY WE MADE IT</h3>
+          ><h3>{{ ['original', 'design'].includes(product.designOrigin) ? 'WHY WE MADE IT' : 'ABOUT THIS PRODUCT' }}</h3>
           <p class="product-description">{{ product.story }}</p></template
         >
         <div class="makers-signature">

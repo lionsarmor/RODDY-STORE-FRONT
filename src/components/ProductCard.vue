@@ -10,6 +10,7 @@ import { priceLabel } from "../merch.js";
 import { shippingLabel } from '../shipping-destinations.js';
 import ProductTags from "./ProductTags.vue";
 import ProductArtwork from "./ProductArtwork.vue";
+import { productOrigin } from '../product-origin.js';
 defineProps({ product: { type: Object, required: true } });
 const catalog = useCatalogStore();
 </script>
@@ -22,14 +23,8 @@ const catalog = useCatalogStore();
   >
     <div class="product-plate-head">
       <span class="catalog-number">{{ product.sku }}</span
-      ><span
-        >{{
-          stockState(product) === "soon"
-            ? "LAB PREVIEW"
-            : product.type === "digital"
-              ? "DIGITAL LIBRARY"
-              : "RODDY ORIGINAL"
-        }}
+      ><span :title="productOrigin(product).description"
+        >{{ productOrigin(product).label }}
         <span aria-hidden="true">↗</span></span
       >
     </div>
