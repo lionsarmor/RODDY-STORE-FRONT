@@ -13,3 +13,8 @@ Here s the full setup.txt
 
 # Manufacturing recipes belong on the private droplet, not the public repo.
 backend/keycap_templates/*.json
+
+# Owner research/drafts are backed up in the private x16-keycaps repository.
+backend/KEYCAPS-MADE-TO-ORDER.md
+backend/goblintech-email-draft.txt
+backend/keycaps-supplier-inquiry.txt
