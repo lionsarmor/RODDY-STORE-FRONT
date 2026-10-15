@@ -3366,23 +3366,27 @@
       "type": "digital",
       "trackStock": false,
       "designOrigin": "community",
-      "shortDescription": "X16 playback by X16 Media Studio. Classic black and white, a Commander X16 feature, and a green-phosphor X16 remix. Bring popcorn.",
-      "description": "X16 Media Studio brings the movie-night magic to the Commander X16. Flying saucers! Graveyard visitors! A plan so ambitious it needed eight practice runs!\n\nThis planned collection pairs the original black-and-white film with two editions based on the X16 Media Studio playback project: the classic Commander X16 feature and a playful green-phosphor X16 remix. Pick your picture, load the popcorn, and give your little computer a gloriously strange night off.",
+      "shortDescription": "X16 movie magic by Anthony Henry, creator of X16 Media Studio. Classic black and white, a Commander X16 feature, and a green-phosphor X16 remix. Bring popcorn.",
+      "description": "Anthony Henry’s X16 Media Studio brings the movie-night magic to the Commander X16. Flying saucers! Graveyard visitors! A plan so ambitious it needed eight practice runs!\n\nThis planned collection pairs the original black-and-white film with two editions using Anthony’s conversion and playback tools: the classic Commander X16 feature and a playful green-phosphor X16 remix. Pick your picture, load the popcorn, and give your little computer a gloriously strange night off.",
       "releaseNote": "Coming soon · Original preserved · X16 conversion and full bundle in preparation.",
       "specs": {
         "Collection": "Original film + classic X16 + green-phosphor X16",
         "Original film": "Unaltered black-and-white WebM",
         "Original runtime": "1 hour 18 minutes",
-        "X16 playback project": "X16 Media Studio",
+        "X16 playback project": "X16 Media Studio by Anthony Henry (ahenry3068)",
         "Delivery": "Digital download bundle — coming soon",
-        "Green-phosphor X16": "Experimental remix based on X16 Media Studio"
+        "Green-phosphor X16": "Experimental remix using Anthony Henry’s X16 Media Studio"
       },
-      "story": "Spotlight on X16 Media Studio: the creator behind the X16 playback project that makes this collection possible. Both the classic X16 edition and the green-phosphor X16 experiment are based on that project. Follow the link, explore their work, and give the creator a round of applause.\n\nOriginal film by Edward D. Wood Jr. The movie conversions and phosphor remix are still in preparation.",
+      "story": "Give Anthony Henry a round of applause! Known as ahenry3068 on the Commander X16 forum, he created X16 Movie Maker, now part of his X16 Media Studio suite. His conversion tools and players are the foundation for both planned X16 editions, including our just-for-fun green-phosphor experiment. Visit his original project to explore his work and follow its development.\n\nOriginal film by Edward D. Wood Jr. The movie conversions and phosphor remix are still in preparation.",
       "coverImage": "img/products/plan-9-video.svg",
       "projectCredit": {
-        "name": "X16 Media Studio",
+        "name": "Anthony Henry",
         "url": "https://cx16forum.com/forum/viewtopic.php?p=35595#p35595",
-        "description": "X16 Media Studio is the creator behind the playback project for both planned X16 editions. The classic picture and the green-phosphor remix celebrate their work. Explore the original project, follow its development, and give the creator the applause!"
+        "description": "Anthony created X16 Movie Maker, now part of his X16 Media Studio suite. Both planned X16 editions use his conversion and playback tools—including the green-phosphor experiment. He built the movie-making machinery; we’re bringing the popcorn. Explore his project and give Anthony the applause!",
+        "projectName": "X16 Media Studio",
+        "forumHandle": "ahenry3068",
+        "onlineAlias": "Tony3068",
+        "identitySourceUrl": "https://theoasisbbs.com/commander-x16-video-playback-demo-by-anthony-henry/"
       },
       "videoEditions": [
         {
@@ -3400,20 +3404,20 @@
           "name": "The little-computer feature",
           "format": "COMMANDER X16",
           "screenLabel": "LOAD THE POPCORN",
-          "description": "The little-computer feature, made possible by X16 Media Studio’s playback project. All the saucers, all the strangeness, one very happy Commander X16.",
+          "description": "The little-computer feature, made possible by Anthony Henry’s X16 Media Studio. All the saucers, all the strangeness, one very happy Commander X16.",
           "status": "X16 edition in preparation",
-          "credit": "X16 Media Studio",
-          "creditRole": "X16 playback project by"
+          "credit": "Anthony Henry · ahenry3068",
+          "creditRole": "X16 Media Studio creator"
         },
         {
           "id": "phosphor",
           "name": "The green-phosphor X16 remix",
           "format": "COMMANDER X16 / GREEN PHOSPHOR",
           "screenLabel": "SIGNAL FROM OUTER SPACE",
-          "description": "An extra-terrestrial glow-up! A playful X16 edition based on X16 Media Studio’s playback project, with a separate green-phosphor treatment. The original film stays untouched.",
+          "description": "An extra-terrestrial glow-up! A playful X16 edition based on Anthony Henry’s X16 Media Studio, with a separate green-phosphor treatment. The original film stays untouched.",
           "status": "X16 remix planned · visual experiment prepared",
-          "credit": "X16 Media Studio",
-          "creditRole": "X16 playback project by"
+          "credit": "Anthony Henry · ahenry3068",
+          "creditRole": "X16 Media Studio creator"
         }
       ],
       "availabilityLabel": "Coming soon"

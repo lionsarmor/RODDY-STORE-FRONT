@@ -57,7 +57,7 @@ const catalog = useCatalogStore();
     </div>
     <div class="product-card-body">
       <h3>{{ product.name }}</h3>
-      <p v-if="product.projectCredit" class="movie-card-credit">X16 playback by <strong>{{ product.projectCredit.name }}</strong></p>
+      <p v-if="product.projectCredit" class="movie-card-credit">{{ product.projectCredit.projectName }} by <strong>{{ product.projectCredit.name }}</strong><br>Forum: {{ product.projectCredit.forumHandle }}</p>
       <p>{{ product.shortDescription || product.description }}</p>
       <ProductTags :ids="product.tags" /><p v-if="product.type === 'physical'" class="shipping-destinations">{{ shippingLabel(product) }}</p>
       <div class="product-card-bottom">

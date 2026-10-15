@@ -253,9 +253,10 @@ async function buyNow() {
       </div>
       <div class="product-information">
         <a v-if="creatorUrl" :href="creatorUrl" target="_blank" rel="noopener noreferrer" class="movie-creator-banner">
-          <span>X16 PLAYBACK BY</span>
+          <span>{{ product.projectCredit.projectName }} · CREATED BY</span>
           <strong>{{ product.projectCredit.name }} ↗</strong>
-          <span>MEET THE CREATOR · EXPLORE THE ORIGINAL PROJECT</span>
+          <span>FORUM: {{ product.projectCredit.forumHandle }} · ALSO KNOWN AS {{ product.projectCredit.onlineAlias }}</span>
+          <span>EXPLORE ANTHONY’S ORIGINAL PROJECT ↗</span>
         </a>
         <p class="eyebrow">
           {{ product.sku }} / {{ product.category }} DIVISION
