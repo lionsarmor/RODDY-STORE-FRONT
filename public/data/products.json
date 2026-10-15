@@ -2816,7 +2816,7 @@
         "free",
         "new-tag-2"
       ],
-      "shortDescription": "Print a home for Link Commander. Free snap-fit shell files for Rev E and Rev F.",
+      "shortDescription": "Print a home for Link Commander. Free snap-fit shell files for Rev E.",
       "description": "A compact, two-piece enclosure for the current Link Commander Rev E through-hole and Rev F SMT boards. Download the files, print the fit coupon, then make the shell in your favorite color. The white case shown is a CAD-based illustration of one finish.\n\nThe ZIP includes base and lid STL files, editable STEP geometry, geometry-only 3MF plate layouts, snap-fit test pieces and printing and assembly instructions. Designed around unfilled ABS, an enclosed Bambu X1 Carbon and a 0.4 mm nozzle.\n\nThis is a digital file download. No printed case, circuit board, electronics, cables or printer is included. The common shell is an engineering prototype: check the fit coupon, your actual board and cable clearances before printing or assembling the full case.\n\nEnclosure A.1 adds an integral lid guard ahead of the internal programming port and a recessed 5V POWER marking above the correct rear socket. JP1 remains internal; assembled units are intended to arrive configured for normal operation.",
       "story": "One shell for both ways to build Link Commander. Print it yourself, inspect the design, and keep the hardware easy to open and work on.",
       "images": [
