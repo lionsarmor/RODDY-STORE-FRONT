@@ -3331,7 +3331,7 @@
       "price": 19.99,
       "pricePending": false,
       "stock": 0,
-      "active": true,
+      "active": false,
       "featured": false,
       "status": "coming-soon",
       "tags": [
