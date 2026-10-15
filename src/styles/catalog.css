@@ -836,24 +836,6 @@
   }
 }
 
-/* Movie-night credits stay vivid across every storefront palette. */
-.movie-creator-banner {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: clamp(18px, 3vw, 28px);
-  background: linear-gradient(120deg, #8ce8ef 0 78%, #ffe274 78%);
-  color: #201337;
-  border: 2px solid #201337;
-  box-shadow: 6px 6px 0 #ed71b4;
-  text-decoration: none;
-  margin-bottom: 26px;
-}
-.movie-creator-banner > span { font: 700 10px/1.6 var(--font-mono); letter-spacing: .08em; }
-.movie-creator-banner strong { font-size: clamp(27px, 3vw, 42px); line-height: 1.05; font-weight: 900; letter-spacing: -.035em; }
-.movie-creator-banner:hover { background: #ffe274; color: #201337; }
-.movie-creator-banner:focus-visible { outline: 3px solid #a13ae4; outline-offset: 5px; }
-.product-card-body .movie-card-credit { background: var(--color-bg-alt); color: var(--color-text); border-left: 3px solid var(--color-brand); padding: 9px 12px; font-size: 12px; line-height: 1.5; }
 .product-card[data-department="video"] .product-card-image {
   background: #eadfc8;
 }

@@ -252,17 +252,11 @@ async function buyNow() {
         </p>
       </div>
       <div class="product-information">
-        <a v-if="creatorUrl" :href="creatorUrl" target="_blank" rel="noopener noreferrer" class="movie-creator-banner">
-          <span>{{ product.projectCredit.projectName }} · CREATED BY</span>
-          <strong>{{ product.projectCredit.name }} ↗</strong>
-          <span>FORUM: {{ product.projectCredit.forumHandle }} · ALSO KNOWN AS {{ product.projectCredit.onlineAlias }}</span>
-          <span>EXPLORE ANTHONY’S ORIGINAL PROJECT ↗</span>
-        </a>
         <p class="eyebrow">
           {{ product.sku }} / {{ product.category }} DIVISION
         </p>
         <h1>{{ product.name }}</h1>
-        <p v-if="creatorUrl" class="release-note product-origin"><strong>{{ product.projectCredit.name }}</strong> · X16 playback project for both the classic and green-phosphor X16 editions.</p>
+        <p v-if="creatorUrl" class="release-note product-origin"><strong>{{ product.projectCredit.projectName }}</strong> · Playback tools for both X16 editions.</p>
         <p v-else class="release-note product-origin"><strong>{{ productOrigin(product).label }}</strong> · {{ productOrigin(product).description }}</p>
         <ProductTags :ids="product.tags" />
         <p class="detail-short">{{ product.shortDescription }}</p>

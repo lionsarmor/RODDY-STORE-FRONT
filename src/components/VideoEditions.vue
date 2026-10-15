@@ -30,9 +30,9 @@ const creditLink = computed(() => safeLink(props.product.projectCredit?.url));
         <p class="creator-handles"><strong>Forum: {{ product.projectCredit.forumHandle }}</strong><br>Also known as {{ product.projectCredit.onlineAlias }} · Creator of {{ product.projectCredit.projectName }}</p>
         <p>{{ product.projectCredit.description }}</p>
       </div>
-      <a :href="creditLink" target="_blank" rel="noopener noreferrer" class="button">Explore Anthony’s project ↗</a>
+      <a :href="creditLink" target="_blank" rel="noopener noreferrer" class="button">Explore X16 Media Studio ↗</a>
     </aside>
-    <p class="edition-footnote">Original film: Edward D. Wood Jr. X16 Media Studio: Anthony Henry (ahenry3068). Both planned X16 editions use his conversion and playback tools. The green-phosphor remix is a playful experiment in preparation; the original film stays black and white.</p>
+    <p class="edition-footnote">Original film: Edward D. Wood Jr. The X16 editions are in preparation; the original film stays black and white.</p>
   </section>
 </template>
 

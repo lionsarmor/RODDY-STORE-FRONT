@@ -23,8 +23,8 @@ const catalog = useCatalogStore();
   >
     <div class="product-plate-head">
       <span class="catalog-number">{{ product.sku }}</span
-      ><span :title="product.projectCredit ? 'X16 playback project by ' + product.projectCredit.name : productOrigin(product).description"
-        >{{ product.projectCredit?.name || productOrigin(product).label }}
+      ><span :title="product.projectCredit ? product.projectCredit.projectName : productOrigin(product).description"
+        >{{ product.projectCredit?.projectName || productOrigin(product).label }}
         <span aria-hidden="true">↗</span></span
       >
     </div>
@@ -57,7 +57,6 @@ const catalog = useCatalogStore();
     </div>
     <div class="product-card-body">
       <h3>{{ product.name }}</h3>
-      <p v-if="product.projectCredit" class="movie-card-credit">{{ product.projectCredit.projectName }} by <strong>{{ product.projectCredit.name }}</strong><br>Forum: {{ product.projectCredit.forumHandle }}</p>
       <p>{{ product.shortDescription || product.description }}</p>
       <ProductTags :ids="product.tags" /><p v-if="product.type === 'physical'" class="shipping-destinations">{{ shippingLabel(product) }}</p>
       <div class="product-card-bottom">
