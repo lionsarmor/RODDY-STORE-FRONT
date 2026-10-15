@@ -15,7 +15,7 @@ test('X16 number-row swatches match the approved color audit in every preview',(
   const audit=JSON.parse(readFileSync(new URL('./keycap-artwork/x16-number-row-colors.json',import.meta.url)));
   assert.equal(profile.revision,audit.revision);assert.equal(template.revision,audit.revision);
   assert.equal(audit.swatches.length,16);
-  const expected={'1':['GR001','OG010'],'2':['GR002','BN046'],'3':['RD004','PK020'],'4':['BL017','GR009'],
+  const expected={'1':['GR001','OG031'],'2':['GR002','BN046'],'3':['RD004','PK020'],'4':['BL017','GR009'],
     '5':['PL002','GR022'],'6':['GN023','GN027'],'7':['BL026','PL031'],'8':['GN043','GR019']};
   for(const design of [defaultDesign(profile),{...defaultDesign(profile),alpha:'GR001',keyColors:{'3':'BL003'}}]){
     const preview=generatePreview(profile,design);

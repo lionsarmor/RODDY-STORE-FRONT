@@ -1,7 +1,7 @@
 {
-  "revision": "v06.11-audit22",
-  "auditRevision": 22,
-  "auditSha256": "31c9bbe043178e76f480212fa042fe52f5b479f6550ffe2aa24f0e861a1035a5",
+  "revision": "v06.12-og031",
+  "auditRevision": 23,
+  "auditSha256": "78ccf563954ac4fd77ea24325cb1b91c46b655e48acd48454eb99a6269217740",
   "swatches": [
     {
       "keyId": "1",
@@ -16,8 +16,8 @@
       "position": "right",
       "label": "ORANGE",
       "referenceHex": "#8B5429",
-      "paletteId": "OG010",
-      "hex": "#CA8455"
+      "paletteId": "OG031",
+      "hex": "#F77E3C"
     },
     {
       "keyId": "2",
