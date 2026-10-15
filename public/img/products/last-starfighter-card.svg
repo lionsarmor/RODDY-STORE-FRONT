@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 750">
+  <defs><pattern id="ridges" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M0 1h10" stroke="#45433e" stroke-width="2"/></pattern></defs>
+  <path fill="#eadfc8" d="M0 0h1000v750H0z"/>
+  <g font-family="monospace" fill="#242823"><text x="50" y="72" font-size="22" font-weight="bold">RODDY VIDEO / THE TAPE SHELF</text><text x="950" y="72" text-anchor="end" font-size="20">VHS / 001</text></g>
+  <path stroke="#242823" stroke-width="2" d="M50 96h900"/><path stroke="#a43b30" stroke-width="6" d="M50 630h900"/>
+  <g transform="rotate(-7 500 400)">
+    <rect x="135" y="214" width="744" height="372" rx="20" fill="#817c6d" opacity=".25" transform="translate(12 20)"/>
+    <rect x="128" y="206" width="744" height="372" rx="20" fill="#222620"/>
+    <path fill="url(#ridges)" d="M148 226h704v332H148z"/>
+    <rect x="180" y="245" width="640" height="169" rx="15" fill="#111710" stroke="#66685c" stroke-width="4"/>
+    <g fill="#b8b9a6" stroke="#272b23" stroke-width="10"><circle cx="274" cy="328" r="64"/><circle cx="726" cy="328" r="64"/></g>
+    <g fill="#30372b"><circle cx="274" cy="328" r="28"/><circle cx="726" cy="328" r="28"/></g>
+    <rect x="355" y="255" width="290" height="150" rx="5" fill="#e8e1cf"/>
+    <g text-anchor="middle" fill="#252b24" font-family="Arial, sans-serif" font-weight="900"><text x="500" y="288" font-size="14" letter-spacing="5">THE LAST</text><text x="500" y="327" font-size="28" letter-spacing="-1">STARFIGHTER</text><path stroke="#a43b30" stroke-width="7" d="M385 343h230"/><text x="500" y="378" font-family="monospace" font-size="13">A LITTLE SPACE. A LOT OF ADVENTURE.</text></g>
+    <rect x="207" y="444" width="585" height="78" rx="4" fill="#e8e1cf"/>
+    <g fill="#252b24" font-family="monospace"><text x="232" y="476" font-size="19" font-weight="bold">FRIDAY NIGHT, SORTED.</text><text x="232" y="503" font-size="13">PHYSICAL VHS / YOUR VCR HAS BEEN WAITING.</text><text x="766" y="491" font-size="32" font-weight="bold" text-anchor="end">VHS</text></g>
+    <g fill="#767a69"><circle cx="152" cy="230" r="5"/><circle cx="848" cy="230" r="5"/><circle cx="152" cy="554" r="5"/><circle cx="848" cy="554" r="5"/></g>
+  </g>
+  <g font-family="monospace" fill="#242823"><text x="50" y="680" font-size="22" font-weight="bold">BE KIND. REWIND. SAVE THE GALAXY.</text><text x="50" y="712" font-size="13">DISPLAY ILLUSTRATION / ACTUAL COPY &amp; PACKAGING TO BE CONFIRMED</text></g>
+</svg>

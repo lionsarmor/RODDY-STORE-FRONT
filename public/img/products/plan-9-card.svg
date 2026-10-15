@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 750">
+  <defs>
+    <pattern id="scan" width="4" height="8" patternUnits="userSpaceOnUse"><path d="M0 7H4" stroke="#a5b98c" stroke-opacity=".15"/></pattern>
+    <pattern id="keys" width="34" height="25" patternUnits="userSpaceOnUse"><rect x="3" y="3" width="26" height="17" rx="2" fill="#c4bba6" stroke="#393c32" stroke-width="2"/></pattern>
+  </defs>
+  <path fill="#eadfc8" d="M0 0h1000v750H0z"/>
+  <g fill="#242823" font-family="monospace" font-weight="bold">
+    <text x="50" y="72" font-size="22">X16 MEDIA STUDIO / ANTHONY HENRY</text>
+    <text x="950" y="72" text-anchor="end" font-size="20">X16 / 002</text>
+  </g>
+  <path stroke="#242823" stroke-width="2" d="M50 96h900"/>
+  <path fill="#c5baa3" d="M163 152h696v390H163z"/>
+  <rect x="150" y="138" width="696" height="390" rx="16" fill="#b6ad99" stroke="#242823" stroke-width="5"/>
+  <rect x="177" y="163" width="575" height="334" rx="25" fill="#272d25"/>
+  <rect x="192" y="178" width="545" height="304" rx="20" fill="#111b13"/>
+  <g fill="#a5b98c" font-family="monospace" text-anchor="middle">
+    <text x="465" y="224" font-size="15" letter-spacing="3">NOW PLAYING ON YOUR X16</text>
+    <text x="465" y="340" font-size="104" font-weight="bold" letter-spacing="-7">PLAN 9</text>
+    <text x="465" y="378" font-size="24" letter-spacing="3">FROM OUTER SPACE</text>
+    <text x="465" y="452" font-size="15">&gt; LOAD THE POPCORN_</text>
+  </g>
+  <rect x="192" y="178" width="545" height="304" rx="20" fill="url(#scan)"/>
+  <g stroke="#494c3e" stroke-width="4"><path d="M776 197h43m-43 12h43m-43 12h43m-43 12h43m-43 12h43m-43 12h43"/></g>
+  <circle cx="798" cy="440" r="12" fill="#34392f"/><circle cx="798" cy="477" r="4" fill="#a5b98c"/>
+  <path fill="#b6ad99" stroke="#242823" stroke-width="4" d="M195 550h606l50 62H145z"/>
+  <path fill="url(#keys)" d="M207 561h583l27 37H180z"/>
+  <path stroke="#a43b30" stroke-width="6" d="M50 649h900"/>
+  <g font-family="monospace" fill="#242823"><text x="50" y="688" font-size="22" font-weight="bold">LATE-NIGHT CINEMA. LITTLE COMPUTER.</text><text x="50" y="720" font-size="15">ORIGINAL / CLASSIC X16 / GREEN-PHOSPHOR X16</text></g>
+</svg>

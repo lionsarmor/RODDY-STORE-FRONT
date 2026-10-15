@@ -30,8 +30,8 @@ const catalog = useCatalogStore();
     </div>
     <div class="product-card-image">
       <img
-        v-if="product.coverImage || product.images?.[0]"
-        :src="productImageUrl(product.coverImage || product.images[0])"
+        v-if="product.cardImage || product.coverImage || product.images?.[0]"
+        :src="productImageUrl(product.cardImage || product.coverImage || product.images[0])"
         :alt="product.name"
         loading="lazy"
       />
