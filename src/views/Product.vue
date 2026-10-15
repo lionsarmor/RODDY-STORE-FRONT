@@ -9,7 +9,7 @@ import {
 } from "../stores/catalog";
 import { merchVariants, optionValues, findVariant, priceLabel, shippingFor } from "../merch.js";
 import { shippingCountries, shippingLabel } from '../shipping-destinations.js';
-import { customerLink, pdfDocumentation } from "../catalog-model.js";
+import { customerLink, pdfDocumentation, safeLink } from "../catalog-model.js";
 import { productOrigin } from '../product-origin.js';
 import { useCartStore } from "../stores/cart";
 import { useUiStore } from "../stores/ui";
@@ -94,6 +94,7 @@ const department = computed(() =>
   catalog.categoryMeta(product.value?.category),
 );
 const direction = computed(() => departmentDirection(product.value?.category));
+const creatorUrl = computed(() => safeLink(product.value?.projectCredit?.url));
 const specifications = computed(() =>
   Object.entries(product.value?.specs || {}),
 );
@@ -251,11 +252,17 @@ async function buyNow() {
         </p>
       </div>
       <div class="product-information">
+        <a v-if="creatorUrl" :href="creatorUrl" target="_blank" rel="noopener noreferrer" class="movie-creator-banner">
+          <span>X16 PLAYBACK BY</span>
+          <strong>{{ product.projectCredit.name }} ↗</strong>
+          <span>MEET THE CREATOR · EXPLORE THE ORIGINAL PROJECT</span>
+        </a>
         <p class="eyebrow">
           {{ product.sku }} / {{ product.category }} DIVISION
         </p>
         <h1>{{ product.name }}</h1>
-        <p class="release-note product-origin"><strong>{{ productOrigin(product).label }}</strong> · {{ productOrigin(product).description }}</p>
+        <p v-if="creatorUrl" class="release-note product-origin"><strong>{{ product.projectCredit.name }}</strong> · X16 playback project for both the classic and green-phosphor X16 editions.</p>
+        <p v-else class="release-note product-origin"><strong>{{ productOrigin(product).label }}</strong> · {{ productOrigin(product).description }}</p>
         <ProductTags :ids="product.tags" />
         <p class="detail-short">{{ product.shortDescription }}</p>
         <p v-if="product.safetyNotice" class="notice" role="note">{{ product.safetyNotice }}</p>
@@ -399,7 +406,7 @@ async function buyNow() {
           ><h3>{{ ['original', 'design'].includes(product.designOrigin) ? 'WHY WE MADE IT' : 'ABOUT THIS PRODUCT' }}</h3>
           <p class="product-description">{{ product.story }}</p></template
         >
-        <div class="makers-signature">
+        <div v-if="!creatorUrl" class="makers-signature">
           <RoddyLogo kind="full_logo" /><span
             >FROM OUR CORNER<br />OF THE FUTURE.</span
           >

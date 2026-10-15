@@ -3366,22 +3366,23 @@
       "type": "digital",
       "trackStock": false,
       "designOrigin": "community",
-      "shortDescription": "One invasion. Three ways to watch. A cult movie night for your Commander X16.",
-      "description": "Flying saucers! Graveyard visitors! A plan so ambitious it needed eight practice runs! Plan 9 from Outer Space lands on the RODDY VIDEO shelf as a multi-edition digital collection.\n\nThe planned bundle brings together the original black-and-white movie, a Commander X16 playback edition, and an optional green-phosphor experiment. Keep the original for a classic movie night, then give your little computer something gloriously unexpected to do.",
+      "shortDescription": "X16 playback by X16 Media Studio. Classic black and white, a Commander X16 feature, and a green-phosphor X16 remix. Bring popcorn.",
+      "description": "X16 Media Studio brings the movie-night magic to the Commander X16. Flying saucers! Graveyard visitors! A plan so ambitious it needed eight practice runs!\n\nThis planned collection pairs the original black-and-white film with two editions based on the X16 Media Studio playback project: the classic Commander X16 feature and a playful green-phosphor X16 remix. Pick your picture, load the popcorn, and give your little computer a gloriously strange night off.",
       "releaseNote": "Coming soon · Original preserved · X16 conversion and full bundle in preparation.",
       "specs": {
-        "Collection": "Original + Commander X16 + optional phosphor edition",
+        "Collection": "Original film + classic X16 + green-phosphor X16",
         "Original film": "Unaltered black-and-white WebM",
         "Original runtime": "1 hour 18 minutes",
         "X16 playback project": "X16 Media Studio",
-        "Delivery": "Digital download bundle — coming soon"
+        "Delivery": "Digital download bundle — coming soon",
+        "Green-phosphor X16": "Experimental remix based on X16 Media Studio"
       },
-      "story": "The movie is by Edward D. Wood Jr. The X16 playback project credit belongs to X16 Media Studio. RODDY is preparing this movie collection using that community project; the original playback technology is their work. Visit the project below, applaud the ingenuity, and bring popcorn.",
+      "story": "Spotlight on X16 Media Studio: the creator behind the X16 playback project that makes this collection possible. Both the classic X16 edition and the green-phosphor X16 experiment are based on that project. Follow the link, explore their work, and give the creator a round of applause.\n\nOriginal film by Edward D. Wood Jr. The movie conversions and phosphor remix are still in preparation.",
       "coverImage": "img/products/plan-9-video.svg",
       "projectCredit": {
         "name": "X16 Media Studio",
         "url": "https://cx16forum.com/forum/viewtopic.php?p=35595#p35595",
-        "description": "The community project behind the planned Commander X16 playback edition. Credit for the original playback technology belongs to X16 Media Studio. RODDY is preparing the movie editions and collection."
+        "description": "X16 Media Studio is the creator behind the playback project for both planned X16 editions. The classic picture and the green-phosphor remix celebrate their work. Explore the original project, follow its development, and give the creator the applause!"
       },
       "videoEditions": [
         {
@@ -3390,23 +3391,29 @@
           "format": "BLACK & WHITE / WEBM",
           "screenLabel": "THE ORIGINAL PICTURE",
           "description": "The original film, preserved just as supplied. Black-and-white picture, original sound, absolutely no green aliens added.",
-          "status": "Original preserved · bundle coming soon"
+          "status": "Original preserved · bundle coming soon",
+          "credit": "Edward D. Wood Jr.",
+          "creditRole": "Original film by"
         },
         {
           "id": "x16",
           "name": "The little-computer feature",
           "format": "COMMANDER X16",
           "screenLabel": "LOAD THE POPCORN",
-          "description": "A movie night for your Commander X16, built around X16 Media Studio. Conversion, packaging and hardware playback checks are still ahead.",
-          "status": "X16 edition in preparation"
+          "description": "The little-computer feature, made possible by X16 Media Studio’s playback project. All the saucers, all the strangeness, one very happy Commander X16.",
+          "status": "X16 edition in preparation",
+          "credit": "X16 Media Studio",
+          "creditRole": "X16 playback project by"
         },
         {
           "id": "phosphor",
-          "name": "The midnight-green experiment",
-          "format": "OPTIONAL / GREEN PHOSPHOR",
+          "name": "The green-phosphor X16 remix",
+          "format": "COMMANDER X16 / GREEN PHOSPHOR",
           "screenLabel": "SIGNAL FROM OUTER SPACE",
-          "description": "A separate green-phosphor treatment for that late-night terminal glow. An experimental alternate look; your original stays untouched.",
-          "status": "Preview experiment prepared"
+          "description": "An extra-terrestrial glow-up! A playful X16 edition based on X16 Media Studio’s playback project, with a separate green-phosphor treatment. The original film stays untouched.",
+          "status": "X16 remix planned · visual experiment prepared",
+          "credit": "X16 Media Studio",
+          "creditRole": "X16 playback project by"
         }
       ],
       "availabilityLabel": "Coming soon"
