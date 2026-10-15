@@ -1,0 +1,22 @@
+{
+  "tool": "Built-in image_gen.imagegen",
+  "date": "2026-10-16",
+  "status": "Marketing concept; illustrative screen, not firmware or a physical prototype",
+  "hero": {
+    "file": "RODDY_KEYCHAIN_KREATURES_CREATURE_HERO.png",
+    "sha256": "246161798a8629f81c51de778cfde0f476ca1ce06be9826f6b9d2cd70e74753e",
+    "reference": "RODDY_KEYCHAIN_KREATURES_HERO.png",
+    "prompt": "creature_hero_prompt.txt",
+    "generated_original": "/home/roddy/.codex/generated_images/01a13f7b-66dc-7b12-8e87-dda8639da7cb/exec-d3fdbdbb-be27-40c2-b27a-c2eddd0b2944.png"
+  },
+  "colourways": {
+    "file": "RODDY_KEYCHAIN_KREATURES_CREATURE_COLORWAYS.png",
+    "sha256": "6b2cbf52d1ffd7d6e3079bf3885c8325054e45c640a074414edd753bd004a063",
+    "references": [
+      "RODDY_KEYCHAIN_KREATURES_COLORWAYS.png",
+      "RODDY_KEYCHAIN_KREATURES_CREATURE_HERO.png"
+    ],
+    "prompt": "creature_colorways_prompt.txt",
+    "generated_original": "/home/roddy/.codex/generated_images/01a13f7b-66dc-7b12-8e87-dda8639da7cb/exec-ac0eeeb1-d5a9-476a-b55e-a8493d2981e0.png"
+  }
+}
