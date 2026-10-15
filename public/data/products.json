@@ -97,6 +97,11 @@
       "id": "new-tag-5",
       "label": "MisterFPGA",
       "color": "#741632"
+    },
+    {
+      "id": "new-tag-6",
+      "label": "Video",
+      "color": "#5fdd74"
     }
   ],
   "products": [
@@ -3313,7 +3318,9 @@
       "active": true,
       "featured": false,
       "status": "coming-soon",
-      "tags": [],
+      "tags": [
+        "new-tag-6"
+      ],
       "images": [
         "img/products/last-starfighter-vhs-render.webp"
       ],
@@ -3343,7 +3350,12 @@
       "coverImage": "img/products/last-starfighter-vhs-render.webp",
       "availabilityLabel": "Sourcing a copy",
       "cardImage": "img/products/last-starfighter-vhs-render.webp",
-      "cardImageNote": "VHS mockup · Actual sleeve and copy to be confirmed"
+      "cardImageNote": "VHS mockup · Actual sleeve and copy to be confirmed",
+      "officeShipping": {},
+      "supplier": null,
+      "fulfillmentRef": "",
+      "keycaps": null,
+      "merch": null
     },
     {
       "category": "video",
@@ -3353,7 +3365,10 @@
       "active": true,
       "featured": false,
       "status": "available",
-      "tags": [],
+      "tags": [
+        "free",
+        "new-tag-6"
+      ],
       "images": [
         "img/products/plan-9-vhs-render.webp"
       ],
@@ -3461,7 +3476,12 @@
       "cardImageNote": "Digital collection · VHS-style cover art",
       "downloadLabel": "Download original movie · FREE",
       "checksumsUrl": "https://store-api.143-244-168-180.sslip.io/public-downloads/plan-9/v1/SHA256SUMS.txt",
-      "videoReleaseNote": "All four downloads are free, with no account or checkout. X16 playback is spot-tested in the emulator; physical hardware testing is pending. Read the included SD-card instructions before playing."
+      "videoReleaseNote": "All four downloads are free, with no account or checkout. X16 playback is spot-tested in the emulator; physical hardware testing is pending. Read the included SD-card instructions before playing.",
+      "officeShipping": {},
+      "supplier": null,
+      "fulfillmentRef": "",
+      "keycaps": null,
+      "merch": null
     }
   ],
   "keycapProfiles": [
