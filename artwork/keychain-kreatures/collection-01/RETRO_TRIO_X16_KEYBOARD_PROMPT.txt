@@ -1,0 +1,10 @@
+Use case: precise-object-edit.
+Edit target image 1: existing RODDY Keychain Kreatures retro three-device poster.
+Image 2: official Commander X16 mini keyboard COLOUR REFERENCE ONLY (white case and white keys, charcoal-grey function/arrow keys, light cyan-blue logo). Do not include a keyboard in the poster.
+Make changes ONLY to the RIGHTMOST Commander X16 device in image 1. Preserve left Commodore device and middle Spectrum device unchanged, all poster text, Roddy logo, labels, margins, background, shadows, camera, screen creature artwork, whole-device silhouette, thick top eyelet, nine round button positions, same exact geometry.
+RIGHTMOST DEVICE CHANGES:
+- Match keyboard palette: clean neutral off-white face (not warm beige), same clean white rear shell and thick eyelet; charcoal / medium neutral grey bezel and the eight clustered round buttons, like keyboard function keys. Centre button is light cyan/sky blue matching the keyboard logo. NO navy shell, NO navy bezel, NO red centre button.
+- Completely remove the TWO red and blue diagonal stripes on the front left below the screen.
+- In that SAME small location print one original, compact butterfly-X graphic in cyan/sky blue. A fresh geometric butterfly shape reading as X: four rounded kite/teardrop wings around a narrow negative-space X, upper wings slightly larger than lower wings. It can evoke the butterfly-like X16 symbol but must have distinctly softer rounded wing contours and different proportions; no '16', no letters, no exact copied logo. Keep it a small flat printed graphic, not a snap-on part, badge or raised geometry.
+Keep the right device's beautiful fat cheerful orange creature screen and tiny hearts unchanged. Same current rounded pear/egg case, screen on narrow top end, buttons on fat end, same full-depth top eyelet.
+Maintain exact 1536x1024 layout. Text remains "COMMANDER X16", "COMMODORE", "SPECTRUM", "KEYCHAIN KREATURES", "RETRO COMPUTER COLOUR STUDIES", "DESIGN PREVIEW". Do not recolour the other two devices.

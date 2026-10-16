@@ -75,16 +75,28 @@
       "key": "RETRO_TRIO",
       "title": "Retro computer trio \u2014 Commodore, Spectrum and Commander X16",
       "kind": "trio",
-      "file": "RETRO_TRIO.png",
-      "sha256": "6332851b38f3eb9f06237d01a9aa1a666917a4b71de13e9b809e63908c60443d",
-      "prompt": "RETRO_TRIO_PROMPT.txt",
-      "prompt_sha256": "bc71e3414a14a9a8090da8ad4ae79e43805f444e2b7a978133e0b9c14c76581c",
+      "file": "RETRO_TRIO_X16_BLUE_BACK.png",
+      "sha256": "4be910be6f55ca4ebf9003a3295f1380e87a5ec4f9fe5b2ec7f69ee1c69613e7",
+      "prompt": "RETRO_TRIO_X16_BLUE_BACK_PROMPT.txt",
+      "prompt_sha256": "75c35190cd541d467635c2686e859122ad43e750764d0e927e167d1a9bf8d1c0",
       "references": {
-        "../RODDY_KEYCHAIN_KREATURES_CREATURE_COLORWAYS.png": "6b2cbf52d1ffd7d6e3079bf3885c8325054e45c640a074414edd753bd004a063",
-        "COMMODORE.png": "d63362957b1d11efc3515ec93291aede3bb1171d307f7318bd739b244f79e7e2",
-        "SPECTRUM_NEXT.png": "6cbf9847f7fd732e7b0798aa46bc8d5f8af74148b5075b2362367a63e585c4ce"
+        "early_concepts/superseded_x16_white_back/RETRO_TRIO_X16_KEYBOARD.png": "e4c6e5e5658364deccd4a8e7606555e03a90b7c2096ba93f5b8aa6cc2723f2b9"
       },
-      "method": "Built-in image_gen.imagegen edit; illustrative colour studies. Shell CAD and firmware unchanged."
+      "method": "Built-in image_gen.imagegen edit; illustrative colour studies. Shell CAD and firmware unchanged.",
+      "external_palette_reference": {
+        "page": "https://texelec.com/product/cx16-mini-keyboard/",
+        "image": "https://texelec.com/wp-content/uploads/2023/07/Commander-X16-Keyboard-1-1024x1024.jpg",
+        "sha256": "23abf91c345a303d4ce11d80207a64b4f14fcfb866d5618cdb91c36677c04b0c"
+      },
+      "design": "User-approved X16 colour study: white face, cyan rear shell and integral keyring eyelet matching cyan Commander button and original butterfly-X graphic; grey bezel and clustered buttons. CAD unchanged.",
+      "prior_edit": {
+        "prompt": "RETRO_TRIO_X16_KEYBOARD_PROMPT.txt",
+        "prompt_sha256": "9d9338928f0c63f73e170f6685acb6c9e4a8bdb1d353bc1d6ba5c603c36cf746",
+        "references": {
+          "early_concepts/superseded_x16_navy/RETRO_TRIO.png": "6332851b38f3eb9f06237d01a9aa1a666917a4b71de13e9b809e63908c60443d"
+        }
+      },
+      "approval": "User: perfect use that (2026-10-16)"
     },
     {
       "key": "PASTEL_TRIO",
