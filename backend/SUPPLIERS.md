@@ -226,3 +226,13 @@ orders, forum, newsletter records, catalog or paid ZIPs. Preserve the existing 6
 Caddy store cap. Only newsletter routes and supplier-preferences JSON accept that
 larger application body limit; other requests retain their 8KB cap. Restart only
 `roddy-store`. Keep an SQLite snapshot and backend rollback copy before deploying.
+
+## Saved automatic pricing
+
+Suppliers → Automatic retail pricing controls the shared landed-cost markup,
+payment-fee reserve, unknown-tax allowance and rounding for automatic products.
+These settings are saved on the private backend, separate from draft import
+estimates. The live-price table shows supplier cost estimates, availability and
+customer listing estimates. Product editors provide fixed-price overrides and
+minimum prices. See [AUTOMATIC_FULFILLMENT.md](AUTOMATIC_FULFILLMENT.md) for the
+formula, refresh intervals, customer quotes and paid-order protection.

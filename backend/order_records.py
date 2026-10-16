@@ -155,6 +155,19 @@ class OrderRecords:
     def expenses(self, session):
         with self.connect() as db:return [dict(r) for r in db.execute('SELECT id,incurred,supplier,reference,amount,currency,note FROM supplier_expenses WHERE session=? ORDER BY created',(session,))]
 
+    def supplier_total(self,order,supplier,reference,amount):
+        if type(amount) is not int or not 0<amount<=100000000:return
+        note='Automatic supplier order total; verify the final invoice and card settlement with the supplier.'
+        with self.connect() as db:
+            db.execute('BEGIN IMMEDIATE')
+            old=db.execute('SELECT id,note FROM supplier_expenses WHERE session=? AND supplier=? AND reference=?',(order['session'],supplier,reference)).fetchone()
+            if old:
+                if old['note'].startswith('Automatic supplier order total'):
+                    db.execute('UPDATE supplier_expenses SET amount=? WHERE id=?',(amount,old['id']))
+            else:
+                db.execute('INSERT INTO supplier_expenses VALUES(?,?,?,?,?,?,?,?,?)',(str(uuid4()),order['session'],int(time.time()),
+                    datetime.now(timezone.utc).strftime('%Y-%m-%d'),supplier,reference,amount,'USD',note))
+
     def message_context(self, order):
         # Bind an owner's sent confirmation to the customer-facing shipment data.
         # Supplier references, costs and manufacturing files never enter emails.

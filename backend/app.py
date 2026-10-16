@@ -116,6 +116,7 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
                     logging.getLogger("roddy-store").error("Supplier connection renewal needs attention; check Suppliers admin.")
                 try:
                     commerce.tick()
+                    pricing_refresh.run()
                 except Exception:
                     # No exception payloads: providers may include personal data.
                     import logging
@@ -279,7 +280,7 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
     def inventory(request: Request):
         rate_limit(request, "inventory", 30)
         return {"items": [{"id": i["id"], "available": i["available"]} for i in commerce.inventory()],
-                'suspendedProducts':[r['product'] for r in commerce.holds.list()]}
+                'suspendedProducts':[r['product'] for r in commerce.holds.list()],**commerce.pricing.public(catalog_loader())}
 
     @app.get("/health")
     def health(request: Request):
@@ -513,6 +514,16 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
         require_admin(request)
         return {'items':commerce.holds.list(),'providers':['printify','mouser','aliexpress','yuzu']}
 
+    @app.get('/admin/pricing')
+    def pricing_settings(request: Request):
+        require_admin(request)
+        return {'settings':commerce.pricing.settings(),'prices':commerce.pricing.rows()}
+
+    @app.post('/admin/pricing')
+    def save_pricing_settings(request: Request,body: dict):
+        require_admin(request)
+        return {'settings':commerce.pricing.save(body),'prices':[]}
+
     @app.post('/admin/fulfillment-holds/{product}')
     def clear_fulfillment_hold(product: str,request: Request,body: dict):
         require_admin(request)
@@ -650,5 +661,8 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
     from .mouser_fulfillment import initialize as initialize_mouser
     initialize_mouser(connect)
     commerce.mouser_factory=lambda:MouserOrders(supplier_services['mouser'](),supplier_services['reserve'])
+    from .pricing_refresh import PricingRefresh
+    pricing_refresh=PricingRefresh(commerce)
+    app.state.pricing_refresh=pricing_refresh
     app.state.pcb_projects=register_pcb_projects(app,require_admin,os.getenv('PCB_PROJECTS_DIR',str(database.parent/'pcb-projects')))
     return app

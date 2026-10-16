@@ -115,3 +115,76 @@ class MouserAutomaticTests(unittest.TestCase):
             self.app.state.commerce.holds.suspend([{'id':'part-'+provider,'kind':provider}],'private cost overrun')
         self.assertEqual(len(self.admin('GET','/admin/fulfillment-holds').json()['items']),4)
         self.assertEqual(self.client.post('/admin/fulfillment-holds/part-yuzu',json={'action':'clear'}).status_code,401)
+
+class AutomaticPricingTests(MouserAutomaticTests):
+    # Inherited fulfillment checks run with their original fixed-price policy;
+    # the tests below explicitly enable the new policy.
+    def enable(self,**changes):
+        p=self.app.state.commerce.pricing
+        return p.save({**p.settings(),'enabled':True,**changes})
+    def test_markup_tracks_landed_cost_both_directions_and_locks_paid_prices(self):
+        self.enable();q=self.quote();self.assertEqual(q.status_code,200,q.text)
+        self.assertEqual(q.json()['subtotal'],1099)
+        self.assertEqual(q.json()['amountTotal'],1899)
+        self.assertTrue(q.json()['automaticPricing']);self.assertEqual(q.json()['items'][0]['unitPriceCents'],1099)
+        self.transport.cost=10
+        higher=self.quote();self.assertGreater(higher.json()['subtotal'],q.json()['subtotal'])
+        self.transport.cost=5
+        result=self.checkout(q.json());self.assertEqual(result.status_code,200,result.text)
+        original=self.order(result.json()['sessionId']);self.assertEqual(original['amount'],1899)
+        self.enable(markupPercent=50)
+        self.provider.is_paid=True;self.tick()
+        self.assertEqual(self.transport.submissions,1)
+        self.assertEqual(self.order(original['session'])['amount'],1899)
+    def test_fixed_override_minimum_price_and_settings_revision(self):
+        self.enable();self.product['pricingMode']='fixed';q=self.quote();self.assertEqual(q.json()['subtotal'],1999)
+        self.product['pricingMode']='automatic';self.product['pricingFloor']=24.99
+        q=self.quote();self.assertEqual(q.json()['subtotal'],2499)
+        self.enable(markupPercent=35)
+        self.assertEqual(self.checkout(q.json()).status_code,409)
+        self.assertEqual(self.transport.submissions,0)
+    def test_pricing_admin_permissions_validation_and_public_cost_redaction(self):
+        self.assertEqual(self.client.get('/admin/pricing').status_code,401)
+        p=self.app.state.commerce.pricing;s=p.settings()
+        for change in [{'markupPercent':-1},{'feePercent':100},{'feeFixed':float('inf')},{'round99':'yes'}]:
+            with self.assertRaises(HTTPException):p.save({**s,**change})
+        self.enable();revision=p.settings()['revision']
+        p.record('mouser-part','',1099,True,revision,'private detail',signature=p.signature(self.product))
+        data=self.client.get('/inventory').json()
+        self.assertEqual(data['prices'][0]['priceCents'],1099)
+        self.assertNotIn('private detail',json.dumps(data));self.assertNotIn('markupPercent',json.dumps(data))
+        self.assertEqual(data['pricingPendingProducts'],['hoodie'])
+    def test_printify_uses_same_rule_and_provider_neutral_cost_allowance(self):
+        self.enable();self.items=[{'id':'hoodie','variantId':'10','qty':1}]
+        q=self.quote();self.assertEqual(q.status_code,200,q.text)
+        expected=self.app.state.commerce.pricing.retail((1200+1234)*1.1,1234)
+        self.assertEqual(q.json()['subtotal'],expected)
+        paid=self.checkout(q.json());self.assertEqual(paid.status_code,200,paid.text)
+        self.provider.is_paid=True;self.tick();self.assertEqual(self.supplier.production,['supplier123'])
+
+    def test_price_cache_invalidates_changed_floor_and_partial_variants(self):
+        self.enable();p=self.app.state.commerce.pricing;revision=p.settings()['revision']
+        p.record('mouser-part','',1099,True,revision,signature=p.signature(self.product))
+        self.product['pricingFloor']=25
+        data=self.client.get('/inventory').json()
+        self.assertIn('mouser-part',data['pricingPendingProducts'])
+        self.assertFalse(data['prices'])
+        hoodie=next(x for x in self.catalog['products'] if x['id']=='hoodie')
+        hoodie['merch']['variants'].append({**hoodie['merch']['variants'][0],'id':'11','providerVariantId':11})
+        p.record('hoodie','10',2999,True,revision,signature=p.signature(hoodie))
+        self.assertIn('hoodie',self.client.get('/inventory').json()['pricingPendingProducts'])
+    def test_refresh_reads_only_updates_stock_and_invalidates_product_changes(self):
+        self.enable();refresh=self.app.state.pricing_refresh;refresh.destination=lambda:ADDRESS
+        supplier_product=self.supplier.product
+        self.supplier.product=lambda pid:{**supplier_product(pid),'shippingProfiles':[{'firstItem':12.34,'countries':['US'],'variantIds':[10]}]}
+        refresh.run();refresh.run()
+        data=self.client.get('/inventory').json();self.assertFalse(data['pricingPendingProducts']);self.assertEqual(len(data['prices']),2)
+        self.assertEqual(self.transport.submissions,0);self.assertFalse(self.supplier.submitted)
+        self.product['pricingFloor']=40
+        refresh.run()
+        data=self.client.get('/inventory').json();row=next(r for r in data['prices'] if r['id']=='mouser-part')
+        self.assertGreaterEqual(row['priceCents'],4000)
+        self.product['pricingFloor']=41;self.transport.stock=0
+        refresh.run()
+        self.assertIn('mouser-part',self.client.get('/inventory').json()['pricingPendingProducts'])
+        self.assertEqual(self.transport.submissions,0)

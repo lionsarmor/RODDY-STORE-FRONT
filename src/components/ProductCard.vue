@@ -59,7 +59,7 @@ const catalog = useCatalogStore();
     <div class="product-card-body">
       <h3>{{ product.name }}</h3>
       <p>{{ product.shortDescription || product.description }}</p>
-      <ProductTags :ids="product.tags" /><p v-if="product.type === 'physical'" class="shipping-destinations">{{ shippingLabel(product) }}</p>
+      <p v-if="product.dynamicPricing" class="shipping-destinations">Price estimate · confirmed with delivery address</p><ProductTags :ids="product.tags" /><p v-if="product.type === 'physical'" class="shipping-destinations">{{ shippingLabel(product) }}</p>
       <div class="product-card-bottom">
         <span
           >{{

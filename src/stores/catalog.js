@@ -47,7 +47,14 @@ export const useCatalogStore = defineStore("catalog", {
             const response = await fetch(this.settings.checkoutEndpoint.replace(/\/$/, "") + "/inventory", {cache: "no-store"});
             if (response.ok) {
               const inventory = await response.json();
-              for (const product of this.products) product.purchasingSuspended = (inventory.suspendedProducts || []).includes(product.id);
+              for (const product of this.products) product.purchasingSuspended = [...(inventory.suspendedProducts || []),...(inventory.pricingPendingProducts || [])].includes(product.id);
+              for (const price of inventory.prices || []) {
+                const product=this.products.find(p=>p.id===price.id);if(!product)continue;
+                product.dynamicPricing=true;
+                const target=product.merch ? product.merch.variants.find(v=>v.id===price.variantId) : product;
+                if(target && Number.isInteger(price.priceCents) && price.priceCents>0)target.price=price.priceCents/100;
+                if(target && product.merch)target.available=price.available;
+              }
               for (const item of inventory.items || []) {
                 const product = this.products.find(p => p.id === item.id && p.type === "physical" && !p.merch);
                 if (product && Number.isInteger(item.available) && item.available >= 0) product.stock = item.available;

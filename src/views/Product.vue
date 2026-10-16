@@ -277,7 +277,7 @@ async function buyNow() {
         <h1>{{ product.name }}</h1>
         <p v-if="creatorUrl" class="release-note product-origin"><strong>{{ product.projectCredit.projectName }}</strong> · Playback tools for both X16 editions.</p>
         <p v-else class="release-note product-origin"><strong>{{ productOrigin(product).label }}</strong> · {{ productOrigin(product).description }}</p>
-        <ProductTags :ids="product.tags" />
+        <p v-if="product.dynamicPricing" class="text-sm text-text-dim">Price estimate. Current pricing and shipping are confirmed for your address before payment.</p><ProductTags :ids="product.tags" />
         <p class="detail-short">{{ product.shortDescription }}</p>
         <p v-if="product.safetyNotice" class="notice" role="note">{{ product.safetyNotice }}</p>
         <div class="detail-price">

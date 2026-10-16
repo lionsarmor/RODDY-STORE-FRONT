@@ -73,9 +73,7 @@ def process(commerce,order):
             commerce.holds.suspend(items,issue)
         commerce.update(session,'mouser',current['state'],ident,issue,current['shipments'])
         # Order cost is an expense record, not a claim that card settlement cleared.
-        if not any(e['supplier']=='Mouser' and e['reference']==ident for e in commerce.records.expenses(session)):
-            commerce.records.expense(order['request_id'],{'supplier':'Mouser','reference':ident,'amountCents':cost,'currency':'USD',
-                'date':datetime.now(timezone.utc).strftime('%Y-%m-%d'),'note':'Automatic supplier order total; verify the final invoice and card settlement in Mouser.'})
+        commerce.records.supplier_total(order,'Mouser',ident,cost)
     except MouserCostChanged as exc:
         commerce.holds.suspend(items,str(exc));commerce.update(session,'mouser','review',error=str(exc))
     except (MouserUnavailable,HTTPException) as exc:

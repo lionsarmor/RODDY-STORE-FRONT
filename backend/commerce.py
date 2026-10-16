@@ -18,6 +18,7 @@ from .keycaps import selection_input, snapshot, label
 from .order_records import OrderRecords
 from .fulfillment_holds import FulfillmentHolds
 from .mouser_orders import MouserUnavailable, MouserCostChanged
+from .pricing import Pricing
 
 
 def cents(value):
@@ -83,6 +84,7 @@ class Commerce:
         self.supplier_quote_factory = None
         self.mouser_factory = None
         self.holds = FulfillmentHolds(connect)
+        self.pricing = Pricing(connect)
         self.lock = threading.Lock()
         self.recover = lambda order: None
         self.records = OrderRecords(connect)
@@ -153,6 +155,8 @@ class Commerce:
             if (p.get('supplier') or {}).get('fulfillment')=='automatic' and p['supplier']['provider']!='mouser':
                 raise HTTPException(409,'Automatic fulfillment is not connected for this item.')
             item = {"id": p["id"], "name": p["name"], "qty": line["qty"], "variantId": line["variantId"]}
+            if self.pricing.applies(p):
+                item.update(pricingRevision=self.pricing.settings()['revision'],pricingFloorCents=cents(p.get('pricingFloor',0)))
             if p.get("type") == "digital":
                 if line["qty"] != 1 or line["variantId"]:
                     raise HTTPException(400, "Digital downloads allow one copy per order.")
@@ -186,7 +190,7 @@ class Commerce:
                     actual = next((v for v in product["variants"] if v["id"] == item["variant_id"]), None)
                     if not actual or not actual["enabled"] or actual["available"] is not True:
                         raise HTTPException(409, "This selection just became unavailable. Choose another option.")
-                    if type(actual.get("costCents")) is not int or actual["costCents"] >= item["cents"]:
+                    if type(actual.get("costCents")) is not int or ('pricingRevision' not in item and actual["costCents"] >= item["cents"]):
                         if type(actual.get('costCents')) is int:
                             self.holds.suspend([item],'Printify unit cost meets or exceeds the retail price. Update pricing before clearing this hold.')
                         raise HTTPException(409, "This selection needs a price update before it can be purchased.")
@@ -210,7 +214,10 @@ class Commerce:
     def mouser_quote(self,items,address,snapshot=None):
         try:
             client=self.mouser_factory()
-            result=client.preview(snapshot,items,address) if snapshot else client.quote(items,address)
+            def reprice(items,total,shipping,goods):
+                calculated=self.pricing.reprice(items,total,shipping,goods)
+                return [price if 'pricingRevision' in item else item['cents'] for item,price in zip(items,calculated)]
+            result=client.preview(snapshot,items,address) if snapshot else client.quote(items,address,pricing=reprice if any('pricingRevision' in i for i in items) else None)
             if snapshot and result['totalCents']>snapshot['totalCents']:
                 raise MouserCostChanged('Mouser cost increased above the accepted quote. Review pricing before fulfilling.')
             return result
@@ -257,6 +264,17 @@ class Commerce:
                 item['procurement']=self.supplier_quote_factory(item['kind']).quote(item,address)
                 direct_shipping+=item['procurement']['shippingCents']
         pod_shipping = supplier.quote_shipping(self.supplier_lines(items), address) if supplier else 0
+        pod=[i for i in items if i['kind']=='printify']
+        if any('pricingRevision' in i for i in pod):
+            rules=self.pricing.settings();quantities=sum(i['qty'] for i in pod)
+            for item in pod:
+                if 'pricingRevision' not in item:continue
+                actual=next((v for v in supplier.product(item['product_id'])['variants'] if v['id']==item['variant_id']),{})
+                cost=actual.get('costCents')
+                if type(cost) is not int:raise HTTPException(409,'A current price is unavailable.')
+                shipping_share=pod_shipping/quantities
+                landed=(cost+shipping_share)*(1+rules['unknownTaxPercent']/100)
+                item['cents']=self.pricing.retail(landed,shipping_share,item['pricingFloorCents'],rules)
         for item in items:
             if item['kind']=='printify':item['procurement']={'shippingCents':pod_shipping,'automatic':True}
         shipping = office_shipping + pod_shipping + direct_shipping
@@ -266,6 +284,8 @@ class Commerce:
             db.execute("INSERT INTO quotes VALUES(?,?,?,?,?,?)", (quote_id, cart, json.dumps(items), json.dumps(address), shipping, now))
         subtotal = sum(i["cents"] * i["qty"] for i in items)
         return {"quoteId": quote_id, "subtotal": subtotal, "shipping": shipping, "amountTotal": subtotal + shipping,
+                'items':[{'id':i['id'],'variantId':i['variantId'],'qty':i['qty'],'unitPriceCents':i['cents']} for i in items],
+                'automaticPricing':any('pricingRevision' in i for i in items),
                 "printifyShipping": pod_shipping, "officeShipping": office_shipping, "currency": "USD", "expiresAt": now + 900}
 
     def prepare(self, body):
@@ -291,6 +311,9 @@ class Commerce:
         address = json.loads(quote["address"])
         current, _ = self.price(cart, live=bool(address), country=address["country"] if address else None)
         items = json.loads(quote["items"])
+        for item,quoted in zip(current,items):
+            if item.get('pricingRevision') and item.get('pricingRevision')==quoted.get('pricingRevision'):
+                item['cents']=quoted['cents']
         if json.dumps(current, sort_keys=True) != json.dumps([{k:v for k,v in i.items() if k!='procurement'} for i in items], sort_keys=True):
             raise HTTPException(409, "Prices or options changed. Refresh your quote.")
         for item in items:
@@ -385,6 +408,8 @@ class Commerce:
         current = supplier.order(supplier_id)
         status = current.get("status", "pending")
         lines = current.get("line_items", [])
+        actual_total=self.printify_total(order,current)
+        if actual_total is not None:self.records.supplier_total(order,'Printify',supplier_id,actual_total)
         # Avoid a production call while Printify is still calculating/creating
         # the order. Once ready, trigger it explicitly, unless already started.
         if status == "on-hold" and not current.get("sent_to_production_at") and not any(i.get("sent_to_production_at") for i in lines):
@@ -394,11 +419,33 @@ class Commerce:
             supplier.send_to_production(supplier_id)
             status = "sending-to-production"
         issue = "Check Printify: " + status if status in {"payment-not-received", "has-issues", "unfulfillable", "source-check-failed"} else ""
+        if actual_total is not None:
+            items=[i for i in json.loads(order['items']) if i.get('kind')=='printify']
+            retail=sum(i['cents']*i['qty'] for i in items)
+            charged=items[0].get('procurement',{}).get('shippingCents',order['shipping'] if all(i.get('kind') in {'printify','digital'} for i in json.loads(order['items'])) else 0)
+            if actual_total>retail+charged-round((retail+charged)*.04)-30:
+                issue='Printify reported a cost above the paid-order allowance. Review the supplier invoice and pricing; new purchases are suspended.'
+                self.holds.suspend(items,issue)
         shipments = [{"carrier": str(s.get("carrier", ""))[:100], "number": str(s.get("number", ""))[:150],
                       "url": s.get("url", "") if re.match(r"^https?://", str(s.get("url", ""))) else "",
                       "deliveredAt": s.get("delivered_at")} for s in current.get("shipments", [])]
         self.update(order["session"], "printify", "delivered" if shipments and all(s["deliveredAt"] for s in shipments) else status,
                     supplier_id, issue, shipments)
+
+    @staticmethod
+    def printify_total(order,current):
+        from collections import Counter
+        items=[i for i in json.loads(order['items']) if i.get('kind')=='printify']
+        expected=Counter()
+        for i in items:expected[(i['product_id'],i['variant_id'])]+=i['qty']
+        actual=Counter();costs=[]
+        for line in current.get('line_items',[]):
+            qty=line.get('quantity');cost=line.get('cost')
+            if type(qty) is not int or qty<1 or type(cost) is not int or cost<0:return None
+            actual[(line.get('product_id'),line.get('variant_id'))]+=qty;costs.append(cost*qty)
+        shipping=current.get('total_shipping');tax=current.get('total_tax')
+        if actual!=expected or type(shipping) is not int or shipping<0 or type(tax) is not int or tax<0:return None
+        return sum(costs)+shipping+tax
 
     def check_printify_cost(self,order,supplier,current=None):
         items=[i for i in json.loads(order['items']) if i.get('kind')=='printify']

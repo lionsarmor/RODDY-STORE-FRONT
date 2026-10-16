@@ -19,6 +19,7 @@ import AddressFields from '../components/AddressFields.vue';
 const address = reactive({first_name: "", last_name: "", email: "", phone: "", country: "US", region: "", address1: "", address2: "", city: "", zip: ""});
 const destination = computed(() => address.country);
 const quote = ref(null);
+function quotedPrice(item){return (quote.value?.items?.find(i=>i.id===item.id && i.variantId===(item.variantId || ''))?.unitPriceCents ?? item.price*100)/100;}
 const quoting = ref(false);
 const quoteError = ref("");
 const route = useRoute();
@@ -189,7 +190,7 @@ function updateQty(item, value) {
               {{
                 item.product.pricePending
                   ? "Pricing TBA"
-                  : formatPrice(item.price) + " each"
+                  : formatPrice(quotedPrice(item)) + " each"
               }}
               · {{ item.product.type }}
             </p>
@@ -225,16 +226,16 @@ function updateQty(item, value) {
           <p v-if="accountMessage" class="text-xs mt-2" role="status">{{accountMessage}}</p>
         </div>
         <div class="mb-4 flex justify-between text-sm">
-          <span>Subtotal</span><span>{{ formatPrice(total) }}</span>
+          <span>Subtotal</span><span>{{ formatPrice(quote ? quote.subtotal/100 : total) }}</span>
         </div>
         <form v-if="physical" class="shipping-form mb-6" @submit.prevent="getQuote">
           <h3 class="font-mono mb-4">DELIVERY ADDRESS</h3>
           <label v-if="customer.signedIn && !guestMode && customer.addresses.length" class="saved-address-picker">Use a saved address<select v-model="savedAddressId" @change="chooseAddress"><option value="">Enter another address</option><option v-for="saved in customer.addresses" :key="saved.id" :value="saved.id">{{saved.label}} — {{saved.address.city}}{{saved.default?' (default)':''}}</option></select></label>
           <AddressFields :address="address" />
           <div v-if="customer.signedIn && !guestMode && customer.addresses.length<10" class="save-address-choice"><label><input v-model="saveForLater" type="checkbox" /> Save this as a new address for next time</label><label v-if="saveForLater">Address label<input v-model="addressLabel" maxlength="40" required placeholder="Home, work…" /></label></div>
-          <button class="button w-full mt-4" type="submit" :disabled="quoting || invalid || catalog.preview">{{ quoting ? 'Calculating…' : 'Calculate shipping' }}</button>
+          <button class="button w-full mt-4" type="submit" :disabled="quoting || invalid || catalog.preview">{{ quoting ? 'Calculating…' : 'Update prices & shipping' }}</button>
           <p v-if="quoteError" class="release-note" role="alert">{{ quoteError }}</p>
-          <p v-if="quote" class="text-xs mt-3">Shipping confirmed for this address. Quote valid for 15 minutes.</p>
+          <p v-if="quote" class="text-xs mt-3">Prices and shipping confirmed for this address. Review the total before paying. Quote expires after 15 minutes; availability is rechecked at checkout.</p>
         </form>
         <div class="mb-4 flex justify-between text-sm">
           <span>{{
@@ -249,7 +250,7 @@ function updateQty(item, value) {
         <div
           class="mb-5 flex justify-between border-t border-border pt-4 font-mono text-lg"
         >
-          <span>Estimated total</span
+          <span>{{quote?'Total to pay':'Estimated total'}}</span
           ><span>{{ formatPrice(quote ? quote.amountTotal / 100 : total + (shipping || 0)) }}{{ physical && !quote ? " (estimate)" : "" }}</span>
         </div>
         <p class="mb-5 text-xs leading-relaxed text-text-dim">

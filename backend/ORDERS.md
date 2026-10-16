@@ -23,8 +23,8 @@ every 30 seconds while visible; loaded history pages remain loaded. Use
    Mixed orders can occupy more than one lane while separate parcels progress.
    **All orders** includes digital sales, unpaid attempts and refunds.
 
-Mouser and AliExpress purchasing/payment are manual. Their stock and shipping
-checks are read-only. Keycap purchasing is also manual; no browser purchasing bot
+AliExpress purchasing/payment remains manual. Mouser supports explicitly enabled
+automatic fulfillment; existing manual orders remain manual. Keycap purchasing is also manual; no browser purchasing bot
 is installed. Printify production is automatic and appears in All orders and Processing,
 with its supplier reference, status, last update and tracking.
 Supplier-purchase automation requires a later explicit authorization and review.
@@ -91,3 +91,7 @@ Needs attention, and suspend new purchases of affected products. The purchase-ho
 controls cover Printify, Mouser and future AliExpress/Yuzu adapters; those latter
 two automatic integrations are not connected yet. See
 [AUTOMATIC_FULFILLMENT.md](AUTOMATIC_FULFILLMENT.md) for activation and recovery.
+
+Automatic pricing and supplier-cost expense reporting are described in
+[AUTOMATIC_FULFILLMENT.md](AUTOMATIC_FULFILLMENT.md). Saved markup controls are in
+Suppliers; all paid orders retain the amounts accepted at checkout.

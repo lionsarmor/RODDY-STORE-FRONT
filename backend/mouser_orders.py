@@ -87,7 +87,7 @@ class MouserOrders:
         if len(cards)!=1:raise MouserUnavailable('Mouser needs exactly one identifiable unexpired saved card for automatic purchasing. Review saved cards in My Mouser.')
         return {k:cards[0][k] for k in ['Method','CreditCardLastFourDigits']}
 
-    def quote(self,items,address):
+    def quote(self,items,address,pricing=None):
         self.enabled()
         dest=shipping_address(address)
         lines=expected_lines(items)
@@ -107,21 +107,26 @@ class MouserOrders:
         request={'CurrencyCode':'USD','CartKey':key,'ShippingAddress':dest,'OrderType':'Complete',
                  'PrimaryShipping':{'Code':code},'Payment':{**payment,'TaxStatus':'Taxable'},'LanguageCode':'en-US'}
         snapshot={'automatic':True,'account':self.fingerprint,'request':request,'service':name,'currency':'USD'}
-        preview=self.preview(snapshot,items,address)
+        preview=self.preview(snapshot,items,address,check_prices=pricing is None)
+        if pricing:
+            prices=pricing(items,preview['totalCents'],preview['shippingCents'],preview['goodsCents'])
+            for item,price in zip(items,prices):item['cents']=price
+            if any(preview['goodsCents'][i['supplier']['supplierSku']]>=i['cents']*i['qty'] for i in items):
+                raise MouserCostChanged('Mouser item cost meets or exceeds its retail price. Review pricing rules or fixed-price overrides.')
         retail=sum(i['qty']*i['cents'] for i in items)
         # Shipping is passed through; supplier tax/fees are absorbed by retail markup.
         if preview['totalCents']>retail+preview['shippingCents']-round((retail+preview['shippingCents'])*.04)-30:
             raise MouserCostChanged('Mouser landed cost exceeds the retail allowance after a 4% + $0.30 payment-fee reserve. Review pricing.')
         return {**snapshot,**preview}
 
-    def preview(self,snapshot,items,address,po=None):
+    def preview(self,snapshot,items,address,po=None,check_prices=True):
         self.enabled()
         if snapshot.get('account')!=self.fingerprint:raise MouserUnavailable('Mouser account credentials changed. Review this order before purchasing.')
         body={**snapshot['request'],'SubmitOrder':False}
         if not matches_address(shipping_address(address),body.get('ShippingAddress')):raise MouserUnavailable('Mouser delivery snapshot does not match the customer address.')
         if po:body['Payment']={**body['Payment'],'PoNumber':po}
         result=self.call('order',{'Order':body}).get('Order')
-        self.validate_order(result,items,address)
+        self.validate_order(result,items,address,check_prices)
         if result.get('SubmitOrder') is True or result.get('OrderID') not in {None,'',0,'0'}:raise MouserUnavailable('Mouser returned an unexpected submitted order during preview. Review the supplier account.')
         shipping=result.get('ShippingMethod') or {}
         if shipping.get('PrimaryCode')!=body['PrimaryShipping']['Code']:raise MouserUnavailable('Mouser shipping service changed. Review this quote.')
@@ -129,9 +134,10 @@ class MouserOrders:
         # Never treat a negative rate on a selected service as free shipping.
         secondary=money(shipping.get('SecondaryShippingRate')) if shipping.get('SecondaryCode') else 0
         return {'totalCents':money(result.get('OrderTotal')),'shippingCents':money(shipping.get('PrimaryShippingRate'))+secondary,
-                'merchandiseCents':money(result.get('MerchandiseTotal')),'taxCents':money(result.get('TaxAmount'))}
+                'merchandiseCents':money(result.get('MerchandiseTotal')),'taxCents':money(result.get('TaxAmount')),
+                'goodsCents':{l['MouserPartNumber']:money(l['ExtendedPrice']) for l in result['OrderLines']}}
 
-    def validate_order(self,result,items,address):
+    def validate_order(self,result,items,address,check_prices=True):
         if not isinstance(result,dict) or result.get('Errors') or result.get('CurrencyCode')!='USD':raise MouserUnavailable('Mouser order summary is incomplete or rejected.')
         if any((result.get(k) or {}).get('Error') for k in ['BillingAddress','ShippingAddress','ShippingMethod','PaymentMethod']):raise MouserUnavailable('Mouser billing, shipping or payment needs attention.')
         if not matches_address(shipping_address(address),result.get('ShippingAddress')):raise MouserUnavailable('Mouser returned a different shipping address. Purchasing stopped.')
@@ -144,7 +150,7 @@ class MouserOrders:
             if line.get('Errors') or type(line.get('Quantity')) is not int or type(line.get('MouserATS')) is not int or line['MouserATS']<line['Quantity']:
                 raise MouserUnavailable('Mouser cannot supply the complete quantity now.')
             actual[line.get('MouserPartNumber')]+=line['Quantity']
-            if money(line.get('ExtendedPrice'))>=retail[line.get('MouserPartNumber')]:
+            if check_prices and money(line.get('ExtendedPrice'))>=retail[line.get('MouserPartNumber')]:
                 raise MouserCostChanged('Mouser item cost meets or exceeds its retail price. Review product pricing.')
         if actual!=expected_lines(items):raise MouserUnavailable('Mouser returned different parts or quantities. Purchasing stopped.')
         money(result.get('OrderTotal'))

@@ -221,7 +221,7 @@ function toggleTag(id) {
       <p class="help-copy">{{ product.supplier.manufacturer }} {{ product.supplier.manufacturerPartNumber }} · {{ product.supplier.sellerName }}</p>
       <p class="help-copy">Supplier minimum {{ product.supplier.minimumQuantity }} · Order multiple {{ product.supplier.orderMultiple }} · Last checked {{ product.supplier.checkedAt ? new Date(product.supplier.checkedAt * 1000).toLocaleString() : 'unknown' }}</p>
       <p class="notice">Mouser supports automatic direct-to-customer fulfillment after verified payment. AliExpress remains manual until its automatic integration is connected. Importing never purchases goods.</p>
-      <label>Fulfillment mode<select v-model="product.supplier.fulfillment" @change="product.trackStock=!['manual','automatic'].includes(product.supplier.fulfillment)"><option value="pending">Supplier fulfillment pending — cannot buy</option><option value="office">I stock and ship this item from my office</option><option value="manual">I order from the supplier manually</option><option v-if="product.supplier.provider==='mouser'" value="automatic">Automatic direct-to-customer fulfillment</option></select></label>
+      <label>Retail pricing<select v-model="product.pricingMode"><option value="automatic">Follow store markup rules when automatic pricing is enabled</option><option value="fixed">Fixed price from Pricing</option></select></label><label v-if="product.pricingMode!=='fixed'">Minimum automatic product price · USD<input v-model.number="product.pricingFloor" type="number" min="0" step=".01" /></label><p class="help-copy">Automatic prices use live landed costs; the price in the editor is the fallback while automatic pricing is disabled. Adjust markup in Suppliers → Automatic retail pricing.</p><label>Fulfillment mode<select v-model="product.supplier.fulfillment" @change="product.trackStock=!['manual','automatic'].includes(product.supplier.fulfillment)"><option value="pending">Supplier fulfillment pending — cannot buy</option><option value="office">I stock and ship this item from my office</option><option value="manual">I order from the supplier manually</option><option v-if="product.supplier.provider==='mouser'" value="automatic">Automatic direct-to-customer fulfillment</option></select></label>
       <p class="help-copy">Choose office only for inventory you own, and set on-hand stock in Orders. Choose manual to place supplier orders yourself after payment; local stock tracking stays off. Configure shipping in Options & shipping for office items and manual Mouser items. Automatic Mouser and manual AliExpress shipping are quoted live. Your retail price stays under Pricing; supplier cost overruns suspend purchasing until reviewed. Enable automatic Mouser in Suppliers, then set Pricing to Available when ready.</p>
       <a v-if="product.supplier.productUrl?.startsWith('https://')" class="button small" :href="product.supplier.productUrl" target="_blank" rel="noopener noreferrer">View supplier listing ↗</a>
       <p class="help-copy">Refresh a listing through Suppliers & imports → Load / refresh details. It will not overwrite this product's name, description, pictures or retail price. Duplicate listings are detected by supplier, product and variant.</p>
@@ -253,6 +253,7 @@ function toggleTag(id) {
         service; do not put private paid-download URLs here.
       </p>
     </div>
+<section v-if="product.merch && tab === 'pricing'" class="admin-section"><h3>Retail pricing</h3><label>Retail pricing<select v-model="product.pricingMode"><option value="automatic">Follow store markup rules when automatic pricing is enabled</option><option value="fixed">Fixed price from Pricing</option></select></label><label v-if="product.pricingMode!=='fixed'">Minimum automatic product price · USD<input v-model.number="product.pricingFloor" type="number" min="0" step=".01" /></label><p class="help-copy">Automatic prices use live landed costs; the price in the editor is the fallback while automatic pricing is disabled. Adjust markup in Suppliers → Automatic retail pricing.</p></section>
     <div class="editor-footer">
       <span>Changes are part of your draft until published.</span>
       <div>
@@ -264,4 +265,5 @@ function toggleTag(id) {
       </div>
     </div>
   </section>
+
 </template>

@@ -7,17 +7,35 @@ this change. No invented supplier API or payment capability is advertised.
 
 ## Retail pricing and suspension
 
-The owner controls product/variant retail prices and supplier import markup in
-the existing editor. Quotes never overwrite those prices. Public catalog data
-continues to omit supplier names, part numbers, credentials and procurement costs.
+Under **Suppliers → Automatic retail pricing & live price status**, the owner
+can enable one saved policy for Printify and automatic Mouser items. The initial
+live policy uses 30% markup on landed cost, a 4% + $0.30 per-unit payment-fee
+reserve, 10% allowance when supplier tax/fees cannot be quoted, and upward .99
+rounding. All controls are adjustable. Product editors also support a minimum
+automatic price or an explicit fixed-price override.
 
-At checkout, a known Printify unit cost at/above retail suspends the product.
-Mouser uses an exact combined cart, quantity, in-stock check and USD order preview.
-Each item's supplier cost must be below its retail total. Landed cost must fit
-retail plus customer shipping, less a conservative 4% + $0.30 payment-fee reserve.
-The fee reserve is a pricing safeguard, not a claim about actual Square fees.
-Mouser tax and additional fees are absorbed by retail markup; only its quoted
-carrier charge is added to customer shipping. No automatic retail repricing.
+The calculation is `(landed cost × (1 + markup) + fixed fee) / (1 - fee rate)`.
+Quoted shipping is subtracted from this total to produce the product price, then
+shown separately at checkout: shipping is not added twice. These allowances are
+estimates, not actual settled payment fees or guaranteed profit. The fulfillment
+loss guard retains a minimum 4% + $0.30 reserve independently of these controls.
+
+Listing estimates refresh roughly every 30 minutes, one product per worker tick.
+Mouser estimates use the account's saved shipping address privately; Printify
+uses US first-item shipping. Checkout obtains current costs and shipping for the
+customer's actual destination and shows revised item prices before payment.
+Changing pricing settings or product sourcing/floor invalidates cached estimates;
+missing, stale, incomplete or unavailable estimates suspend the public offer
+until refreshed. Supplier credentials, costs and destinations are never public.
+
+Prices follow costs down as well as up. Paid orders keep their accepted totals;
+a policy change invalidates unpaid quotes. Printify supplier tax is not known
+until its order is created, so pricing uses the configured allowance and verifies
+the reported cost before releasing production. Mouser previews include supplier
+tax and fees. Fixed-price overrides still use the shared loss guard. Recorded
+supplier order totals update sales expenses without overwriting manual invoices;
+“remaining after recorded supplier costs” excludes unrecorded expenses and is
+not presented as final profit.
 
 A cost increase over the accepted Mouser quote stops fulfillment and suspends
 new product purchases. Printify is checked before order creation and again with

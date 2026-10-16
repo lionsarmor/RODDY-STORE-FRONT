@@ -53,6 +53,8 @@ export function normalizeProduct(p) {
     officeShipping: p.officeShipping || {},
     supplier: p.supplier || null,
     fulfillment: p.fulfillment || "",
+    pricingMode: p.pricingMode || "automatic",
+    pricingFloor: p.pricingFloor || 0,
     fulfillmentRef: p.fulfillmentRef || "",
     keycaps: p.keycaps || null,
     merch: p.merch ? { ...p.merch, variants: Array.isArray(p.merch.variants) ? p.merch.variants : [], shippingCountries: p.merch.shippingCountries || ["US", "CA"], shippingProfiles: p.merch.shippingProfiles || [] } : null,
@@ -157,6 +159,7 @@ export function validateCatalog(data) {
       if (!["US", "CA"].includes(country) || !rate || [rate.firstItem, rate.additionalItem].some(n => !Number.isFinite(n) || n < 0 || n > 999999 || Math.abs(n*100-Math.round(n*100)) > .00001))
         errors.push(`${p.name}: enter valid office shipping rates for US or Canada.`);
     }
+    if (!['automatic','fixed'].includes(p.pricingMode) || !Number.isFinite(p.pricingFloor) || p.pricingFloor<0 || Math.abs(p.pricingFloor*100-Math.round(p.pricingFloor*100))>.000001) errors.push(`${p.name}: check automatic pricing mode and minimum price.`);
     if (p.supplier) {
       const s = p.supplier;
       const key = JSON.stringify([s.provider, String(s.supplierSku || "").toLowerCase(), s.variantId || ""]);
