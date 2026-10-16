@@ -1,0 +1,25 @@
+{
+  "method": "VTK rendering of the exact downloadable STL triangle meshes. Translation for plate placement only; no geometry reconstruction or generative image editing.",
+  "archive": "public/downloads/3d-print/LINK_COMMANDER_ENCLOSURE_A1.zip",
+  "archiveSha256": "bf44cf973699971672765149710503f9d294b30184bfa11d3eb82b8c8a2bba4c",
+  "meshes": {
+    "LINK_COMMANDER_ENCLOSURE_A/print/BASE_print.stl": {
+      "sha256": "2e258eab3e5d666c587c63dd8e9f1cbb4eac28e52fa5314cbdbac06eda79ab47",
+      "triangles": 8258,
+      "translationMm": [
+        7,
+        78,
+        0
+      ]
+    },
+    "LINK_COMMANDER_ENCLOSURE_A/print/LID_print.stl": {
+      "sha256": "cae6ba335b0ac3d53d6eab51306549f7ab50f5a042936e9473743e82ce74202b",
+      "triangles": 17602,
+      "translationMm": [
+        135,
+        78,
+        0
+      ]
+    }
+  }
+}

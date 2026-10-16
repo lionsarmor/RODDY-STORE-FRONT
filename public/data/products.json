@@ -2869,12 +2869,12 @@
         "new-tag-2"
       ],
       "shortDescription": "Print a home for Link Commander. Free snap-fit shell files for Rev E.",
-      "description": "A compact, two-piece enclosure for the current Link Commander Rev E through-hole and Rev F SMT boards. Download the files, print the fit coupon, then make the shell in your favorite color. The case artwork illustrates one possible printed finish.\n\nThe ZIP includes base and lid STL files, editable STEP geometry, geometry-only 3MF plate layouts, snap-fit test pieces and printing and assembly instructions. Designed around unfilled ABS, an enclosed Bambu X1 Carbon and a 0.4 mm nozzle.\n\nThis is a digital file download. No printed case, circuit board, electronics, cables or printer is included. The common shell is an engineering prototype: check the fit coupon, your actual board and cable clearances before printing or assembling the full case.\n\nEnclosure A.1 adds an integral lid guard ahead of the internal programming port and a recessed 5V POWER marking above the correct rear socket. JP1 remains internal; assembled units are intended to arrive configured for normal operation.",
+      "description": "A compact, two-piece enclosure for the current Link Commander Rev E through-hole and Rev F SMT boards. Download the files, print the fit coupon, then make the shell in your favorite color. The image shows the exact downloadable base and lid meshes in their print orientation; colours are illustrative.\n\nThe ZIP includes base and lid STL files, editable STEP geometry, geometry-only 3MF plate layouts, snap-fit test pieces and printing and assembly instructions. Designed around unfilled ABS, an enclosed Bambu X1 Carbon and a 0.4 mm nozzle.\n\nThis is a digital file download. No printed case, circuit board, electronics, cables or printer is included. The common shell is an engineering prototype: check the fit coupon, your actual board and cable clearances before printing or assembling the full case.\n\nEnclosure A.1 adds an integral lid guard ahead of the internal programming port and a recessed 5V POWER marking above the correct rear socket. JP1 remains internal; assembled units are intended to arrive configured for normal operation.",
       "story": "One shell for both ways to build Link Commander. Print it yourself, inspect the design, and keep the hardware easy to open and work on.",
       "images": [
-        "img/products/kit-listings-01/lc-stl-v1.png"
+        "img/products/kit-listings-01/lc-stl-v2-native.png"
       ],
-      "coverImage": "img/products/kit-listings-01/lc-stl-v1.png",
+      "coverImage": "img/products/kit-listings-01/lc-stl-v2-native.png",
       "specs": {
         "Download": "Free ZIP · STL / STEP / 3MF + instructions",
         "Fits": "Current 100 × 75 mm Link Commander Rev E and Rev F boards",
@@ -2890,7 +2890,7 @@
       "downloadUrl": "https://roddy.world/downloads/3d-print/LINK_COMMANDER_ENCLOSURE_A1.zip",
       "githubUrl": "",
       "documentationUrl": "https://roddy.world/downloads/docs/link-commander-enclosure-guide.pdf",
-      "releaseNote": "Free download, no checkout required. Branding illustrates 3D-printed case parts; the download contains digital files only. Print and check the fit coupons first. Physical fit testing is incomplete.",
+      "releaseNote": "Free download, no checkout required. Image rendered directly from the base and lid STL files in the download ZIP. Print and check the fit coupons first; physical fit testing is incomplete.",
       "relatedProductIds": [
         "link-commander-e"
       ],
@@ -2902,7 +2902,7 @@
       "merch": null,
       "safetyNotice": "Includes an internal guard for the RP2040 service USB and a rear 5V POWER marking. Fit-test the printed guard against your actual module. The guard is not electrical isolation; disconnect all power before opening the shell.",
       "designOrigin": "original",
-      "cardImage": "img/products/kit-listings-01/lc-stl-v1.png",
+      "cardImage": "img/products/kit-listings-01/lc-stl-v2-native.png",
       "cardImageNote": "Print your own case. Free digital files; no physical parts or printer included."
     },
     {

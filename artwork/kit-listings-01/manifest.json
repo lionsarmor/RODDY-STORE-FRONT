@@ -8,7 +8,7 @@
     "kk-parts-v1.png": "088e3bf2d30958b51734751b1382029352f52556e477918f3dcf60e32318be56",
     "lc-parts-v1.png": "18146408d79c51346690a73c68dd1c3a379c7409fbb38a6ff9ba3680f8781ee1",
     "kk-stl-v1.png": "b61dd0be113df9b51e51843bcbe40479a7f96197599ebee9daea8dcf45f82d82",
-    "lc-stl-v1.png": "316c8f136089e9776b7ad7611f8f547ef2e2c7d63ffd5107f994b30fbf7e4766"
+    "lc-stl-v2-native.png": "f432643ace3fe29e777d775c24b22e1b1818068737ab6c289cf837c434cb7662"
   },
   "preservedOriginalAssets": {
     "img/products/keychain-kreatures/collection-01/PASTEL_TRIO.png": "a7f2e6c5943cf669624c224df63e0bfdf8e8aa2686f0673a479697ccd34d8b93",
@@ -29,5 +29,6 @@
     "img/products/link-commander/link-commander-board-v1.png": "d885a96d3bfb72fbe53c757f1672d2a6d15a4f8771c0bdf6532bf370d6910b55",
     "img/products/link-commander/enclosure-service-guard-a1.png": "fc59b7b0d218490f4bf807606d4749c522d9c62ac22bf7aa66bd34600ba0e9fb",
     "img/products/link-commander/link-commander-white-closed-v1.png": "394f2593b6df9ddef2442d3e4bfeeeab33779cb9d53389186b3dfe47dd8b20b9"
-  }
+  },
+  "correction": "Link Commander generated STL illustration rejected for geometry mismatch. Replaced with exact customer-download STL mesh render; see native/lc-stl-provenance.json."
 }
