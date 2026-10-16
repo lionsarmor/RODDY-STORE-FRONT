@@ -5,7 +5,7 @@ from fastapi import HTTPException, Request
 from .newsletter_mail import text
 
 SUPPLIER_DIRECTORY = {
-    'mouser': {'name': 'Mouser Electronics', 'website': 'https://www.mouser.com/', 'workflow': 'Manual ordering · live stock checks', 'services': ['Components', 'Development boards'], 'api': 'Search connected separately. Order/Cart approval does not enable purchasing.'},
+    'mouser': {'name': 'Mouser Electronics', 'website': 'https://www.mouser.com/', 'workflow': 'Automatic or manual ordering · live stock checks', 'services': ['Components', 'Development boards'], 'api': 'Search connected separately. Automatic ordering requires account setup and automatic product fulfillment.'},
     'aliexpress': {'name': 'AliExpress', 'website': 'https://www.aliexpress.com/', 'workflow': 'Manual ordering · exact seller and variant', 'services': ['Finished products', 'Accessories'], 'api': 'Product reads and shipping quotes only. Purchasing remains manual.'},
     'yuzu': {'name': 'Yuzu Keycaps', 'website': 'https://yuzukeycaps.com/', 'workflow': 'Manual ordering · private design JSON', 'services': ['Custom keycaps'], 'api': 'No ordering API connected. Download paid order packets from Orders.'},
     'pcbway': {'name': 'PCBWay', 'website': 'https://www.pcbway.com/', 'workflow': 'Quote and prototype review', 'services': ['Bare PCBs', 'Assembly', 'Firmware programming', 'Functional testing', 'Enclosures / box build', 'Customer dispatch'], 'api': 'Partner approval required. No PCB or assembly ordering API connected.'},

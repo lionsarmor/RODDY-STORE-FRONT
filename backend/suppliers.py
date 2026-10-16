@@ -122,7 +122,10 @@ def register_suppliers(app, connect, require_admin, config_path, public_url, sit
                  'orderReadiness': config.get(provider, {}).get('orderReadiness') if provider == 'mouser' else None,
                  'orderKeyStored': bool(config.get(provider, {}).get('orderKey')) if provider == 'mouser' else False,
                  'orderApprovalPending': config.get(provider, {}).get('orderApprovalPending', False) if provider == 'mouser' else False,
-                 'capabilities': {'keywordSearch': True, 'productLookup': True, 'completeSellerCatalog': False, 'orderSubmission': False, 'automaticPayment': False}}
+                 'automaticOrdering': provider=='mouser' and config.get(provider,{}).get('automaticOrdering',False),
+                 'capabilities': {'keywordSearch': True, 'productLookup': True, 'completeSellerCatalog': False,
+                     'orderSubmission':provider=='mouser' and config.get(provider,{}).get('automaticOrdering',False),
+                     'automaticPayment':provider=='mouser' and config.get(provider,{}).get('automaticOrdering',False)}}
                 for provider in sorted(PROVIDERS)]
 
     def cached(provider, kind, query, page, country):
@@ -187,6 +190,7 @@ def register_suppliers(app, connect, require_admin, config_path, public_url, sit
                         if any(c.isspace() for c in value):
                             raise HTTPException(400, 'API credentials cannot contain whitespace.')
                         if field == 'orderKey' and value != entry.get(field):
+                            entry['automaticOrdering'] = False
                             entry.pop('orderVerifiedAt', None)
                             entry.pop('orderReadiness', None)
                             entry['orderApprovalPending'] = False
@@ -235,6 +239,21 @@ def register_suppliers(app, connect, require_admin, config_path, public_url, sit
                 checks['ordering']={'ok':False,'message':'Buyer product access does not establish purchasing/payment access. Direct ordering is not enabled.'}
             except HTTPException as exc:checks['search']={'ok':False,'message':exc.detail}
         return {'checks':checks,'connections':connection_status(read_connections(config_path)),'orderPlaced':False}
+
+    @app.post('/admin/suppliers/mouser/automation')
+    def mouser_automation(request: Request,body: dict):
+        require_admin(request)
+        if type(body.get('enabled')) is not bool:raise HTTPException(400,'Choose enabled or disabled.')
+        with config_lock:
+            config=read_connections(config_path);entry=config.get('mouser',{})
+            if body['enabled']:
+                result=MouserOrdering(entry,reserve).options()
+                if not result['billingReady'] or result['unexpiredCards']!=1:
+                    raise HTTPException(409,'Mouser needs billing details and exactly one identifiable unexpired saved card before enabling automatic fulfillment.')
+                entry.update(orderReadiness={**result,'checkedAt':int(time.time())},orderVerifiedAt=int(time.time()),orderApprovalPending=False)
+            entry['automaticOrdering']=body['enabled']
+            config['mouser']=entry;write_connections(config_path,config)
+        return {'connections':connection_status(config),'orderPlaced':False}
 
     @app.post('/admin/suppliers/preferences')
     def save_preferences(request: Request, body: dict):

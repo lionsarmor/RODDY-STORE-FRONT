@@ -88,7 +88,7 @@ class OrderRecords:
         if type(start) is not int or type(end) is not int or start<0 or end<0 or (end and end<=start) or not isinstance(search,str) or len(search)>100:
             raise HTTPException(400,'Check order dates and search.')
         where, args = ['1=1'], []
-        if view=='inbox':where.append("o.paid=1 AND EXISTS(SELECT 1 FROM fulfillments q WHERE q.session=o.session AND q.state IN ('ready-to-order','awaiting-submission','ready-to-ship'))")
+        if view=='inbox':where.append("o.paid=1 AND EXISTS(SELECT 1 FROM fulfillments q WHERE q.session=o.session AND (q.state IN ('ready-to-order','awaiting-submission','ready-to-ship','review') OR q.error<>''))")
         if view=='progress':where.append("o.paid=1 AND EXISTS(SELECT 1 FROM fulfillments q WHERE q.session=o.session AND q.state NOT IN ('ready-to-order','awaiting-submission','ready-to-ship','shipped','delivered','canceled'))")
         if view=='shipped':where.append("o.paid=1 AND EXISTS(SELECT 1 FROM fulfillments q WHERE q.session=o.session) AND NOT EXISTS(SELECT 1 FROM fulfillments q WHERE q.session=o.session AND q.state NOT IN ('shipped','delivered','canceled'))")
         if view=='keycaps':where.append("o.paid=1 AND EXISTS(SELECT 1 FROM fulfillments q WHERE q.session=o.session AND q.kind='keycaps' AND q.state='awaiting-submission')")

@@ -22,12 +22,14 @@ class Supplier:
     available = True
     submission_timeout = False
     status = 'on-hold'
+    cost = 1200
+    tax = 0
     def __init__(self):
         self.submitted = []
         self.production = []
         self.found = None
     def product(self, pid):
-        return {'variants': [{'id': 10, 'enabled': True, 'available': self.available, 'costCents': 1200}]}
+        return {'variants': [{'id': 10, 'enabled': True, 'available': self.available, 'costCents': self.cost}]}
     def quote_shipping(self, lines, address):
         return 1234
     def submit_order(self, external, lines, address):
@@ -38,7 +40,9 @@ class Supplier:
     def find_order(self, external):
         return self.found
     def order(self, sid):
-        return {'id': sid, 'status': self.status, 'line_items': [], 'shipments': []}
+        return {'id': sid, 'status': self.status,
+                'line_items': [{**line,'cost':self.cost} for line in self.submitted[0][1]] if self.submitted else [],
+                'total_shipping':1234,'total_tax':self.tax,'shipments': []}
     def send_to_production(self, sid):
         self.production.append(sid)
         self.status = 'in-production'
@@ -90,6 +94,23 @@ class MixedCheckoutTests(unittest.TestCase):
         result = self.quote([{'id': 'office', 'qty': 1}])
         self.assertEqual(result.status_code, 200, result.text)
         self.assertEqual(result.json()['subtotal'], 1799)
+
+    def test_printify_cost_overrun_suspends_new_purchases_and_holds_paid_order(self):
+        q=self.quote().json();result=self.checkout(q).json();self.provider.is_paid=True
+        self.supplier.cost=9999;self.tick()
+        self.assertEqual(self.supplier.submitted,[]);self.assertEqual(self.supplier.production,[])
+        self.assertEqual(self.app.state.commerce.fulfillments(result['sessionId'])[1]['state'],'review')
+        self.assertIn('hoodie',self.client.get('/inventory').json()['suspendedProducts'])
+        self.assertEqual(self.quote().status_code,409)
+        self.assertEqual(self.admin('GET','/admin/orders?view=inbox').json()['total'],1)
+
+    def test_printify_tax_overrun_stops_production_without_resubmission(self):
+        q=self.quote().json();result=self.checkout(q).json();self.provider.is_paid=True
+        self.supplier.tax=100000;self.tick()
+        self.assertEqual(len(self.supplier.submitted),1);self.assertEqual(self.supplier.production,[])
+        self.assertIn('hoodie',self.client.get('/inventory').json()['suspendedProducts'])
+        self.tick();self.assertEqual(len(self.supplier.submitted),1)
+        self.assertEqual(self.supplier.production,[])
 
     def test_mixed_order_total_repriced_shipping_and_no_production_before_payment(self):
         q=self.quote(); self.assertEqual(q.status_code,200,q.text); q=q.json()

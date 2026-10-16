@@ -16,6 +16,8 @@ from .printify import PrintifyUnavailable
 from .square import PaymentUnavailable
 from .keycaps import selection_input, snapshot, label
 from .order_records import OrderRecords
+from .fulfillment_holds import FulfillmentHolds
+from .mouser_orders import MouserUnavailable, MouserCostChanged
 
 
 def cents(value):
@@ -79,6 +81,8 @@ class Commerce:
         self.provider, self.printify, self.enabled = provider, printify, enabled
         self.packets = packets
         self.supplier_quote_factory = None
+        self.mouser_factory = None
+        self.holds = FulfillmentHolds(connect)
         self.lock = threading.Lock()
         self.recover = lambda order: None
         self.records = OrderRecords(connect)
@@ -131,6 +135,7 @@ class Commerce:
                  "reserved": held.get(p["id"], 0), "available": stock[p["id"]] - held.get(p["id"], 0)} for p in products]
 
     def price(self, cart, live=False, country=None):
+        self.holds.check(json.loads(cart))
         catalog = self.catalog()
         products = {p["id"]: p for p in catalog["products"]}
         result, supplier, product_cache = [], None, {}
@@ -143,14 +148,16 @@ class Commerce:
                 raise HTTPException(400, "This product does not accept a keycap design.")
             if country and p.get('type') == 'physical' and 'shippingCountries' in p and country not in p['shippingCountries']:
                 raise HTTPException(409, 'This item does not ship to the selected country.')
-            if p.get("supplier") and (not isinstance(p["supplier"], dict) or p["supplier"].get("fulfillment") not in {"office","manual"} or p.get("merch") or p["supplier"].get("provider") not in {"mouser", "aliexpress"}):
+            if p.get("supplier") and (not isinstance(p["supplier"], dict) or p["supplier"].get("fulfillment") not in {"office","manual","automatic"} or p.get("merch") or p["supplier"].get("provider") not in {"mouser", "aliexpress"}):
                 raise HTTPException(409, "This item is temporarily unavailable. Please contact RODDY.")
+            if (p.get('supplier') or {}).get('fulfillment')=='automatic' and p['supplier']['provider']!='mouser':
+                raise HTTPException(409,'Automatic fulfillment is not connected for this item.')
             item = {"id": p["id"], "name": p["name"], "qty": line["qty"], "variantId": line["variantId"]}
             if p.get("type") == "digital":
                 if line["qty"] != 1 or line["variantId"]:
                     raise HTTPException(400, "Digital downloads allow one copy per order.")
                 item.update(self.digital_items(json.dumps([p["id"]]))[0], kind="digital", qty=1)
-            elif p.get('type')=='physical' and (p.get('supplier') or {}).get('fulfillment')=='manual':
+            elif p.get('type')=='physical' and (p.get('supplier') or {}).get('fulfillment') in {'manual','automatic'}:
                 if not self.enabled or self.provider.mode!='live' or p['supplier']['provider'] not in {'aliexpress','mouser'} or p.get('trackStock') is not False or not self.supplier_quote_factory:
                     raise HTTPException(409,'This item is temporarily unavailable.')
                 item.update(kind=p['supplier']['provider'],cents=cents(p['price']),supplier=dict(p['supplier']),label='',officeShipping=p.get('officeShipping',{}))
@@ -180,6 +187,8 @@ class Commerce:
                     if not actual or not actual["enabled"] or actual["available"] is not True:
                         raise HTTPException(409, "This selection just became unavailable. Choose another option.")
                     if type(actual.get("costCents")) is not int or actual["costCents"] >= item["cents"]:
+                        if type(actual.get('costCents')) is int:
+                            self.holds.suspend([item],'Printify unit cost meets or exceeds the retail price. Update pricing before clearing this hold.')
                         raise HTTPException(409, "This selection needs a price update before it can be purchased.")
             elif p.get("type") == "physical":
                 if not self.enabled or p.get("trackStock") is not True or line["variantId"]:
@@ -193,6 +202,23 @@ class Commerce:
         if sum(i["qty"] * i["cents"] for i in result) > 99999999:
             raise HTTPException(400, "Order total is too large.")
         return result, supplier
+
+    @staticmethod
+    def automatic_mouser(items):
+        return [i for i in items if i.get('kind')=='mouser' and i.get('supplier',{}).get('fulfillment')=='automatic']
+
+    def mouser_quote(self,items,address,snapshot=None):
+        try:
+            client=self.mouser_factory()
+            result=client.preview(snapshot,items,address) if snapshot else client.quote(items,address)
+            if snapshot and result['totalCents']>snapshot['totalCents']:
+                raise MouserCostChanged('Mouser cost increased above the accepted quote. Review pricing before fulfilling.')
+            return result
+        except MouserCostChanged as exc:
+            self.holds.suspend(items,str(exc))
+            raise HTTPException(409,'An item needs a price review and has been temporarily suspended.') from None
+        except (MouserUnavailable,KeyError,TypeError,ValueError,AttributeError):
+            raise HTTPException(409,'Live fulfillment is unavailable for this selection. Please try again later or contact RODDY.') from None
 
     @staticmethod
     def supplier_lines(items):
@@ -220,11 +246,19 @@ class Commerce:
                 raise HTTPException(409, "Shipping is not configured for this product and country.")
             office_shipping += cents(rate["firstItem"]) + cents(rate["additionalItem"]) * (i["qty"] - 1)
         direct_shipping=0
+        automatic=self.automatic_mouser(items)
+        if automatic:
+            if any(i['kind']=='mouser' and i not in automatic for i in items):raise HTTPException(409,'Please order these supplier items separately.')
+            procurement=self.mouser_quote(automatic,address)
+            for item in automatic:item['procurement']=procurement
+            direct_shipping+=procurement['shippingCents']
         for item in items:
-            if item['kind'] in {'aliexpress','mouser'}:
+            if item['kind'] in {'aliexpress','mouser'} and item not in automatic:
                 item['procurement']=self.supplier_quote_factory(item['kind']).quote(item,address)
                 direct_shipping+=item['procurement']['shippingCents']
         pod_shipping = supplier.quote_shipping(self.supplier_lines(items), address) if supplier else 0
+        for item in items:
+            if item['kind']=='printify':item['procurement']={'shippingCents':pod_shipping,'automatic':True}
         shipping = office_shipping + pod_shipping + direct_shipping
         quote_id, now = secrets.token_urlsafe(32), int(time.time())
         with self.connect() as db:
@@ -236,6 +270,7 @@ class Commerce:
 
     def prepare(self, body):
         cart = cart_input(body.get("items"))
+        self.holds.check(json.loads(cart))
         try:
             reference = str(UUID(body.get("requestId", ""), version=4))
             if reference != body.get("requestId"):
@@ -259,10 +294,12 @@ class Commerce:
         if json.dumps(current, sort_keys=True) != json.dumps([{k:v for k,v in i.items() if k!='procurement'} for i in items], sort_keys=True):
             raise HTTPException(409, "Prices or options changed. Refresh your quote.")
         for item in items:
-            if item['kind'] in {'aliexpress','mouser'}:
+            if item['kind'] in {'aliexpress','mouser'} and item not in self.automatic_mouser(items):
                 live_quote=self.supplier_quote_factory(item['kind']).quote(item,address)
                 if live_quote['totalCents']>item['procurement']['totalCents'] or live_quote['service']!=item['procurement']['service']:
                     raise HTTPException(409,'Price or shipping changed. Refresh your quote.')
+        automatic=self.automatic_mouser(items)
+        if automatic:self.mouser_quote(automatic,address,automatic[0]['procurement'])
         self.inventory() if any(i["kind"] == "office" for i in items) else None
         session = secrets.token_urlsafe(32)
         with self.connect() as db:
@@ -298,7 +335,7 @@ class Commerce:
                 kinds = {i.get("kind", "digital") for i in json.loads(order["items"])} - {"digital"}
                 for kind in kinds:
                     db.execute("INSERT OR IGNORE INTO fulfillments(session,kind,state,updated) VALUES(?,?,?,?)",
-                               (order["session"], kind, "queued" if kind == "printify" else "ready-to-order" if kind in {"aliexpress","mouser"} else "awaiting-submission" if kind == "keycaps" else "ready-to-ship", int(time.time())))
+                               (order["session"], kind, "queued" if kind == "printify" or (kind=='mouser' and self.automatic_mouser(json.loads(order['items']))) else "ready-to-order" if kind in {"aliexpress","mouser"} else "awaiting-submission" if kind == "keycaps" else "ready-to-ship", int(time.time())))
                 if "keycaps" in kinds and self.packets:
                     self.packets.enqueue(db, order["session"])
             elif order["paid"]:
@@ -309,8 +346,10 @@ class Commerce:
     def fulfillments(self, session):
         with self.connect() as db:
             rows = db.execute("SELECT * FROM fulfillments WHERE session=? ORDER BY kind", (session,)).fetchall()
+            order=db.execute('SELECT items FROM orders WHERE session=?',(session,)).fetchone()
+        automatic=bool(order and self.automatic_mouser(json.loads(order['items'])))
         return [{"kind": r["kind"], "state": r["state"], "supplierId": r["supplier_id"], "error": r["error"],
-                 "shipments": json.loads(r["shipments"]), "updated": r["updated"]} for r in rows]
+                 "shipments": json.loads(r["shipments"]), "updated": r["updated"], 'automatic':r['kind']=='printify' or (r['kind']=='mouser' and automatic)} for r in rows]
 
     def update(self, session, kind, state, supplier_id=None, error="", shipments=None):
         with self.connect() as db:
@@ -338,6 +377,7 @@ class Commerce:
                     return
                 supplier_id = found["id"]
             else:
+                if not self.check_printify_cost(order,supplier):return
                 self.update(order["session"], "printify", "submitting")
                 result = supplier.submit_order(external, self.supplier_lines(json.loads(order["items"])), json.loads(order["address"]))
                 supplier_id = result["id"]
@@ -348,6 +388,9 @@ class Commerce:
         # Avoid a production call while Printify is still calculating/creating
         # the order. Once ready, trigger it explicitly, unless already started.
         if status == "on-hold" and not current.get("sent_to_production_at") and not any(i.get("sent_to_production_at") for i in lines):
+            if not self.check_printify_cost(order,supplier,current):return
+            if not self.check_payment(order):
+                self.mark_paid(order,False);return
             supplier.send_to_production(supplier_id)
             status = "sending-to-production"
         issue = "Check Printify: " + status if status in {"payment-not-received", "has-issues", "unfulfillable", "source-check-failed"} else ""
@@ -356,6 +399,36 @@ class Commerce:
                       "deliveredAt": s.get("delivered_at")} for s in current.get("shipments", [])]
         self.update(order["session"], "printify", "delivered" if shipments and all(s["deliveredAt"] for s in shipments) else status,
                     supplier_id, issue, shipments)
+
+    def check_printify_cost(self,order,supplier,current=None):
+        items=[i for i in json.loads(order['items']) if i.get('kind')=='printify']
+        try:self.holds.check(items)
+        except HTTPException:
+            self.update(order['session'],'printify','review',error='Purchasing suspended pending product pricing review.');return False
+        retail=sum(i['cents']*i['qty'] for i in items)
+        charged=items[0].get('procurement',{}).get('shippingCents')
+        if charged is None:
+            charged=order['shipping'] if all(i.get('kind') in {'printify','digital'} for i in json.loads(order['items'])) else 0
+        goods=0;bad=[]
+        for item in items:
+            if current is None:
+                variant=next((v for v in supplier.product(item['product_id'])['variants'] if v['id']==item['variant_id']),{})
+                cost=variant.get('costCents')
+            else:
+                line=next((v for v in current.get('line_items',[]) if v.get('product_id')==item['product_id'] and v.get('variant_id')==item['variant_id']),{})
+                if line.get('quantity')!=item['qty']:raise PrintifyUnavailable('Printify quantities changed. Review before production.')
+                cost=line.get('cost')
+            if type(cost) is not int or cost<0:raise PrintifyUnavailable('Printify costs are not available. Production is held for review.')
+            goods+=cost*item['qty']
+            if cost>=item['cents']:bad.append(item)
+        shipping=supplier.quote_shipping(self.supplier_lines(items),json.loads(order['address'])) if current is None else current.get('total_shipping')
+        tax=0 if current is None else current.get('total_tax')
+        if type(shipping) is not int or shipping<0 or type(tax) is not int or tax<0:raise PrintifyUnavailable('Printify shipping or tax is unavailable. Production is held for review.')
+        if bad or goods+shipping+tax>retail+charged-round((retail+charged)*.04)-30:
+            reason='Printify fulfillment cost exceeds the retail allowance after shipping, tax and a 4% + $0.30 fee reserve. Review pricing and this paid order.'
+            self.holds.suspend(bad or items,reason)
+            self.update(order['session'],'printify','review',error=reason);return False
+        return True
 
     def was_paid(self, session):
         with self.connect() as db:return bool(db.execute('SELECT 1 FROM sale_events WHERE session=?',(session,)).fetchone())
@@ -382,7 +455,14 @@ class Commerce:
                     if paid and self.enabled and self.provider.mode == "live":
                         if self.packets:
                             self.packets.process(order)
-                        self.process_printify(order)
+                        try:
+                            self.process_printify(order)
+                        except PrintifyUnavailable as exc:
+                            f=next((f for f in self.fulfillments(order['session']) if f['kind']=='printify'),None)
+                            if f:self.update(order['session'],'printify','review' if f['state']=='submitting' else f['state'],error=str(exc))
+                        if self.mouser_factory:
+                            from .mouser_fulfillment import process
+                            process(self,order)
                     elif not paid and not order["paid"] and not self.was_paid(order["session"]) and order["created"] < time.time() - 3600 and order["link_id"]:
                         # Delete the hosted link BEFORE releasing reservations.
                         self.provider.cancel_checkout(order["link_id"])

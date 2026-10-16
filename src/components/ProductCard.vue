@@ -48,7 +48,7 @@ const catalog = useCatalogStore();
         stockState(product) === "soon"
           ? `● ${stockLabel(product).toUpperCase()}`
           : stockState(product) === "out"
-            ? "SOLD OUT"
+            ? stockLabel(product).toUpperCase()
             : product.pricePending
               ? "DETAILS TO COME"
               : product.type === "digital"

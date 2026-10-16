@@ -82,3 +82,12 @@ It mounts the actual order component against read-only fixture APIs and checks
 default history, automatic Printify fulfillment, digital orders, status refresh,
 pagination, filter recovery, mobile layout and cleanup of the refresh timer.
 It never submits a payment or supplier order.
+
+## Automatic suppliers and pricing holds
+
+Mouser automatic orders stay visible in All orders and Processing, with the supplier
+reference, costs and tracking. Cost overruns also enter Needs your action and
+Needs attention, and suspend new purchases of affected products. The purchase-hold
+controls cover Printify, Mouser and future AliExpress/Yuzu adapters; those latter
+two automatic integrations are not connected yet. See
+[AUTOMATIC_FULFILLMENT.md](AUTOMATIC_FULFILLMENT.md) for activation and recovery.

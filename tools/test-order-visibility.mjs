@@ -28,7 +28,9 @@ const order=(id,kind='printify')=>({id,created:1792135383,amount_total:4518,paym
 try{
  await page.route('https://orders.test/**',async route=>{
   assert.equal(route.request().method(),'GET','Browser test must never purchase, submit or modify an order');
-  const url=new URL(route.request().url());requests.push(url.searchParams.toString());
+  const url=new URL(route.request().url());
+  if(url.pathname==='/admin/fulfillment-holds'){await route.fulfill({json:{items:[]}});return;}
+  requests.push(url.searchParams.toString());
   const all=url.searchParams.get('view')==='all',progress=url.searchParams.get('view')==='progress';
   const second=url.searchParams.has('cursor');
   const data=all?(second?[order('older-order')]:[order('automated-hoodie'),order('digital-sale','digital'),...Array.from({length:48},(_,i)=>order('order-'+i))]):progress?[order('automated-hoodie')]:[];

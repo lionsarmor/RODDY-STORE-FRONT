@@ -46,7 +46,9 @@ export const useCatalogStore = defineStore("catalog", {
           try {
             const response = await fetch(this.settings.checkoutEndpoint.replace(/\/$/, "") + "/inventory", {cache: "no-store"});
             if (response.ok) {
-              for (const item of (await response.json()).items || []) {
+              const inventory = await response.json();
+              for (const product of this.products) product.purchasingSuspended = (inventory.suspendedProducts || []).includes(product.id);
+              for (const item of inventory.items || []) {
                 const product = this.products.find(p => p.id === item.id && p.type === "physical" && !p.merch);
                 if (product && Number.isInteger(item.available) && item.available >= 0) product.stock = item.available;
               }
@@ -75,8 +77,9 @@ export const useCatalogStore = defineStore("catalog", {
 });
 
 export function stockState(product) {
+  if (product.purchasingSuspended) return 'out';
   if (product.status === 'coming-soon') return 'soon';
-  if (product.supplier && !['office','manual'].includes(product.supplier.fulfillment)) return 'soon';
+  if (product.supplier && !['office','manual','automatic'].includes(product.supplier.fulfillment)) return 'soon';
   if (product.status === 'sold-out') return 'out';
   if (product.merch && !product.merch.variants.some(v => v.enabled && v.available !== false)) return 'out';
   if (product.active && product.trackStock === false) return 'in';
@@ -86,6 +89,7 @@ export function stockState(product) {
 }
 
 export function stockLabel(product) {
+  if (product.purchasingSuspended) return 'Temporarily unavailable';
   const state = stockState(product);
   if (state === 'soon') return product.availabilityLabel || 'Coming soon';
   if (state === "out") return "Sold out";

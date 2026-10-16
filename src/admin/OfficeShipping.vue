@@ -8,9 +8,9 @@ function addRate(country) {
 </script>
 <template>
   <section>
-    <template v-if="product.supplier?.provider === 'aliexpress' && product.supplier.fulfillment === 'manual'">
+    <template v-if="(product.supplier?.provider === 'aliexpress' && product.supplier.fulfillment === 'manual') || product.supplier?.fulfillment === 'automatic'">
       <h3>Live shipping quotes</h3>
-      <p class="help-copy">Shipping is quoted for the selected country, exact listing, seller and variant before payment. Place paid orders manually from Orders.</p>
+      <p class="help-copy">Shipping is quoted for the selected country, exact listing, seller and variant before payment. {{ product.supplier?.fulfillment === 'automatic' ? 'Verified paid orders ship directly to the customer through automatic fulfillment.' : 'Place paid orders manually from Orders.' }}</p>
     </template>
     <template v-else>
       <h3>Customer shipping charges</h3>

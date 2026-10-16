@@ -165,7 +165,8 @@ export function validateCatalog(data) {
       if (typeof s.supplierSku !== "string" || !s.supplierSku.trim() || s.supplierSku.length > 80 || supplierKeys.has(key))
         errors.push(`${p.name}: supplier listing and variant must be present and unique.`);
       supplierKeys.add(key);
-      if (!["pending", "office", "manual"].includes(s.fulfillment)) errors.push(`${p.name}: choose a supported fulfillment mode.`);
+      if (!["pending", "office", "manual", "automatic"].includes(s.fulfillment)) errors.push(`${p.name}: choose a supported fulfillment mode.`);
+      if (s.fulfillment==='automatic' && s.provider!=='mouser') errors.push(`${p.name}: automatic ordering is not connected for this supplier.`);
       if (s.provider === "aliexpress" && (typeof s.variantId !== "string" || !s.variantId)) errors.push(`${p.name}: choose an exact AliExpress variant before importing.`);
       if (s.productUrl && (!safeLink(s.productUrl) || !s.productUrl.startsWith("https://"))) errors.push(`${p.name}: use a valid HTTPS supplier listing URL.`);
       if ([s.minimumQuantity, s.orderMultiple].some(n => !Number.isInteger(n) || n < 1)) errors.push(`${p.name}: supplier minimums must be positive whole numbers.`);
@@ -195,7 +196,7 @@ export function validateCatalog(data) {
       const countries = shippingCountries(p);
       if (!countries.length) errors.push(`${p.name}: enable at least one shipping destination.`);
       const liveShipping = p.merch || (p.supplier?.provider === 'aliexpress' && p.supplier.fulfillment === 'manual') || (!p.supplier && p.fulfillment === 'manual');
-      if (!liveShipping && countries.some(c => !p.officeShipping?.[c])) errors.push(`${p.name}: add a shipping rate for each enabled destination.`);
+      if (!liveShipping && (p.supplier?.fulfillment || p.fulfillment)!=='automatic' && countries.some(c => !p.officeShipping?.[c])) errors.push(`${p.name}: add a shipping rate for each enabled destination.`);
     }
     if (p.downloadUrl && !safeLink(p.downloadUrl))
       errors.push(`${p.name}: download must be an HTTP(S) URL.`);

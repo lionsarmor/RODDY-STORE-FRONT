@@ -9,8 +9,8 @@ service. No new framework, database or alternate customer checkout is introduced
 
 **Suppliers & imports** provides in admin: private connection management,
 keyword search, exact listing lookup, preferred-store bookmarks, seller verification,
-selected draft imports and fee-aware retail estimates. It does **not** enable direct
-Mouser/AliExpress purchasing, automatic supplier charges or background supplier sync.
+selected draft imports and fee-aware retail estimates. Mouser supports opt-in automatic direct-to-customer purchasing after verified
+Square payment. AliExpress and Yuzu automatic purchasing remain unconnected.
 Connection and capability messages in admin make these boundaries explicit.
 
 ## Payment and billing
@@ -36,7 +36,8 @@ imports**. Save API credentials in its password fields over HTTPS:
 
 - Mouser: Search API key from My Mouser → API access. A separate optional Order/Cart
   key can be saved and checked with a read-only account-options request. Purchasing
-  stays manual regardless of either key's approval status.
+  requires enabling automatic Mouser in Suppliers and choosing automatic fulfillment
+  for each product. A verified key alone never enables purchasing.
 - AliExpress: approved Open Platform App Key and App Secret with Dropship search
   permission. Exact listing/SKU details also require an authorized buyer token.
   An affiliate-only application's permissions may be insufficient.
@@ -131,10 +132,9 @@ with fulfillment pending until the owner edits and publishes them normally.
 
 Mouser Search access is connected and has passed a live keyword search. The
 separately saved Order/Cart key passed a live read-only account-options check on
-2026-10-16. The account returned USD billing/shipping options, but its only saved
-card was listed as expired. The owner now wants automatic purchasing; account
-access is verified, while payment setup and the purchasing integration remain
-incomplete. **Verify supplier
+2026-10-16. The account returned USD billing/shipping options, and the owner replaced the expired saved card. A fresh account check confirms
+one identifiable unexpired saved card. The owner authorized direct-to-customer
+automatic fulfillment and supplier-neutral pricing holds. **Verify supplier
 connection** checks these capabilities separately without placing an order. Both
 keys remain private; manual purchasing does not require Order/Cart API approval.
 The admin connection panel persists the latest account/card readiness result.
@@ -189,9 +189,10 @@ Paid orders enter **Orders → To order / send** for the owner to purchase manua
 record a supplier reference and invoice, then save shipment tracking. See
 [ORDERS.md](ORDERS.md). No supplier order or payment endpoint is called.
 
-The owner requested automatic Mouser purchasing on 2026-10-16. Before activation,
-it still needs a current saved payment method, a confirmed delivery policy,
-landed-cost limits, durable submission/reconciliation and exception handling.
+The owner requested automatic Mouser purchasing on 2026-10-16. The Order/Cart
+integration uses live cart previews, explicit customer delivery addresses,
+landed-cost ceilings and durable submission/reconciliation. See
+[automatic fulfillment](AUTOMATIC_FULFILLMENT.md) for setup, checks and limitations.
 Every automatic order must remain visible in Orders with its supplier reference
 and status. Existing manual orders must not be retroactively submitted merely
 because the API key becomes approved.

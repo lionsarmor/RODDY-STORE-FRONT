@@ -230,7 +230,7 @@ class MouserOrdering:
             if not cards:
                 status='missing';message='No saved card returned by Mouser. Add a card in My Mouser before setting up automatic payment.'
             elif unexpired:
-                status='on-file';message='An unexpired saved card is on file. Payment has not been tested; automatic purchasing is not enabled.'
+                status='on-file';message='An unexpired saved card is on file. Card settlement has not been tested; automatic ordering is controlled separately.'
             elif unknown:
                 status='unverified';message='Mouser returned a saved card without a recognized expiry. Check it in My Mouser before setting up automatic payment.'
             else:

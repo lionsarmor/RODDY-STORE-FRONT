@@ -278,7 +278,8 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
     @app.get("/inventory")
     def inventory(request: Request):
         rate_limit(request, "inventory", 30)
-        return {"items": [{"id": i["id"], "available": i["available"]} for i in commerce.inventory()]}
+        return {"items": [{"id": i["id"], "available": i["available"]} for i in commerce.inventory()],
+                'suspendedProducts':[r['product'] for r in commerce.holds.list()]}
 
     @app.get("/health")
     def health(request: Request):
@@ -465,6 +466,7 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
         if kind not in {'aliexpress','mouser'} or not any(i.get('kind')==kind for i in json.loads(order['items'])):raise HTTPException(400,'Choose a supplier belonging to this order.')
         action=body.get('action')
         existing=next(f for f in commerce.fulfillments(order['session']) if f['kind']==kind)
+        if existing.get('automatic'):raise HTTPException(409,'This supplier order is automatic. Review its existing supplier reference; manual reset is disabled to prevent duplicate purchasing.')
         if action in {'ordered','pending'} and existing['state']=='shipped':raise HTTPException(409,'This order has already shipped.')
         if action=='download':return Response(supplier_packet_zip(order,kind),media_type='application/zip',headers={'Content-Disposition':f'attachment; filename="RODDY-{reference}-{kind}.zip"','Cache-Control':'no-store'})
         if action=='ordered':
@@ -505,6 +507,18 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
     def admin_inventory(request: Request):
         require_admin(request)
         return {"items": commerce.inventory()}
+
+    @app.get('/admin/fulfillment-holds')
+    def fulfillment_holds(request: Request):
+        require_admin(request)
+        return {'items':commerce.holds.list(),'providers':['printify','mouser','aliexpress','yuzu']}
+
+    @app.post('/admin/fulfillment-holds/{product}')
+    def clear_fulfillment_hold(product: str,request: Request,body: dict):
+        require_admin(request)
+        if body.get('action')!='clear':raise HTTPException(400,'Choose clear after reviewing and publishing the product price.')
+        commerce.holds.clear(product)
+        return {'saved':True}
 
     @app.post("/admin/inventory/{product_id}")
     def set_inventory(product_id: str, request: Request, body: dict):
@@ -632,5 +646,9 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
     register_newsletter(app, connect, require_admin, rate_limit, origins)
     supplier_services = register_suppliers(app, connect, require_admin, os.getenv("SUPPLIERS_CONFIG", str(database.parent / "suppliers.json")), public_url, site, rate_limit)
     commerce.supplier_quote_factory=supplier_quote_factory or (lambda kind:supplier_quote_client(kind,supplier_services['buyer']() if kind=='aliexpress' else supplier_services['mouser'](),supplier_services['reserve']))
+    from .mouser_orders import MouserOrders
+    from .mouser_fulfillment import initialize as initialize_mouser
+    initialize_mouser(connect)
+    commerce.mouser_factory=lambda:MouserOrders(supplier_services['mouser'](),supplier_services['reserve'])
     app.state.pcb_projects=register_pcb_projects(app,require_admin,os.getenv('PCB_PROJECTS_DIR',str(database.parent/'pcb-projects')))
     return app

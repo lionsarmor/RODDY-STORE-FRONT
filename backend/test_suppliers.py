@@ -219,6 +219,21 @@ class SupplierTests(unittest.TestCase):
                 with self.assertRaises(HTTPException) as caught:MouserOrdering({'orderKey':'test'},lambda _:None).options()
                 self.assertNotIn('private-order-key',caught.exception.detail)
 
+    def test_mouser_automation_requires_current_card_and_is_owner_only(self):
+        self.assertEqual(self.client.post('/admin/suppliers/mouser/automation',json={'enabled':True}).status_code,401)
+        self.admin('POST','/connections',{'provider':'mouser','orderKey':'test-only'})
+        readiness={'billingReady':True,'unexpiredCards':0,'cardStatus':'expired'}
+        with patch('backend.suppliers.MouserOrdering.options',return_value=readiness):
+            self.assertEqual(self.admin('POST','/mouser/automation',{'enabled':True}).status_code,409)
+            readiness['unexpiredCards']=1
+            result=self.admin('POST','/mouser/automation',{'enabled':True})
+            self.assertEqual(result.status_code,200,result.text)
+            self.assertTrue(result.json()['connections'][1]['automaticOrdering'])
+            self.assertFalse(result.json()['orderPlaced'])
+        self.admin('POST','/connections',{'provider':'mouser','orderKey':'different-test-only'})
+        self.assertFalse(self.admin('GET').json()['connections'][1]['automaticOrdering'])
+        self.assertEqual(self.admin('POST','/mouser/automation',{'enabled':False}).status_code,200)
+
     def test_preferred_supplier_official_url_identity_and_revision_conflict(self):
         favorite = {'id': 'retro', 'name': 'Chosen Store', 'provider': 'aliexpress', 'url': 'https://www.aliexpress.com/store/1234567', 'query': 'MiSTer FPGA'}
         result = self.admin('POST', '/preferences', {'revision': 1, 'favorites': [favorite]})
