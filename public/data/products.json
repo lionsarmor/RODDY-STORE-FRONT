@@ -2803,8 +2803,8 @@
         "Internal service": "Guarded RP2040 USB · JP1 factory-fitted for normal operation"
       },
       "images": [
-        "img/products/link-commander/link-commander-board-v1.png",
         "img/products/link-commander/link-commander-mystery-v1.png",
+        "img/products/link-commander/link-commander-board-v1.png",
         "img/products/link-commander/link-commander-white-open-v1.png",
         "img/products/link-commander/link-commander-white-closed-v1.png",
         "img/products/link-commander/rev-e-cad.png",
@@ -2813,7 +2813,7 @@
       ],
       "status": "coming-soon",
       "type": "physical",
-      "coverImage": "img/products/link-commander/link-commander-board-v1.png",
+      "coverImage": "img/products/link-commander/link-commander-mystery-v1.png",
       "tags": [
         "new-tag-2"
       ],
