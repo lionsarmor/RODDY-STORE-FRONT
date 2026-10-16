@@ -6,7 +6,7 @@
     "heroTitle": "THE FUTURE\nIS PERSONAL.",
     "heroDescription": "Pocket-sized worlds. Strange new games. Computers with character. Welcome to a different kind of technology company.",
     "heroProductId": "keychain-kreatures",
-    "heroImage": "",
+    "heroImage": "img/products/keychain-kreatures/collection-01/MYSTERY_TEASER.png",
     "heroButton": "Explore the catalog",
     "featuredTitle": "SMALL CATALOG. BIG IDEAS.",
     "manifestoTitle": "LESS DISPOSABLE.\nMORE DISCOVERABLE.",
@@ -501,7 +501,14 @@
       },
       "images": [
         "img/products/keychain-kreatures/roddy-creature-hero-v1.png",
-        "img/products/keychain-kreatures/creature-colourways-v1.png"
+        "img/products/keychain-kreatures/creature-colourways-v1.png",
+        "img/products/keychain-kreatures/collection-01/AVOCADO.png",
+        "img/products/keychain-kreatures/collection-01/PASTEL_PURPLE.png",
+        "img/products/keychain-kreatures/collection-01/PINK.png",
+        "img/products/keychain-kreatures/collection-01/COMMODORE.png",
+        "img/products/keychain-kreatures/collection-01/SPECTRUM_NEXT.png",
+        "img/products/keychain-kreatures/collection-01/HARDWARE_NATIVE_EXPLODED.png",
+        "img/products/keychain-kreatures/collection-01/MYSTERY_TEASER.png"
       ],
       "type": "physical",
       "status": "coming-soon",
@@ -519,7 +526,7 @@
       "compareAtPrice": 0,
       "downloadUrl": "",
       "githubUrl": "",
-      "story": "Remember the little digital pet you took everywhere? Keychain Kreatures brings that playful spirit to a larger, programmable handheld you can build and make your own.\n\nThe Roddy look pairs a cream face with a black back and a bright red bezel. The current design has a substantial integral keyring eyelet and an interchangeable screen surround. Avocado and retro beige are alternative colour concepts.\n\nOur cheerful, round-bellied creature is a first glimpse of the personality we want on screen. The hardware is in prototyping and the game is still in development.",
+      "story": "Remember the little digital pet you took everywhere? Keychain Kreatures brings that playful spirit to a larger, programmable handheld you can build and make your own.\n\nThe Roddy look pairs a cream face with a black back and a bright red bezel. The current design has a substantial integral keyring eyelet and an interchangeable screen surround. Explore avocado, pastel purple, pink, warm Commodore-inspired beige and a charcoal Spectrum Next-inspired look with rainbow accents. These are Roddy colour concepts for the same little creature computer.\n\nOur cheerful, round-bellied creature is a first glimpse of the personality we want on screen. The hardware is in prototyping and the game is still in development.",
       "documentationUrl": "https://roddy.world/downloads/docs/keychain-kreatures-guide.pdf",
       "merch": null,
       "officeShipping": {},

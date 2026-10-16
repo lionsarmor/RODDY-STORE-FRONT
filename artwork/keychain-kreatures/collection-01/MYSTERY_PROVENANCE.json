@@ -1,0 +1,23 @@
+{
+  "method": "Built-in image_gen.imagegen edit",
+  "purpose": "Restore the shadowy landing-page teaser using the current enclosure B silhouette. Illustrative shell campaign, not a CAD render.",
+  "source_references": {
+    "original_mystery": {
+      "path": "RODDY-STORE-FRONT/public/img/products/roddy-6f19c18f-fd8a-47ea-88f8-7362526fb360.jpg",
+      "sha256": "98f2eb5670c69eb8fade6657fad2ec4c63dba2ecd71ade8a15bf6f1d549946e0"
+    },
+    "native_shell": {
+      "path": "KeychainKreatures/revisions/C7_P5-handheld/enclosure/B-keyring-bezel/renders/RODDY.png",
+      "sha256": "6fe97af19af9c003915186e2cd35ebbd8e073e85168ce1758968327383beb33b"
+    },
+    "branding_shell": {
+      "path": "KeychainKreatures/revisions/C7_P5-handheld/branding/RODDY_KEYCHAIN_KREATURES_CREATURE_HERO.png",
+      "sha256": "246161798a8629f81c51de778cfde0f476ca1ce06be9826f6b9d2cd70e74753e"
+    }
+  },
+  "output": "MYSTERY_TEASER.png",
+  "sha256": "fcd5f0e0fd6dde70b499302310ef60b6e7e94023dcf5da49dc6f5c4985b6c475",
+  "prompt": "MYSTERY_TEASER_PROMPT.txt",
+  "prompt_sha256": "351ce500adc6c134ba04ea917bee1adbfe40d808799c7a08743fd860ad8a51d4",
+  "original": "/home/roddy/.codex/generated_images/01a13f7b-66dc-7b12-8e87-dda8639da7cb/exec-063258b0-ae32-4593-aa95-7b223fcb9e10.png"
+}

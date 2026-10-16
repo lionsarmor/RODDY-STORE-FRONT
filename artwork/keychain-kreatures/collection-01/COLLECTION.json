@@ -1,0 +1,75 @@
+{
+  "method": "Five colourway studies and mystery teaser: built-in image_gen.imagegen. Hardware: native KiCad/CAD renders and deterministic composition.",
+  "date": "2026-10-16",
+  "status": "Illustrative branding; CAD and firmware unchanged",
+  "base_references": {
+    "RODDY_KEYCHAIN_KREATURES_CREATURE_HERO.png": "246161798a8629f81c51de778cfde0f476ca1ce06be9826f6b9d2cd70e74753e",
+    "RODDY_KEYCHAIN_KREATURES_CREATURE_COLORWAYS.png": "6b2cbf52d1ffd7d6e3079bf3885c8325054e45c640a074414edd753bd004a063"
+  },
+  "assets": [
+    {
+      "key": "AVOCADO",
+      "title": "Avocado",
+      "kind": "colourway",
+      "file": "AVOCADO.png",
+      "sha256": "6739c2784439d607c4d9dcc4fd046f8c3e42f36d7d1df4b4f6a1019fe5a018b8",
+      "prompt": "AVOCADO_PROMPT.txt",
+      "prompt_sha256": "ab23e0e40c4b48e910c81992d23dce6273bd6fa9c31b76e97ddc619e31ca3f74"
+    },
+    {
+      "key": "PASTEL_PURPLE",
+      "title": "Pastel purple",
+      "kind": "colourway",
+      "file": "PASTEL_PURPLE.png",
+      "sha256": "aab35116aecf66af90faf3c83423d0e6b075f7d0451415b3432a561c5abbea6d",
+      "prompt": "PASTEL_PURPLE_PROMPT.txt",
+      "prompt_sha256": "82d96383142aa6aacdc164a6438699d88241d99a75a7a686fecd8ea79146d3cd"
+    },
+    {
+      "key": "PINK",
+      "title": "Pink",
+      "kind": "colourway",
+      "file": "PINK.png",
+      "sha256": "f4b4a04ec33744e02c21f8e1d1ba3bb58b058128c9edfde2cf277dd7dce656a9",
+      "prompt": "PINK_PROMPT.txt",
+      "prompt_sha256": "7edbcb1a8354d4a9d186526e2374652fd8002d3ce87f74d9bec355b87184829d"
+    },
+    {
+      "key": "COMMODORE",
+      "title": "Commodore-inspired",
+      "kind": "colourway",
+      "file": "COMMODORE.png",
+      "sha256": "d63362957b1d11efc3515ec93291aede3bb1171d307f7318bd739b244f79e7e2",
+      "prompt": "COMMODORE_PROMPT.txt",
+      "prompt_sha256": "773c67ad5a7218746195895c8b4bcd496dd311d2f2ff2152bd99d810ba17f9e9"
+    },
+    {
+      "key": "SPECTRUM_NEXT",
+      "title": "Spectrum Next-inspired",
+      "kind": "colourway",
+      "file": "SPECTRUM_NEXT.png",
+      "sha256": "6cbf9847f7fd732e7b0798aa46bc8d5f8af74148b5075b2362367a63e585c4ce",
+      "prompt": "SPECTRUM_NEXT_PROMPT.txt",
+      "prompt_sha256": "4fa33f499f36d51ac50b9829e7baa993e08b83e612e52af93378cd530c95a3b5"
+    },
+    {
+      "key": "HARDWARE_NATIVE_EXPLODED",
+      "title": "Inside Keychain Kreatures \u2014 native KiCad hardware",
+      "kind": "hardware",
+      "file": "HARDWARE_NATIVE_EXPLODED.png",
+      "sha256": "553d63a11b9ed80e2fe91ce204fe887eaeda7579d29b8dfaf18ebf3a9f86f95d",
+      "provenance": "HARDWARE_REFERENCE.json",
+      "provenance_sha256": "8774491dc28d1e03299f532b0f52e03bc3e2b9c890374cfa7cd18a771c40b080"
+    },
+    {
+      "key": "MYSTERY_TEASER",
+      "title": "Something little is coming \u2014 current-shell mystery teaser",
+      "kind": "teaser",
+      "file": "MYSTERY_TEASER.png",
+      "sha256": "fcd5f0e0fd6dde70b499302310ef60b6e7e94023dcf5da49dc6f5c4985b6c475",
+      "prompt": "MYSTERY_TEASER_PROMPT.txt",
+      "prompt_sha256": "351ce500adc6c134ba04ea917bee1adbfe40d808799c7a08743fd860ad8a51d4",
+      "provenance": "MYSTERY_PROVENANCE.json"
+    }
+  ]
+}

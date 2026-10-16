@@ -1,0 +1,9 @@
+# Run from the KeychainKreatures repository root. KiCad 10.0.6.
+kicad-cli pcb render --width 1600 --height 1800 --side top --rotate '342,12,352' --zoom 0.70 --quality high --background transparent -o revisions/C7_P5-handheld/branding/collection_01/native/main_front.png revisions/C7_P5-handheld/kicad/main/KK_main_module.kicad_pcb
+kicad-cli pcb render --width 1000 --height 1200 --side bottom --rotate '342,12,352' --zoom 0.85 --quality high --background transparent -o revisions/C7_P5-handheld/branding/collection_01/native/main_back.png revisions/C7_P5-handheld/kicad/main/KK_main_module.kicad_pcb
+kicad-cli pcb render --width 1200 --height 1200 --side top --rotate '342,12,352' --zoom 0.8 --quality high --background transparent -o revisions/C7_P5-handheld/branding/collection_01/native/power_front.png revisions/C7_P5-handheld/kicad/power/KK_power_module.kicad_pcb
+# Python environment requires CadQuery and VTK. Set OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1.
+python tools/render_branding_hardware.py display
+python tools/render_branding_hardware.py battery
+# Node environment requires Playwright + Chromium. Optional PLAYWRIGHT_MODULE and CHROMIUM_PATH overrides.
+node tools/compose_hardware_branding.mjs
