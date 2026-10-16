@@ -20,6 +20,7 @@ import { importPrintifyProduct, priceLabel } from "../merch.js";
 import SaleNotifications from './SaleNotifications.vue';
 import KeycapManager from './KeycapManager.vue';
 import PcbWizard from './PcbWizard.vue';
+import ProjectWorkshop from './ProjectWorkshop.vue';
 import CategoryManager from './CategoryManager.vue';
 import { categoryVisible } from '../category-visibility.js';
 import ProductEditor from "./ProductEditor.vue";
@@ -42,7 +43,8 @@ import "./admin.css";
 useThemeStore();
 const ui = useUiStore();
 const CONFIG_KEY = "roddy:admin:config";
-const tab = ref("overview");
+const tab = ref(window.location.hash === "#workshop" ? "workshop" : "overview");
+watch(tab, value => { window.history.replaceState(null, "", value === "workshop" ? "#workshop" : window.location.pathname + window.location.search); });
 const tabs = [
   { id: "overview", label: "Overview", icon: "◫" },
   { id: "products", label: "Products", icon: "▦" },
@@ -55,6 +57,7 @@ const tabs = [
   { id: "keycaps", label: "Keycap profiles", icon: "⌨" },
   { id: "orders", label: "Orders", icon: "▤" },
   { id: "customers", label: "Customers", icon: "☺" },
+  { id: "workshop", label: "Project Workshop", icon: "▧" },
   { id: "pcb", label: "Electronics / PCBWay", icon: "⚡" },
   { id: "newsletters", label: "Newsletters & ads", icon: "✉" },
   { id: "forum", label: "Community forum", icon: "☷" },
@@ -1263,6 +1266,7 @@ function syncPrintify(source, targetId) {
               <p class="help-copy">Customers can combine merchandise and downloads in one checkout. The backend quotes shipping for their address, verifies payment, submits Printify orders and refreshes tracking. Printify charges production and shipping to your Printify account separately; keep its payment method funded. Review exceptions in Orders.</p>
             </section>
           </template>
+          <ProjectWorkshop v-if="tab === 'workshop'" :endpoint="catalog.settings.checkoutEndpoint" :token="form.token" :connected="connected" />
           <template v-if="tab === 'pcb'"><PcbWizard :endpoint="catalog.settings.checkoutEndpoint" :token="form.token" :connected="connected" :products="catalog.products" /></template>
           <template v-if="tab === 'orders'"><OrderManager :refresh-key="ordersRefresh" :endpoint="catalog.settings.checkoutEndpoint" :token="form.token" :connected="connected" /></template>
           <template v-if="tab === 'customers'"><CustomerManager :endpoint="catalog.settings.checkoutEndpoint" :token="form.token" :connected="connected" /></template>

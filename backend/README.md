@@ -38,6 +38,41 @@ npm run build
 Tests inject a fake payment provider. There is **no HTTP test-payment bypass** in
 the deployed service. A sandbox purchase through Square remains required.
 
+## Project Workshop library
+
+The admin sidebar's **Project Workshop** opens private snapshots of the Keychain
+Kreatures and Link Commander guides, purchasing packs, CAD, cases and branding.
+`admin.html#workshop` links directly to this section. Catalog publication does not
+upload these files, and the library Refresh button reloads the uploaded index.
+
+After changing either hardware repository, export a fresh library from the store
+repository (both project checkouts must be siblings):
+
+```sh
+python3 tools/build_project_workshop.py --workspace .. --output /tmp/roddy-workshop-new
+```
+
+The output must report no missing links. Upload it to a staging directory under
+`/var/lib/roddy-store/project-workshop`, check the file hashes in `manifest.json`,
+set ownership to `roddystore:roddystore` (directories 700, files 600), then replace
+the `library` directory with the validated staging directory. Keep the previous
+library for rollback. Never put this export in `public/` or GitHub Pages: it
+contains purchasing estimates and supplier documents. `PROJECT_WORKSHOP_DIR`
+overrides the storage root; the default is beside the order database.
+
+The owner-authenticated `/admin/workshop` endpoints list documents and issue
+two-hour viewing links. Relative images and downloads share that limited library
+access. Links contain random capabilities, not GitHub credentials; do not log or
+share them. Responses disable caching and referrers, sandbox HTML, and only serve
+manifest-listed files within the library. Session digests live in a separate
+SQLite database outside the served directory. Reopening a card issues a new link.
+
+The exporter follows existing local document links and includes linked directory
+contents using an artifact-extension allowlist. It excludes hidden files and
+files outside the two project roots, bundles native KiCad folders, and fixes two
+known moved archive links in the exported copy. Original hardware files remain
+unchanged. Historical concepts are hidden by default in the admin library.
+
 ## First deployment
 
 1. Verify the SSH host fingerprint against the droplet console. Use the dedicated

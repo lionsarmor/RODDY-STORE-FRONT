@@ -33,6 +33,7 @@ from .newsletter import register_newsletter
 from .forum import register_forum
 from .customers import register_customers
 from .pcb_projects import register_pcb_projects
+from .project_workshop import register_project_workshop
 from .catalog_sourcing import register_catalog_sourcing
 
 
@@ -666,5 +667,6 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
     from .pricing_refresh import PricingRefresh
     pricing_refresh=PricingRefresh(commerce)
     app.state.pricing_refresh=pricing_refresh
+    register_project_workshop(app,require_admin,os.getenv('PROJECT_WORKSHOP_DIR',str(database.parent/'project-workshop')))
     app.state.pcb_projects=register_pcb_projects(app,require_admin,os.getenv('PCB_PROJECTS_DIR',str(database.parent/'pcb-projects')))
     return app
