@@ -1,5 +1,5 @@
 {
-  "method": "Five colourway studies and mystery teaser: built-in image_gen.imagegen. Hardware: native KiCad/CAD renders and deterministic composition.",
+  "method": "Colourway studies, trio campaigns and mystery teaser: built-in image_gen.imagegen. Hardware: native KiCad/CAD renders and deterministic composition.",
   "date": "2026-10-16",
   "status": "Illustrative branding; CAD and firmware unchanged",
   "base_references": {
@@ -70,6 +70,34 @@
       "prompt": "MYSTERY_TEASER_PROMPT.txt",
       "prompt_sha256": "351ce500adc6c134ba04ea917bee1adbfe40d808799c7a08743fd860ad8a51d4",
       "provenance": "MYSTERY_PROVENANCE.json"
+    },
+    {
+      "key": "RETRO_TRIO",
+      "title": "Retro computer trio \u2014 Commodore, Spectrum and Commander X16",
+      "kind": "trio",
+      "file": "RETRO_TRIO.png",
+      "sha256": "6332851b38f3eb9f06237d01a9aa1a666917a4b71de13e9b809e63908c60443d",
+      "prompt": "RETRO_TRIO_PROMPT.txt",
+      "prompt_sha256": "bc71e3414a14a9a8090da8ad4ae79e43805f444e2b7a978133e0b9c14c76581c",
+      "references": {
+        "../RODDY_KEYCHAIN_KREATURES_CREATURE_COLORWAYS.png": "6b2cbf52d1ffd7d6e3079bf3885c8325054e45c640a074414edd753bd004a063",
+        "COMMODORE.png": "d63362957b1d11efc3515ec93291aede3bb1171d307f7318bd739b244f79e7e2",
+        "SPECTRUM_NEXT.png": "6cbf9847f7fd732e7b0798aa46bc8d5f8af74148b5075b2362367a63e585c4ce"
+      },
+      "method": "Built-in image_gen.imagegen edit; illustrative colour studies. Shell CAD and firmware unchanged."
+    },
+    {
+      "key": "PASTEL_TRIO",
+      "title": "Pastel trio \u2014 lavender, strawberry and mint",
+      "kind": "trio",
+      "file": "PASTEL_TRIO.png",
+      "sha256": "a7f2e6c5943cf669624c224df63e0bfdf8e8aa2686f0673a479697ccd34d8b93",
+      "prompt": "PASTEL_TRIO_PROMPT.txt",
+      "prompt_sha256": "06d4aacfbd145a415eb3d2aab652ad7775688c5089313a0b0ef198154058de30",
+      "references": {
+        "../RODDY_KEYCHAIN_KREATURES_CREATURE_COLORWAYS.png": "6b2cbf52d1ffd7d6e3079bf3885c8325054e45c640a074414edd753bd004a063"
+      },
+      "method": "Built-in image_gen.imagegen edit; illustrative colour studies. Shell CAD and firmware unchanged."
     }
   ]
 }
