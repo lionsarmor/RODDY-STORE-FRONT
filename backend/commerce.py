@@ -176,7 +176,7 @@ class Commerce:
                     raise HTTPException(503, "Made-to-order checkout is unavailable.")
                 m = p["merch"]
                 v = next((v for v in m["variants"] if v["id"] == line["variantId"]), None)
-                if not v or not v.get("enabled") or v.get("available") is not True or (country and country not in m.get("shippingCountries", [])):
+                if not v or not v.get("enabled") or (v.get("available") is not True and 'pricingRevision' not in item) or (country and country not in m.get("shippingCountries", [])):
                     raise HTTPException(409, "This color, size or shipping country is unavailable.")
                 item.update(kind="printify", cents=cents(v["price"]), product_id=m["productId"],
                             variant_id=v["providerVariantId"], shop_id=m["shopId"], label=" / ".join(filter(None, [v.get("color"), v.get("size")])))

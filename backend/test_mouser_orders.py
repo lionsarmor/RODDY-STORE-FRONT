@@ -188,3 +188,13 @@ class AutomaticPricingTests(MouserAutomaticTests):
         refresh.run()
         self.assertIn('mouser-part',self.client.get('/inventory').json()['pricingPendingProducts'])
         self.assertEqual(self.transport.submissions,0)
+
+    def test_live_stock_can_recover_without_overriding_owner_disabled_variants(self):
+        self.enable();self.items=[{'id':'hoodie','variantId':'10','qty':1}]
+        hoodie=next(x for x in self.catalog['products'] if x['id']=='hoodie')
+        hoodie['merch']['variants'][0]['available']=False
+        self.assertEqual(self.quote().status_code,200)
+        self.supplier.available=False
+        self.assertEqual(self.quote().status_code,409)
+        self.supplier.available=True;hoodie['merch']['variants'][0]['enabled']=False
+        self.assertEqual(self.quote().status_code,409)
