@@ -24,27 +24,32 @@
     {
       "id": "apps",
       "name": "Apps",
-      "code": "TOOLS WITH PERSONALITY"
+      "code": "TOOLS WITH PERSONALITY",
+      "visible": true
     },
     {
       "id": "games",
       "name": "Games",
-      "code": "ENTER ANOTHER WORLD"
+      "code": "ENTER ANOTHER WORLD",
+      "visible": true
     },
     {
       "id": "video",
       "name": "Video",
-      "code": "RODDY VIDEO"
+      "code": "RODDY VIDEO",
+      "visible": true
     },
     {
       "id": "computers",
       "name": "Computers",
-      "code": "YOUR NEXT GREAT IDEA"
+      "code": "YOUR NEXT GREAT IDEA",
+      "visible": true
     },
     {
       "id": "labs",
       "name": "Labs",
-      "code": "EXPERIMENTS & IDEAS"
+      "code": "EXPERIMENTS & IDEAS",
+      "visible": true
     },
     {
       "id": "kits",
@@ -56,7 +61,9 @@
     {
       "id": "merch",
       "name": "Merch",
-      "code": "MERCHANDISE & THINGS"
+      "code": "MERCHANDISE & THINGS",
+      "visible": true,
+      "previewKey": "d4075d9a652d4a24b88173d553e1f25e"
     }
   ],
   "tags": [
@@ -175,7 +182,9 @@
       },
       "fulfillment": "",
       "fulfillmentRef": "",
-      "designOrigin": "design"
+      "designOrigin": "design",
+      "pricingMode": "automatic",
+      "pricingFloor": 0
     },
     {
       "id": "standard-keycaps",
@@ -229,7 +238,9 @@
       },
       "fulfillment": "",
       "fulfillmentRef": "",
-      "designOrigin": "design"
+      "designOrigin": "design",
+      "pricingMode": "automatic",
+      "pricingFloor": 0
     },
     {
       "id": "weather-commander-x16",
@@ -291,7 +302,9 @@
       "fulfillment": "",
       "fulfillmentRef": "",
       "keycaps": null,
-      "designOrigin": "original"
+      "designOrigin": "original",
+      "pricingMode": "automatic",
+      "pricingFloor": 0
     },
     {
       "id": "shadow-over-space",
@@ -357,7 +370,9 @@
       "fulfillment": "",
       "fulfillmentRef": "",
       "keycaps": null,
-      "designOrigin": "original"
+      "designOrigin": "original",
+      "pricingMode": "automatic",
+      "pricingFloor": 0
     },
     {
       "id": "desk-commander",
@@ -427,7 +442,9 @@
       "fulfillment": "",
       "fulfillmentRef": "",
       "keycaps": null,
-      "designOrigin": "original"
+      "designOrigin": "original",
+      "pricingMode": "automatic",
+      "pricingFloor": 0
     },
     {
       "id": "iknowwhatisaw",
@@ -483,7 +500,9 @@
       "fulfillment": "",
       "fulfillmentRef": "",
       "keycaps": null,
-      "designOrigin": "original"
+      "designOrigin": "original",
+      "pricingMode": "automatic",
+      "pricingFloor": 0
     },
     {
       "id": "keychain-kreatures",
@@ -547,7 +566,9 @@
       "fulfillmentRef": "",
       "keycaps": null,
       "designOrigin": "original",
-      "relatedProductIds": []
+      "relatedProductIds": [],
+      "pricingMode": "automatic",
+      "pricingFloor": 0
     },
     {
       "id": "kestrel-computer",
@@ -580,7 +601,9 @@
       "fulfillment": "",
       "fulfillmentRef": "",
       "keycaps": null,
-      "designOrigin": "original"
+      "designOrigin": "original",
+      "pricingMode": "automatic",
+      "pricingFloor": 0
     },
     {
       "id": "desk-mat",
@@ -704,7 +727,9 @@
       "fulfillmentRef": "a4cb14f91b6c5148465f8bec442365ec52b732330fa3c7409e91e7024845b0d8",
       "fulfillment": "",
       "keycaps": null,
-      "designOrigin": "design"
+      "designOrigin": "design",
+      "pricingMode": "automatic",
+      "pricingFloor": 0
     },
     {
       "id": "hoodie",
@@ -2789,7 +2814,9 @@
       "fulfillmentRef": "7b0f25d26e853eaf4b5c5b69fbd23269c1b8f6da1646a26a37716a4b4c0121fe",
       "fulfillment": "",
       "keycaps": null,
-      "designOrigin": "design"
+      "designOrigin": "design",
+      "pricingMode": "automatic",
+      "pricingFloor": 0
     },
     {
       "id": "link-commander-e",
@@ -2847,7 +2874,9 @@
       "keycaps": null,
       "relatedProductIds": [],
       "safetyNotice": "POWER: Use only the rear USB-C socket marked 5V POWER. The internal RP2040 USB port and JP1 jumper are service-only. Do not open the case or change the jumper for normal use. Disconnect all power before connecting or disconnecting PS/2 cables.",
-      "designOrigin": "original"
+      "designOrigin": "original",
+      "pricingMode": "automatic",
+      "pricingFloor": 0
     },
     {
       "id": "link-commander-snap-fit-enclosure",
@@ -2902,7 +2931,9 @@
       "safetyNotice": "Includes an internal guard for the RP2040 service USB and a rear 5V POWER marking. Fit-test the printed guard against your actual module. The guard is not electrical isolation; disconnect all power before opening the shell.",
       "designOrigin": "original",
       "cardImage": "img/products/kit-listings-01/lc-stl-v2-native.png",
-      "cardImageNote": "Print your own case. Free digital files; no physical parts or printer included."
+      "cardImageNote": "Print your own case. Free digital files; no physical parts or printer included.",
+      "pricingMode": "automatic",
+      "pricingFloor": 0
     },
     {
       "id": "aula-f87-pro",
@@ -2946,7 +2977,9 @@
       "shippingCountries": [
         "US"
       ],
-      "designOrigin": "selected"
+      "designOrigin": "selected",
+      "pricingMode": "automatic",
+      "pricingFloor": 0
     },
     {
       "id": "roddy-de10-nano",
@@ -3020,7 +3053,8 @@
       "keycaps": null,
       "merch": null,
       "designOrigin": "selected",
-      "pricingMode": "automatic"
+      "pricingMode": "automatic",
+      "pricingFloor": 0
     },
     {
       "id": "mister-sdram-128mb",
@@ -3063,7 +3097,9 @@
       "keycaps": null,
       "merch": null,
       "fulfillmentRef": "",
-      "designOrigin": "community"
+      "designOrigin": "community",
+      "pricingMode": "automatic",
+      "pricingFloor": 0
     },
     {
       "id": "mister-usb-hub",
@@ -3106,7 +3142,9 @@
       "keycaps": null,
       "merch": null,
       "fulfillmentRef": "",
-      "designOrigin": "community"
+      "designOrigin": "community",
+      "pricingMode": "automatic",
+      "pricingFloor": 0
     },
     {
       "id": "mister-analog-io",
@@ -3152,7 +3190,9 @@
       "keycaps": null,
       "merch": null,
       "fulfillmentRef": "",
-      "designOrigin": "community"
+      "designOrigin": "community",
+      "pricingMode": "automatic",
+      "pricingFloor": 0
     },
     {
       "id": "mister-rtc",
@@ -3194,7 +3234,9 @@
       "keycaps": null,
       "merch": null,
       "fulfillmentRef": "",
-      "designOrigin": "community"
+      "designOrigin": "community",
+      "pricingMode": "automatic",
+      "pricingFloor": 0
     },
     {
       "id": "mister-usb-bridge",
@@ -3236,7 +3278,9 @@
       "keycaps": null,
       "merch": null,
       "fulfillmentRef": "",
-      "designOrigin": "community"
+      "designOrigin": "community",
+      "pricingMode": "automatic",
+      "pricingFloor": 0
     },
     {
       "id": "usb-c-power-supply-5v-3a",
@@ -3304,7 +3348,8 @@
       "keycaps": null,
       "merch": null,
       "designOrigin": "selected",
-      "pricingMode": "automatic"
+      "pricingMode": "automatic",
+      "pricingFloor": 0
     },
     {
       "category": "video",
@@ -3351,7 +3396,9 @@
       "supplier": null,
       "fulfillmentRef": "",
       "keycaps": null,
-      "merch": null
+      "merch": null,
+      "pricingMode": "automatic",
+      "pricingFloor": 0
     },
     {
       "category": "video",
@@ -3477,7 +3524,9 @@
       "supplier": null,
       "fulfillmentRef": "",
       "keycaps": null,
-      "merch": null
+      "merch": null,
+      "pricingMode": "automatic",
+      "pricingFloor": 0
     },
     {
       "id": "keychain-kreatures-hardware-bundle",
@@ -3532,7 +3581,9 @@
         "keychain-kreatures-snap-fit-enclosure"
       ],
       "cardImageNote": "Native CAD preview of the bare mainboard. Included modules are listed; completion components and case are separate.",
-      "cardImage": "img/products/kit-listings-01/kk-board-v1.png"
+      "cardImage": "img/products/kit-listings-01/kk-board-v1.png",
+      "pricingMode": "automatic",
+      "pricingFloor": 0
     },
     {
       "id": "keychain-kreatures-parts-kit",
@@ -3586,7 +3637,9 @@
         "keychain-kreatures-snap-fit-enclosure"
       ],
       "cardImageNote": "Illustrative component selection; final contents follow the revision-specific BOM. Board kit and printed case excluded.",
-      "cardImage": "img/products/kit-listings-01/kk-parts-v1.png"
+      "cardImage": "img/products/kit-listings-01/kk-parts-v1.png",
+      "pricingMode": "automatic",
+      "pricingFloor": 0
     },
     {
       "id": "link-commander-bare-boards",
@@ -3638,7 +3691,9 @@
       "designOrigin": "original",
       "prototypeWarning": "Prototype hardware: testing has not been completed. Assembly, fault-finding and firmware development are required. This is not a finished working device; parts or board revisions may need changes.",
       "cardImageNote": "Native CAD preview of the bare mainboard. Included modules are listed; completion components and case are separate.",
-      "cardImage": "img/products/kit-listings-01/lc-board-v1.png"
+      "cardImage": "img/products/kit-listings-01/lc-board-v1.png",
+      "pricingMode": "automatic",
+      "pricingFloor": 0
     },
     {
       "id": "link-commander-parts-kit",
@@ -3692,7 +3747,9 @@
       "designOrigin": "original",
       "prototypeWarning": "Prototype hardware: testing has not been completed. Assembly, fault-finding and firmware development are required. This is not a finished working device; parts or board revisions may need changes.",
       "cardImageNote": "Illustrative component selection; final contents follow the revision-specific BOM. Board kit and printed case excluded.",
-      "cardImage": "img/products/kit-listings-01/lc-parts-v1.png"
+      "cardImage": "img/products/kit-listings-01/lc-parts-v1.png",
+      "pricingMode": "automatic",
+      "pricingFloor": 0
     },
     {
       "id": "keychain-kreatures-snap-fit-enclosure",
@@ -3744,7 +3801,9 @@
       "designOrigin": "original",
       "prototypeWarning": "Physical print fit and hardware testing are incomplete. These files are for C7/P5 only; check the included fit coupons and actual components.",
       "cardImage": "img/products/kit-listings-01/kk-stl-v1.png",
-      "cardImageNote": "Print your own case. Free digital files; no physical parts or printer included."
+      "cardImageNote": "Print your own case. Free digital files; no physical parts or printer included.",
+      "pricingMode": "automatic",
+      "pricingFloor": 0
     }
   ],
   "keycapProfiles": [
