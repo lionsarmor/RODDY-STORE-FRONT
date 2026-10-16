@@ -10,7 +10,7 @@ import httpx
 from fastapi.testclient import TestClient
 
 from backend.app import create_app
-from backend.supplier_clients import Mouser, number
+from backend.supplier_clients import Mouser, MouserOrdering, number
 from backend.test_checkout import FakeProvider
 
 PART = {'MouserPartNumber': '123-FPGA', 'ManufacturerPartNumber': 'DE10-TEST', 'Manufacturer': 'Test Manufacturer',
@@ -169,6 +169,55 @@ class SupplierTests(unittest.TestCase):
         self.admin('POST', '/connections', {'provider': 'mouser', 'disconnect': True})
         saved = json.loads((self.root / 'suppliers.json').read_text())['mouser']
         self.assertNotIn('searchKey', saved); self.assertEqual(saved['orderKey'], 'private-order-key')
+
+    def test_mouser_order_readiness_does_not_confuse_access_with_payment(self):
+        from backend.suppliers import write_connections
+        from datetime import datetime, timezone
+        from fastapi import HTTPException
+        path=self.root/'suppliers.json'
+        write_connections(path,{'mouser':{'orderKey':'private-order-key','orderApprovalPending':True}})
+        now=datetime.now(timezone.utc)
+        # Synthetic fixtures only; no card identifier or account address is returned.
+        for names,status,expired,unexpired,unknown in [
+            ([], 'missing',0,0,0),
+            (['Visa ending in 1111- Exp  01/20'], 'expired',1,0,0),
+            ([f'Visa ending in 1111- Exp {now.month:02d}/{now.year}'], 'on-file',0,1,0),
+            (['Card ending in 1111'], 'unverified',0,0,1),
+            (['Card Exp 99/40'], 'unverified',0,0,1),
+            (['Visa Exp 01/20','Card Exp 12/99'], 'on-file',1,1,0),
+        ]:
+            payload={'OrderInitialize':{'CurrencyCode':'USD','Errors':[],
+                'BillingAddress':{'AddressOne':'private-address','Error':None},
+                'Shipping':{'Methods':[{'Code':1,'Rate':None}]},
+                'Payment':{'PaymentTypes':[{'Name':name,'CreditCardLastFourDigits':'1111'} for name in names]
+                    +[{'Name':'PayPal','CreditCardLastFourDigits':None}]}}}
+            with self.subTest(status=status,names=names), patch('backend.supplier_clients.httpx.post',return_value=httpx.Response(200,json=payload)) as post:
+                response=self.admin('POST','/verify',{'provider':'mouser'})
+                self.assertEqual(response.status_code,200,response.text)
+                result=response.json()['checks']['ordering']
+                self.assertTrue(result['ok']);self.assertFalse(result['paymentVerified']);self.assertFalse(result['orderPlaced'])
+                self.assertEqual((result['cardStatus'],result['expiredCards'],result['unexpiredCards'],result['unknownExpiryCards']),(status,expired,unexpired,unknown))
+                saved=self.admin('GET').json()['connections'][1]
+                self.assertFalse(saved['orderApprovalPending']);self.assertTrue(saved['orderVerifiedAt'])
+                self.assertEqual(saved['orderReadiness']['cardStatus'],status)
+                self.assertFalse(saved['capabilities']['automaticPayment'])
+                for secret in ['private-order-key','private-address','1111']:
+                    self.assertNotIn(secret,response.text);self.assertNotIn(secret,json.dumps(saved))
+                post.assert_called_once()
+                self.assertEqual(post.call_args.args[0],'https://api.mouser.com/api/v1/order/options/query')
+                self.assertEqual(post.call_args.kwargs['json'],{'OrderInitialize':{'CurrencyCode':'USD'}})
+        with patch('backend.supplier_clients.httpx.post',return_value=httpx.Response(401,json={})):
+            failed=self.admin('POST','/verify',{'provider':'mouser'}).json()
+            self.assertFalse(failed['checks']['ordering']['ok'])
+            status=failed['connections'][1]
+            self.assertIsNone(status['orderVerifiedAt']);self.assertFalse(status['orderReadiness']['accessVerified'])
+        self.admin('POST','/connections',{'provider':'mouser','orderKey':'replacement-test-only'})
+        status=self.admin('GET').json()['connections'][1]
+        self.assertIsNone(status['orderReadiness']);self.assertIsNone(status['orderVerifiedAt'])
+        for payload in [{},[],{'OrderInitialize':None},{'OrderInitialize':{'Errors':[{'Message':'private-order-key'}]}}]:
+            with patch('backend.supplier_clients.httpx.post',return_value=httpx.Response(200,json=payload)):
+                with self.assertRaises(HTTPException) as caught:MouserOrdering({'orderKey':'test'},lambda _:None).options()
+                self.assertNotIn('private-order-key',caught.exception.detail)
 
     def test_preferred_supplier_official_url_identity_and_revision_conflict(self):
         favorite = {'id': 'retro', 'name': 'Chosen Store', 'provider': 'aliexpress', 'url': 'https://www.aliexpress.com/store/1234567', 'query': 'MiSTer FPGA'}

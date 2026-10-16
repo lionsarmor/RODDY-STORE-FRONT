@@ -119,6 +119,7 @@ def register_suppliers(app, connect, require_admin, config_path, public_url, sit
                  'searchVerifiedAt': config.get(provider, {}).get('verifiedAt'),
                  'approvalPending': config.get(provider, {}).get('approvalPending', False),
                  'orderVerifiedAt': config.get(provider, {}).get('orderVerifiedAt'),
+                 'orderReadiness': config.get(provider, {}).get('orderReadiness') if provider == 'mouser' else None,
                  'orderKeyStored': bool(config.get(provider, {}).get('orderKey')) if provider == 'mouser' else False,
                  'orderApprovalPending': config.get(provider, {}).get('orderApprovalPending', False) if provider == 'mouser' else False,
                  'capabilities': {'keywordSearch': True, 'productLookup': True, 'completeSellerCatalog': False, 'orderSubmission': False, 'automaticPayment': False}}
@@ -185,6 +186,10 @@ def register_suppliers(app, connect, require_admin, config_path, public_url, sit
                         value = text(body[field], 4096 if field == 'accessToken' else 512, 'the API credential', True)
                         if any(c.isspace() for c in value):
                             raise HTTPException(400, 'API credentials cannot contain whitespace.')
+                        if field == 'orderKey' and value != entry.get(field):
+                            entry.pop('orderVerifiedAt', None)
+                            entry.pop('orderReadiness', None)
+                            entry['orderApprovalPending'] = False
                         entry[field] = value
                 needed = ['searchKey'] if provider == 'mouser' else ['appKey', 'appSecret']
                 if not (any(entry.get(field) for field in ['searchKey','orderKey']) if provider=='mouser' else all(entry.get(field) for field in needed)):
@@ -212,7 +217,12 @@ def register_suppliers(app, connect, require_admin, config_path, public_url, sit
                     result=client();checks[name]={'ok':True,**(result if name=='ordering' else {'products':len(result['products'])})}
                     config['verifiedAt' if name=='search' else 'orderVerifiedAt']=int(time.time())
                     config['approvalPending' if name=='search' else 'orderApprovalPending']=False
-                except HTTPException as exc:checks[name]={'ok':False,'message':exc.detail}
+                    if name=='ordering':config['orderReadiness']={**result,'checkedAt':config['orderVerifiedAt']}
+                except HTTPException as exc:
+                    checks[name]={'ok':False,'message':exc.detail}
+                    if name=='ordering':
+                        config.pop('orderVerifiedAt',None)
+                        config['orderReadiness']={'accessVerified':False,'checkedAt':int(time.time()),'message':exc.detail,'paymentVerified':False,'orderPlaced':False}
             with config_lock:
                 current=read_connections(config_path)
                 saved=current.get(provider,{})

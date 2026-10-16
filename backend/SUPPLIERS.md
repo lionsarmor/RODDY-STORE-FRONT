@@ -130,10 +130,18 @@ Bulk selection/review remains available. All imports remain unpublished drafts
 with fulfillment pending until the owner edits and publishes them normally.
 
 Mouser Search access is connected and has passed a live keyword search. The
-separately saved Order/Cart key still returns HTTP 401 from the read-only account
-options endpoint, and the owner confirmed approval is pending. **Verify supplier
+separately saved Order/Cart key passed a live read-only account-options check on
+2026-10-16. The account returned USD billing/shipping options, but its only saved
+card was listed as expired. The owner now wants automatic purchasing; account
+access is verified, while payment setup and the purchasing integration remain
+incomplete. **Verify supplier
 connection** checks these capabilities separately without placing an order. Both
 keys remain private; manual purchasing does not require Order/Cart API approval.
+The admin connection panel persists the latest account/card readiness result.
+Mouser exposes expiry in a card display name: unrecognized expiry formats remain
+unverified, and an unexpired card on file is never represented as tested payment.
+Changing the Order key or a failed recheck invalidates previous readiness.
+Checks only read account options; they do not submit an order or charge a card.
 
 Save a store's name, AliExpress Store ID and keywords in Preferred suppliers.
 Entering an ID builds its official HTTPS store URL; pasting a `/store/NUMBER` URL
@@ -181,9 +189,12 @@ Paid orders enter **Orders → To order / send** for the owner to purchase manua
 record a supplier reference and invoice, then save shipment tracking. See
 [ORDERS.md](ORDERS.md). No supplier order or payment endpoint is called.
 
-Future automatic purchasing would need separate explicit authorization, approved
-billing/API permissions, durable submission/reconciliation and exception handling.
-The owner has deferred that work; a saved token or card never enables it.
+The owner requested automatic Mouser purchasing on 2026-10-16. Before activation,
+it still needs a current saved payment method, a confirmed delivery policy,
+landed-cost limits, durable submission/reconciliation and exception handling.
+Every automatic order must remain visible in Orders with its supplier reference
+and status. Existing manual orders must not be retroactively submitted merely
+because the API key becomes approved.
 
 ## Official references
 

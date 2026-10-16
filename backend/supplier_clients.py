@@ -5,6 +5,7 @@ AliExpress: current Open Service docs and their downloadable Java TOP SDK.
 No purchasing/payment API is exposed by these catalog adapters.
 """
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
+from datetime import datetime, timezone
 import hashlib
 import hmac
 import re
@@ -201,11 +202,43 @@ class MouserOrdering:
             if response.status_code in {401,403}:
                 raise HTTPException(409,'Mouser rejected the Order/Cart API connection. Check its approval and save the active Order/Cart key; the Search key is different.')
             if not response.is_success:raise HTTPException(503,'Mouser ordering options are unavailable. No order was placed.')
-            result=response.json();result=result.get('OrderInitialize',result)
+            result=response.json()
+            if not isinstance(result,dict) or not isinstance(result.get('OrderInitialize'),dict):
+                raise HTTPException(503,'Mouser returned incomplete account options. No order was placed.')
+            result=result['OrderInitialize']
             if result.get('Errors'):raise HTTPException(409,'Mouser account options need attention. Check billing and Order/Cart API access in My Mouser.')
-            payment=result.get('Payment') or {};shipping=result.get('Shipping') or {}
-            return {'accessVerified':True,'billingReady':bool(result.get('BillingAddress')),
+            payment=result.get('Payment');shipping=result.get('Shipping')
+            billing=result.get('BillingAddress') or {}
+            if (not isinstance(payment,dict) or not isinstance(shipping,dict) or not isinstance(billing,dict)
+                    or not isinstance(result.get('CurrencyCode'),str)
+                    or not isinstance(payment.get('PaymentTypes'),list) or not isinstance(shipping.get('Methods'),list)
+                    or any(not isinstance(card,dict) for card in payment['PaymentTypes'])):
+                raise HTTPException(503,'Mouser returned incomplete account options. No order was placed.')
+            # The API exposes expiry only in its display name, not a structured
+            # field. Unknown formats must stay unknown, never imply a valid card.
+            cards=[card for card in payment.get('PaymentTypes') or [] if card.get('CreditCardLastFourDigits')]
+            current=datetime.now(timezone.utc)
+            expired=unexpired=0
+            for card in cards:
+                match=re.search(r'\bExp\s+(0?[1-9]|1[0-2])/(\d{4}|\d{2})\b',str(card.get('Name','')),re.IGNORECASE)
+                if match:
+                    month,year=map(int,match.groups())
+                    if year<100:year+=2000
+                    if (year,month)<(current.year,current.month):expired+=1
+                    else:unexpired+=1
+            unknown=len(cards)-expired-unexpired
+            if not cards:
+                status='missing';message='No saved card returned by Mouser. Add a card in My Mouser before setting up automatic payment.'
+            elif unexpired:
+                status='on-file';message='An unexpired saved card is on file. Payment has not been tested; automatic purchasing is not enabled.'
+            elif unknown:
+                status='unverified';message='Mouser returned a saved card without a recognized expiry. Check it in My Mouser before setting up automatic payment.'
+            else:
+                status='expired';message='All saved cards returned by Mouser are expired. Update the saved card in My Mouser before setting up automatic payment.'
+            return {'accessVerified':True,'billingReady':bool(billing) and not bool(billing.get('Error')),
                     'currency':result.get('CurrencyCode'),'shippingMethods':len(shipping.get('Methods') or []),
-                    'paymentMethods':len(payment.get('PaymentTypes') or []),'orderPlaced':False}
+                    'paymentMethods':len(payment.get('PaymentTypes') or []),'savedCards':len(cards),
+                    'expiredCards':expired,'unexpiredCards':unexpired,'unknownExpiryCards':unknown,
+                    'cardStatus':status,'message':message,'paymentVerified':False,'orderPlaced':False}
         except (httpx.HTTPError,ValueError):
             raise HTTPException(503,'Mouser ordering connection could not be checked. No order was placed.') from None
