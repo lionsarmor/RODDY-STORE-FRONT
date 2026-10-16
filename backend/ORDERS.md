@@ -7,12 +7,17 @@ manufacturing recipes and supplier credentials never appear in CSV exports.
 
 ## Daily workflow
 
-1. Open **Orders → To order / send**. Copy delivery details or download the private
+Orders opens **All orders** by default, including automatic Printify fulfillment,
+digital purchases, unpaid attempts, refunds and manual shipments. It refreshes
+every 30 seconds while visible; loaded history pages remain loaded. Use
+**Show all / clear filters** to return to the complete history.
+
+1. Open **Orders → Needs your action**. Copy delivery details or download the private
    packet. Keycap packets contain the frozen manufacturing JSON for each design;
    Mouser/AliExpress packets contain exact part/listing/variant IDs and quantities.
 2. Place and pay for the supplier order yourself. Enter its order number and,
    optionally, the actual invoice total in USD. Click **Mark ordered**.
-3. Open **In progress**. When dispatched, enter carrier and tracking, then click
+3. Open **Processing**. When dispatched, enter carrier and tracking, then click
    **Save tracking + mark shipped**. Tracking appears on the buyer's receipt page.
 4. Use **Shipped** for completed dispatches and **Needs attention** for exceptions.
    Mixed orders can occupy more than one lane while separate parcels progress.
@@ -20,7 +25,8 @@ manufacturing recipes and supplier credentials never appear in CSV exports.
 
 Mouser and AliExpress purchasing/payment are manual. Their stock and shipping
 checks are read-only. Keycap purchasing is also manual; no browser purchasing bot
-is installed. Existing Printify production automation continues separately.
+is installed. Printify production is automatic and appears in All orders and Processing,
+with its supplier reference, status, last update and tracking.
 Supplier-purchase automation requires a later explicit authorization and review.
 
 Manual supplier products use `supplier.fulfillment: manual` and `trackStock: false`.
@@ -67,3 +73,12 @@ $25 Canada. These are owner-authorized estimates, not supplier quotations. Both
 profiles use the approved palette, and checkout validates every individual key
 and printed-layer color. Customers can inspect the enlarged design but cannot
 download the private manufacturing packet.
+
+## Visibility regression check
+
+Run `node tools/test-order-visibility.mjs` with Playwright installed in
+`.tools/node_modules` (the same browser tooling used by the customer-guide builder).
+It mounts the actual order component against read-only fixture APIs and checks
+default history, automatic Printify fulfillment, digital orders, status refresh,
+pagination, filter recovery, mobile layout and cleanup of the refresh timer.
+It never submits a payment or supplier order.
