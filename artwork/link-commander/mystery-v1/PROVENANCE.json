@@ -1,0 +1,24 @@
+{
+  "method": "Built-in image_gen.imagegen",
+  "date": "2026-10-16",
+  "asset": "LINK_COMMANDER_MYSTERY.png",
+  "sha256": "2ac4e137a4367ff76ce328be1a8bcba538e4e59492135dc86f34232ae6826fcd",
+  "prompt": "PROMPT.txt",
+  "prompt_sha256": "48980aa39b2f9fd43d7906a0c478c7c106c93e73ad9363d11ba297f7b31b7437",
+  "references": [
+    {
+      "path": "KeychainKreatures/revisions/C7_P5-handheld/branding/collection_01/MYSTERY_TEASER.png",
+      "sha256": "fcd5f0e0fd6dde70b499302310ef60b6e7e94023dcf5da49dc6f5c4985b6c475"
+    },
+    {
+      "path": "LINK-COMMANDER/enclosure/A-snap-fit-abs/previews/CLOSED_PS2.png",
+      "sha256": "b4381c27477b1ad73928bb7732c0fec9eb826a75d25e11dec4535d3b852ff9b8"
+    },
+    {
+      "path": "RODDY-STORE-FRONT/public/img/products/link-commander/link-commander-white-closed-v1.png",
+      "sha256": "394f2593b6df9ddef2442d3e4bfeeeab33779cb9d53389186b3dfe47dd8b20b9"
+    }
+  ],
+  "original": "/home/roddy/.codex/generated_images/01a13f7b-66dc-7b12-8e87-dda8639da7cb/exec-658906fd-9542-4ad5-8226-ab53123e1cf8.png",
+  "status": "Atmospheric promotional illustration based on closed E/F enclosure CAD; not a CAD render or a tested prototype photograph. Hardware sources unchanged."
+}
