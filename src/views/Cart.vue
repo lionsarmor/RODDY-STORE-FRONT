@@ -88,7 +88,7 @@ function itemError(item) {
   }
   if (item.product.price <= 0) return "Get free downloads from their product pages.";
   if (item.product.type === "digital" && item.qty !== 1) return "Choose one copy of this digital download.";
-  if (item.product.type === "physical" && !item.product.trackStock && (item.product.supplier?.fulfillment || item.product.fulfillment)!=="manual") return "This item is temporarily unavailable.";
+  if (item.product.type === "physical" && !item.product.trackStock && !["manual","automatic"].includes(item.product.supplier?.fulfillment || item.product.fulfillment)) return "This item is temporarily unavailable.";
   if (
     ["soon", "out"].includes(stockState(item.product)) ||
     item.product.pricePending

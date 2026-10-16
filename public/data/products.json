@@ -3007,11 +3007,12 @@
       "documentationUrl": "",
       "downloadUrl": "",
       "githubUrl": "",
-      "fulfillment": "manual",
-      "fulfillmentRef": "0260e8ad6f8f8a6eb447ffbb3a27488f7cad5f78e4d6c9abe6490a19c765f7df",
+      "fulfillment": "automatic",
+      "fulfillmentRef": "6a65ec7f3ea0f0d72293f719304b205839709fca2f4dd36c5fac4871870a84cc",
       "keycaps": null,
       "merch": null,
-      "designOrigin": "selected"
+      "designOrigin": "selected",
+      "pricingMode": "automatic"
     },
     {
       "id": "mister-sdram-128mb",
@@ -3280,8 +3281,8 @@
           "additionalItem": 25
         }
       },
-      "fulfillment": "manual",
-      "fulfillmentRef": "25ead206bb2745fe5440c90bff614c97745a47351ced9126ba90d99fcf792523",
+      "fulfillment": "automatic",
+      "fulfillmentRef": "43c045ee94eeafc6e381f632df587e95005e8409952ee9d2500251aeeef5de44",
       "relatedProductIds": [
         "link-commander-e"
       ],
@@ -3294,7 +3295,8 @@
       "supplier": null,
       "keycaps": null,
       "merch": null,
-      "designOrigin": "selected"
+      "designOrigin": "selected",
+      "pricingMode": "automatic"
     },
     {
       "category": "video",
