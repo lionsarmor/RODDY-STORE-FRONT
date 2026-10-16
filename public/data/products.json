@@ -3230,48 +3230,6 @@
       "designOrigin": "community"
     },
     {
-      "id": "mister-classic-case",
-      "sku": "C-036",
-      "name": "MiSTer Classic Metal Case — Black",
-      "category": "computers",
-      "type": "physical",
-      "status": "coming-soon",
-      "active": false,
-      "featured": false,
-      "price": 0,
-      "pricePending": true,
-      "stock": 0,
-      "trackStock": false,
-      "description": "A candidate black metal enclosure advertised for the DE10-Nano, analog I/O v6.1 and MiSTer USB hub. Final connector clearance, stack fit and included hardware will be confirmed before release. Enclosure only; boards, fan and other electronics are separate unless explicitly included in the final specification.",
-      "shortDescription": "A black metal enclosure for the classic DE10-Nano stack.",
-      "images": [],
-      "coverImage": "",
-      "tags": [
-        "new-tag-5"
-      ],
-      "specs": {
-        "Color": "Black",
-        "Material": "Metal",
-        "Intended stack": "DE10-Nano + Analog I/O v6.1 + MiSTer USB hub"
-      },
-      "supplier": null,
-      "officeShipping": {},
-      "releaseNote": "In preparation. Final specifications, pricing and shipping will be confirmed before orders open.",
-      "compareAtPrice": 0,
-      "story": "",
-      "documentationUrl": "",
-      "downloadUrl": "",
-      "githubUrl": "",
-      "fulfillment": "pending",
-      "keycaps": null,
-      "merch": null,
-      "shippingCountries": [
-        "US"
-      ],
-      "fulfillmentRef": "7c3a7d224ddc6f590bde923b832902ba2bb4a4a6df8284244e2e97b8bc06fa14",
-      "designOrigin": "selected"
-    },
-    {
       "id": "usb-c-power-supply-5v-3a",
       "sku": "RODDY-PWR-5V3A-US",
       "name": "5V / 3A USB-C Power Adapter + Cable",
