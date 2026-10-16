@@ -1,4 +1,5 @@
 <script setup>
+import PrototypeNotice from './PrototypeNotice.vue';
 import {
   stockState,
   stockLabel,
@@ -58,6 +59,7 @@ const catalog = useCatalogStore();
     </div>
     <div class="product-card-body">
       <h3>{{ product.name }}</h3>
+      <PrototypeNotice :product="product" compact />
       <p>{{ product.shortDescription || product.description }}</p>
       <p v-if="product.dynamicPricing" class="shipping-destinations">Price estimate · confirmed with delivery address</p><ProductTags :ids="product.tags" /><p v-if="product.type === 'physical'" class="shipping-destinations">{{ shippingLabel(product) }}</p>
       <div class="product-card-bottom">

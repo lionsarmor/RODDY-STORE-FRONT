@@ -1,4 +1,5 @@
 <script setup>
+import PrototypeNotice from '../components/PrototypeNotice.vue';
 import { computed, ref, reactive, watch, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import {
@@ -184,6 +185,7 @@ function updateQty(item, value) {
               class="font-mono text-sm font-bold"
               >{{ item.product.name }}</RouterLink
             >
+            <PrototypeNotice :product="item.product" />
             <p v-if="item.design" class="mt-2 text-xs leading-relaxed">{{designLabel(item.design)}}</p>
             <p v-if="item.variant" class="mt-2 text-sm">{{ variantLabel(item.variant) }}</p>
             <p class="mt-2 font-mono text-xs text-text-dim">

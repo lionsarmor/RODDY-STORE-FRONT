@@ -1,5 +1,6 @@
 <script setup>
 import { computed, ref } from "vue";
+import KitBomEditor from './KitBomEditor.vue';
 import KeycapProductEditor from './KeycapProductEditor.vue';
 import OfficeShipping from "./OfficeShipping.vue";
 import ShippingDestinations from "./ShippingDestinations.vue";
@@ -50,7 +51,7 @@ function toggleTag(id) {
       aria-label="Product editor sections"
     >
       <button
-        v-for="t in ['details', 'images', 'pricing', ...(product.type === 'physical' ? ['options & shipping', 'keyboard profile', ...(product.supplier ? ['supplier'] : [])] : []), 'links']"
+        v-for="t in ['details', 'images', 'pricing', ...(product.type === 'physical' ? ['options & shipping', 'keyboard profile', 'parts kit', ...(product.supplier ? ['supplier'] : [])] : []), 'links']"
         :key="t"
         role="tab"
         :aria-selected="tab === t"
@@ -107,6 +108,7 @@ function toggleTag(id) {
           />
         </label>
       </div>
+      <label>Red prototype warning<textarea v-model="product.prototypeWarning" rows="3" placeholder="Testing is not complete. Explain assembly requirements and limitations." /><small>Shown in red on cards, product pages and in the cart. This notice does not prevent purchases.</small></label>
       <div class="field-heading">
         <h3>Product tags</h3>
         <span>Colors are managed in Tags</span>
@@ -215,6 +217,7 @@ function toggleTag(id) {
     </div>
     <div v-if="tab === 'keyboard profile'" class="editor-content"><KeycapProductEditor :product="product" :catalog="catalog" /></div>
     <div v-if="tab === 'options & shipping'" class="editor-content"><ShippingDestinations :product="product" /><KeycapProductEditor v-if="product.keycaps" :product="product" :catalog="catalog" /><MerchEditor v-else-if="product.merch" :product="product" /><OfficeShipping v-else :product="product" /></div>
+    <KitBomEditor v-if="tab === 'parts kit'" :product="product" />
     <div v-if="tab === 'supplier' && product.supplier" class="editor-content">
       <h3>{{ product.supplier.provider === 'mouser' ? 'Mouser Electronics' : 'AliExpress' }}</h3>
       <p class="help-copy">Listing {{ product.supplier.supplierSku }} · Variant {{ product.supplier.variantId || 'not applicable' }}</p>

@@ -1,4 +1,5 @@
 <script setup>
+import PrototypeNotice from '../components/PrototypeNotice.vue';
 import { computed, ref, watch } from "vue";
 import {
   useCatalogStore,
@@ -278,6 +279,7 @@ async function buyNow() {
         <p v-if="creatorUrl" class="release-note product-origin"><strong>{{ product.projectCredit.projectName }}</strong> · Playback tools for both X16 editions.</p>
         <p v-else class="release-note product-origin"><strong>{{ productOrigin(product).label }}</strong> · {{ productOrigin(product).description }}</p>
         <p v-if="product.dynamicPricing" class="text-sm text-text-dim">Price estimate. Current pricing and shipping are confirmed for your address before payment.</p><ProductTags :ids="product.tags" />
+        <PrototypeNotice :product="product" />
         <p class="detail-short">{{ product.shortDescription }}</p>
         <p v-if="product.safetyNotice" class="notice" role="note">{{ product.safetyNotice }}</p>
         <div class="detail-price">

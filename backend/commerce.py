@@ -146,6 +146,10 @@ class Commerce:
             if (not p or not p.get("active") or p.get("status") != "available" or p.get("pricePending")
                     or p.get("downloadUrl") or "free" in p.get("tags", [])):
                 raise HTTPException(409, "An item is unavailable. Refresh your cart.")
+            if (p.get('supplier') or {}).get('bom') is not None:
+                from .mouser_bom import unit_lines
+                try:unit_lines(p['supplier'])
+                except ValueError as e:raise HTTPException(409,str(e)) from None
             if line.get("design") and not p.get("keycaps"):
                 raise HTTPException(400, "This product does not accept a keycap design.")
             if country and p.get('type') == 'physical' and 'shippingCountries' in p and country not in p['shippingCountries']:

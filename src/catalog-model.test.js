@@ -132,3 +132,12 @@ test("documentation links reject executable and non-web URLs", () => {
     );
   }
 });
+
+test('prototype sales allow incomplete testing but require a complete procurement BOM',()=>{
+ const c=normalizeCatalog(structuredClone(data)),p=c.products.find(p=>p.id==='link-commander-parts-kit');
+ Object.assign(p,{active:true,status:'available',pricePending:false,price:99,trackStock:false,prototypeWarning:'Testing not complete',supplier:{provider:'mouser',supplierSku:'kit-lc',fulfillment:'automatic',minimumQuantity:1,orderMultiple:1,bom:{revision:'H-v1',status:'ready',lines:[{supplierSku:'358-SC0917',quantity:1}]}}});
+ assert.deepEqual(validateCatalog(c),[]);
+ p.supplier.bom.status='draft';assert.ok(validateCatalog(c).some(e=>e.includes('finish the parts list')));
+ p.status='coming-soon';assert.deepEqual(validateCatalog(c),[]);
+ p.supplier.bom.lines.push({...p.supplier.bom.lines[0]});assert.ok(validateCatalog(c).some(e=>e.includes('unique exact Mouser')));
+});

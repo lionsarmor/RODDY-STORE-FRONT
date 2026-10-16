@@ -4,6 +4,7 @@ import hashlib
 import json
 import time
 from fastapi import HTTPException
+from .mouser_bom import allocated_goods
 
 DEFAULTS={'enabled':False,'markupPercent':30,'feePercent':4,'feeFixed':.30,'unknownTaxPercent':10,'round99':True}
 
@@ -44,10 +45,11 @@ class Pricing:
         if not 0<price<=99999999:raise HTTPException(409,'The calculated retail price needs review.')
         return price
     def reprice(self,items,total,shipping,goods,rules=None):
-        r=rules or self.settings();weights=[Decimal(str(goods.get(i['supplier']['supplierSku'],0))) for i in items]
+        r=rules or self.settings()
+        try:weights=allocated_goods(items,goods)
+        except ValueError as e:raise HTTPException(409,str(e)) from None
         denominator=sum(weights)
         if denominator<=0:raise HTTPException(409,'A current supplier cost is unavailable.')
-        # Items with the same supplier SKU are not valid catalog duplicates.
         return [self.retail(Decimal(total)*w/denominator/i['qty'],Decimal(shipping)*w/denominator/i['qty'],i.get('pricingFloorCents',0),r) for i,w in zip(items,weights)]
     @staticmethod
     def signature(product):

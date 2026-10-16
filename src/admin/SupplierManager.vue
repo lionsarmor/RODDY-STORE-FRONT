@@ -1,4 +1,5 @@
 <script setup>
+import KitCarts from './KitCarts.vue';
 import PricingManager from './PricingManager.vue';
 import { computed, nextTick, reactive, ref, watch } from 'vue';
 import SupplierDirectory from './SupplierDirectory.vue';
@@ -224,6 +225,7 @@ function importSelected() {
         <p v-if="selection.length && readySelection.length !== selection.length" class="notice">Choose the missing options above before adding these drafts.</p>
         <button class="button primary" :disabled="!selection.length || readySelection.length !== selection.length" @click="act(importSelected)">Add selected as hidden product drafts</button>
       </section>
+      <details class="supplier-settings"><summary>Kit carts · reusable revision BOMs</summary><KitCarts v-if="connected" :catalog="catalog" :token="token" /></details>
       <details class="supplier-settings" open><summary>Automatic retail pricing & live price status</summary><PricingManager v-if="connected" :endpoint="catalog.settings.checkoutEndpoint" :token="token" :catalog="catalog" /></details>
       <details class="supplier-settings"><summary>Draft import price estimates</summary>
       <section class="admin-section">

@@ -661,6 +661,8 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
     from .mouser_fulfillment import initialize as initialize_mouser
     initialize_mouser(connect)
     commerce.mouser_factory=lambda:MouserOrders(supplier_services['mouser'](),supplier_services['reserve'])
+    from .kit_carts import register_kit_carts
+    register_kit_carts(app,commerce,require_admin)
     from .pricing_refresh import PricingRefresh
     pricing_refresh=PricingRefresh(commerce)
     app.state.pricing_refresh=pricing_refresh

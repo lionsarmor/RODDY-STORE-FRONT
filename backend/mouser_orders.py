@@ -4,6 +4,7 @@ Official schema: https://api.mouser.com/api/docs/V1
 No POST is retried here. Supplier responses/URLs never enter public errors.
 """
 from collections import Counter
+from .mouser_bom import expected_lines as bom_lines, allocated_goods
 from datetime import datetime, timezone
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 import hashlib
@@ -43,9 +44,12 @@ def matches_address(expected,actual):
         ['CountryCode','AddressOne','AddressTwo','City','StateOrProvince','PostalCode'])
 
 def expected_lines(items):
-    lines=Counter()
-    for i in items:lines[i['supplier']['supplierSku']]+=i['qty']
-    return lines
+    try:return bom_lines(items)
+    except ValueError as e:raise MouserUnavailable(str(e)) from None
+
+def item_costs(items,goods):
+    try:return allocated_goods(items,goods)
+    except ValueError as e:raise MouserUnavailable(str(e)) from None
 
 class MouserOrders:
     def __init__(self,config,reserve):
@@ -87,15 +91,22 @@ class MouserOrders:
         if len(cards)!=1:raise MouserUnavailable('Mouser needs exactly one identifiable unexpired saved card for automatic purchasing. Review saved cards in My Mouser.')
         return {k:cards[0][k] for k in ['Method','CreditCardLastFourDigits']}
 
+    def create_cart(self,items,country):
+        # Omitting CartKey creates an isolated cart, even for repeat orders.
+        if country not in {'US','CA'}:raise MouserUnavailable('Choose a supported shipping country.')
+        lines=expected_lines(items)
+        cart=self.call('cart/items/insert',{'CartItems':[{'MouserPartNumber':sku,'Quantity':qty,'PackagingChoice':'None'} for sku,qty in sorted(lines.items())],
+                    'MouserPaysCustomsAndDuties':True}, {'countryCode':country,'currencyCode':'USD'})
+        key=cart.get('CartKey','')
+        try:UUID(key)
+        except (ValueError,TypeError,AttributeError):raise MouserUnavailable('Mouser did not return a new cart reference.') from None
+        return key
+
     def quote(self,items,address,pricing=None):
         self.enabled()
         dest=shipping_address(address)
         lines=expected_lines(items)
-        cart=self.call('cart/items/insert',{'CartItems':[{'MouserPartNumber':sku,'Quantity':qty,'PackagingChoice':'None'} for sku,qty in sorted(lines.items())],
-                    'MouserPaysCustomsAndDuties':True}, {'countryCode':address['country'],'currencyCode':'USD'})
-        key=cart.get('CartKey','')
-        try:UUID(key)
-        except (ValueError,TypeError,AttributeError):raise MouserUnavailable('Mouser did not return a new cart reference.') from None
+        key=self.create_cart(items,address['country'])
         options=self.options(address,key);payment=self.card(options)
         methods=[]
         for method in (options.get('Shipping') or {}).get('Methods') or []:
@@ -111,7 +122,7 @@ class MouserOrders:
         if pricing:
             prices=pricing(items,preview['totalCents'],preview['shippingCents'],preview['goodsCents'])
             for item,price in zip(items,prices):item['cents']=price
-            if any(preview['goodsCents'][i['supplier']['supplierSku']]>=i['cents']*i['qty'] for i in items):
+            if any(cost>=i['cents']*i['qty'] for i,cost in zip(items,item_costs(items,preview['goodsCents']))):
                 raise MouserCostChanged('Mouser item cost meets or exceeds its retail price. Review pricing rules or fixed-price overrides.')
         retail=sum(i['qty']*i['cents'] for i in items)
         # Shipping is passed through; supplier tax/fees are absorbed by retail markup.
@@ -144,15 +155,17 @@ class MouserOrders:
         lines=result.get('OrderLines')
         if not isinstance(lines,list):raise MouserUnavailable('Mouser order lines are missing.')
         actual=Counter()
-        retail=Counter()
-        for item in items:retail[item['supplier']['supplierSku']]+=item['qty']*item['cents']
+        goods={}
         for line in lines:
             if line.get('Errors') or type(line.get('Quantity')) is not int or type(line.get('MouserATS')) is not int or line['MouserATS']<line['Quantity']:
                 raise MouserUnavailable('Mouser cannot supply the complete quantity now.')
-            actual[line.get('MouserPartNumber')]+=line['Quantity']
-            if check_prices and money(line.get('ExtendedPrice'))>=retail[line.get('MouserPartNumber')]:
-                raise MouserCostChanged('Mouser item cost meets or exceeds its retail price. Review product pricing.')
+            sku=line.get('MouserPartNumber')
+            if sku in goods:raise MouserUnavailable('Mouser returned duplicate part lines. Review this quote.')
+            actual[sku]+=line['Quantity']
+            goods[sku]=money(line.get('ExtendedPrice'))
         if actual!=expected_lines(items):raise MouserUnavailable('Mouser returned different parts or quantities. Purchasing stopped.')
+        if check_prices and any(cost>=item['qty']*item['cents'] for item,cost in zip(items,item_costs(items,goods))):
+            raise MouserCostChanged('Mouser item cost meets or exceeds its retail price. Review product pricing.')
         money(result.get('OrderTotal'))
 
     def submit(self,snapshot,po):

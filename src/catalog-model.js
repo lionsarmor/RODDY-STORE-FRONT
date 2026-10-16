@@ -173,6 +173,19 @@ export function validateCatalog(data) {
       if (s.provider === "aliexpress" && (typeof s.variantId !== "string" || !s.variantId)) errors.push(`${p.name}: choose an exact AliExpress variant before importing.`);
       if (s.productUrl && (!safeLink(s.productUrl) || !s.productUrl.startsWith("https://"))) errors.push(`${p.name}: use a valid HTTPS supplier listing URL.`);
       if ([s.minimumQuantity, s.orderMultiple].some(n => !Number.isInteger(n) || n < 1)) errors.push(`${p.name}: supplier minimums must be positive whole numbers.`);
+      if (s.bom !== undefined) {
+        const b = s.bom, seen = new Set();
+        if (s.provider !== 'mouser' || s.fulfillment !== 'automatic' || !b || !['draft','ready'].includes(b.status) || !Array.isArray(b.lines) || b.lines.length > 250) {
+          errors.push(`${p.name}: use a valid automatic Mouser kit BOM.`);
+        } else {
+          if (b.status === 'ready' && (!/^[A-Za-z0-9._-]{1,80}$/.test(b.revision || '') || !b.lines.length)) errors.push(`${p.name}: a complete BOM needs a revision and exact part lines.`);
+          for (const line of b.lines) {
+            if (!line || !/^[A-Za-z0-9][A-Za-z0-9./_()+#-]{0,79}$/.test(line.supplierSku || '') || seen.has(line.supplierSku) || !Number.isInteger(line.quantity) || line.quantity < 1 || line.quantity > 10000) errors.push(`${p.name}: BOM lines need unique exact Mouser numbers and whole order-unit quantities.`);
+            seen.add(line?.supplierSku);
+          }
+          if (p.active && p.status === 'available' && b.status !== 'ready') errors.push(`${p.name}: finish the parts list before enabling kit purchases. Incomplete physical testing can be disclosed with the red warning.`);
+        }
+      }
     }
     if (p.merch) {
       const m = p.merch, ids = new Set(), combinations = new Set();
