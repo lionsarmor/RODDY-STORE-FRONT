@@ -6,6 +6,7 @@ Upload output to /var/lib/roddy-store/project-workshop/library after validation.
 No source designs are changed. Re-run after updating the project repositories.
 """
 import argparse
+import gzip
 import hashlib
 import json
 import os
@@ -38,6 +39,18 @@ class Links(HTMLParser):
 
     def handle_starttag(self, tag, attrs):
         self.links.extend(v for k, v in attrs if k in ('href', 'src', 'poster') and v)
+
+
+def compress_html(output, files):
+    for path, meta in list(files.items()):
+        if not path.endswith('.html') or meta['bytes'] < 131072:
+            continue
+        compressed = '_compressed/' + meta['sha256'] + '.html.gz'
+        dest = output / compressed
+        dest.parent.mkdir(exist_ok=True)
+        dest.write_bytes(gzip.compress((output/path).read_bytes(), compresslevel=6, mtime=0))
+        files[compressed] = {'bytes': dest.stat().st_size, 'sha256':hashlib.sha256(dest.read_bytes()).hexdigest()}
+        meta['gzip'] = compressed
 
 
 def build(workspace, output):
@@ -156,6 +169,7 @@ def build(workspace, output):
             target = posixpath.normpath(posixpath.join(posixpath.dirname(path), unquote(parsed.path)))
             if target not in files and not any(f.startswith(target.rstrip('/')+'/') for f in files):
                 missing.add(target)
+    compress_html(output, files)
     manifest = {'updatedAt': datetime.now(timezone.utc).isoformat(),
                 'projects': [{'id':'kk','name':'Keychain Kreatures'}, {'id':'lc','name':'Link Commander'}],
                 'entries': entries, 'files': files, 'missingSourceLinks': sorted(missing)}

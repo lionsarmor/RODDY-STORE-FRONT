@@ -1,4 +1,5 @@
 import hashlib
+import gzip
 import json
 import sqlite3
 import tempfile
@@ -82,3 +83,20 @@ class WorkshopTests(unittest.TestCase):
         (self.root/'library/manifest.json').unlink()
         response = self.client.get('/admin/workshop', headers={'Authorization':'Bearer owner'})
         self.assertEqual(response.status_code, 503)
+
+    def test_compressed_large_guides_and_identity_fallback(self):
+        library = self.root/'library'
+        original = (library/'Project/OPEN_ME.html').read_bytes()
+        (library/'guide.html.gz').write_bytes(gzip.compress(original))
+        self.manifest['files']['Project/OPEN_ME.html'] = {'gzip':'guide.html.gz'}
+        self.manifest['files']['guide.html.gz'] = {}
+        (library/'manifest.json').write_text(json.dumps(self.manifest))
+        path = self.issue()
+        response = self.client.get(path, headers={'accept-encoding':'gzip, deflate'})
+        self.assertEqual(response.content, original)
+        self.assertEqual(response.headers['content-encoding'], 'gzip')
+        self.assertIn('text/html',response.headers['content-type'])
+        self.assertEqual(response.headers['vary'], 'Accept-Encoding')
+        response = self.client.get(path, headers={'accept-encoding':'gzip;q=0'})
+        self.assertEqual(response.content, original)
+        self.assertNotIn('content-encoding',response.headers)

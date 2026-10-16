@@ -84,7 +84,12 @@ def register_project_workshop(app, require_admin, directory):
             mime = mimetypes.guess_type(path)[0] or 'application/octet-stream'
             if target.suffix.lower() in {'.md', '.csv', '.txt', '.pos'}:
                 mime = 'text/plain'
-            return FileResponse(target, media_type=mime, headers=HEADERS)
+            encoded = files[path].get('gzip')
+            if encoded and encoded in files and 'gzip' in [p.strip().lower() for p in request.headers.get('accept-encoding', '').split(',')]:
+                compressed = (base / encoded).resolve()
+                if compressed.is_relative_to(base) and compressed.is_file():
+                    return FileResponse(compressed, media_type=mime, headers={**HEADERS, 'Content-Encoding':'gzip', 'Vary':'Accept-Encoding'})
+            return FileResponse(target, media_type=mime, headers={**HEADERS, 'Vary':'Accept-Encoding'})
         prefix = path.rstrip('/') + '/' if path else ''
         children = sorted({p[len(prefix):].split('/')[0] for p in files if p.startswith(prefix) and p != path})
         if not children:
