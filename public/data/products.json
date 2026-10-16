@@ -44,7 +44,12 @@
     {
       "id": "labs",
       "name": "Labs",
-      "code": "EXPERIMENTS & KITS"
+      "code": "EXPERIMENTS & IDEAS"
+    },
+    {
+      "id": "kits",
+      "name": "Kits",
+      "code": "BUILD IT. MAKE IT YOURS."
     },
     {
       "id": "merch",
@@ -540,11 +545,7 @@
       "fulfillmentRef": "",
       "keycaps": null,
       "designOrigin": "original",
-      "relatedProductIds": [
-        "keychain-kreatures-hardware-bundle",
-        "keychain-kreatures-parts-kit",
-        "keychain-kreatures-snap-fit-enclosure"
-      ]
+      "relatedProductIds": []
     },
     {
       "id": "kestrel-computer",
@@ -2842,11 +2843,7 @@
       "fulfillment": "",
       "fulfillmentRef": "",
       "keycaps": null,
-      "relatedProductIds": [
-        "link-commander-bare-boards",
-        "link-commander-parts-kit",
-        "link-commander-snap-fit-enclosure"
-      ],
+      "relatedProductIds": [],
       "safetyNotice": "POWER: Use only the rear USB-C socket marked 5V POWER. The internal RP2040 USB port and JP1 jumper are service-only. Do not open the case or change the jumper for normal use. Disconnect all power before connecting or disconnecting PS/2 cables.",
       "designOrigin": "original"
     },
@@ -2854,7 +2851,7 @@
       "id": "link-commander-snap-fit-enclosure",
       "sku": "L-002",
       "name": "LINK COMMANDER · FREE SHELL STL",
-      "category": "labs",
+      "category": "kits",
       "type": "digital",
       "status": "available",
       "active": true,
@@ -3484,7 +3481,7 @@
       "id": "keychain-kreatures-hardware-bundle",
       "sku": "KK-HW-C7P5",
       "name": "KEYCHAIN KREATURES · BOARD KIT",
-      "category": "labs",
+      "category": "kits",
       "price": 0,
       "stock": 0,
       "featured": false,
@@ -3539,7 +3536,7 @@
       "id": "keychain-kreatures-parts-kit",
       "sku": "KK-PARTS",
       "name": "KEYCHAIN KREATURES · PARTS KIT",
-      "category": "labs",
+      "category": "kits",
       "price": 0,
       "stock": 0,
       "featured": false,
@@ -3593,7 +3590,7 @@
       "id": "link-commander-bare-boards",
       "sku": "LC-PCB",
       "name": "LINK COMMANDER · BOARD KIT",
-      "category": "labs",
+      "category": "kits",
       "price": 0,
       "stock": 0,
       "active": true,
@@ -3645,7 +3642,7 @@
       "id": "link-commander-parts-kit",
       "sku": "LC-PARTS",
       "name": "LINK COMMANDER · PARTS KIT",
-      "category": "labs",
+      "category": "kits",
       "price": 0,
       "stock": 0,
       "active": true,
@@ -3699,7 +3696,7 @@
       "id": "keychain-kreatures-snap-fit-enclosure",
       "sku": "KK-STL-B",
       "name": "KEYCHAIN KREATURES · FREE SHELL STL",
-      "category": "labs",
+      "category": "kits",
       "type": "digital",
       "status": "available",
       "active": true,

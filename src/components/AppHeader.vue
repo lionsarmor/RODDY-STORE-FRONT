@@ -1,7 +1,5 @@
 <script setup>
 import { useRoute } from "vue-router";
-import { computed } from 'vue';
-import { useCatalogStore } from '../stores/catalog';
 import { useThemeStore } from "../stores/theme";
 import { useCartStore } from "../stores/cart";
 import { useUiStore } from "../stores/ui";
@@ -12,19 +10,16 @@ const theme = useThemeStore();
 const cart = useCartStore();
 const ui = useUiStore();
 
-const catalog = useCatalogStore();
-const navLinks = computed(() => [
+const navLinks = [
   { label: "Home", to: "/", query: {} },
   { label: "Shop", to: "/shop", query: {} },
-  ...catalog.categories.map(c => ({ label: c.name, to: '/shop', query: { cat: c.id } })),
   { label: "About", to: "/about", query: {} },
   { label: "Contact", to: "/contact", query: {} },
-]);
+];
 
-// RouterLink's exact-active-class only checks the matched route record, so
-// every /shop?cat=* link lights up together — compare the query too.
+// Shop stays highlighted while browsing any of its departments.
 function isNavLinkActive(link) {
-  return route.path === link.to && (route.query.cat || "") === (link.query.cat || "");
+  return route.path === link.to;
 }
 </script>
 

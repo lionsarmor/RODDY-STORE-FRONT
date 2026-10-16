@@ -105,7 +105,7 @@ const visibleSpecifications = computed(() =>
 const isHardware = computed(
   () =>
     product.value?.type === "physical" &&
-    ["computers", "labs", "apps"].includes(product.value?.category),
+    ["computers", "labs", "kits", "apps"].includes(product.value?.category),
 );
 const linkedProducts = computed(() =>
   (Array.isArray(product.value?.relatedProductIds) ? product.value.relatedProductIds : [])
@@ -114,7 +114,9 @@ const linkedProducts = computed(() =>
 const related = computed(() =>
   catalog
     .byCategory("all")
-    .filter((p) => p.id !== props.id)
+    .filter((p) => p.id !== props.id && !(
+      ["keychain-kreatures", "link-commander-e"].includes(props.id) && p.category === "kits"
+    ))
     .sort(
       (a, b) =>
         Number(linkedProducts.value.includes(b)) - Number(linkedProducts.value.includes(a)) ||

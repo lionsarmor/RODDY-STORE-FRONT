@@ -36,6 +36,12 @@ const departments = {
     note: "The place for curious machines, unfinished questions, and ideas worth trying.",
     motif: "engineering",
   },
+  kits: {
+    title: "YOUR WORKBENCH.\nYOUR NEXT PROJECT.",
+    label: "The kits department",
+    note: "Board kits, completion parts and free case files for building your own RODDY hardware. Check each listing for prototype status and availability.",
+    motif: "engineering",
+  },
   merch: {
     title: "OFF THE SCREEN.\nINTO YOUR WORLD.",
     label: "The company store",
