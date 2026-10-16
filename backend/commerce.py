@@ -433,18 +433,40 @@ class Commerce:
                     supplier_id, issue, shipments)
 
     @staticmethod
-    def printify_total(order,current):
-        from collections import Counter
+    def printify_lines(order,current):
         items=[i for i in json.loads(order['items']) if i.get('kind')=='printify']
-        expected=Counter()
-        for i in items:expected[(i['product_id'],i['variant_id'])]+=i['qty']
-        actual=Counter();costs=[]
-        for line in current.get('line_items',[]):
-            qty=line.get('quantity');cost=line.get('cost')
-            if type(qty) is not int or qty<1 or type(cost) is not int or cost<0:return None
-            actual[(line.get('product_id'),line.get('variant_id'))]+=qty;costs.append(cost*qty)
+        lines=current.get('line_items',[])
+        if len(lines)!=len(items):return None
+        # Printify snapshots may have new product IDs. Its documented line
+        # metadata.external_id preserves our identity; verify the parent order
+        # reference as well before accepting that alternate mapping.
+        reference='RODDY-'+order['request_id']
+        same_order=reference in [current.get('external_id'),(current.get('metadata') or {}).get('shop_order_id')]
+        matched={};used=set()
+        for item in items:
+            key=item['id']+':'+item['variantId'];candidates=[]
+            for pos,line in enumerate(lines):
+                external=(line.get('metadata') or {}).get('external_id')
+                identity=(same_order and external==key) or (line.get('product_id')==item['product_id'] and external in {None,'',key})
+                if pos not in used and identity and line.get('variant_id')==item['variant_id']:
+                    candidates.append((pos,line))
+            if len(candidates)!=1:return None
+            pos,line=candidates[0];qty=line.get('quantity')
+            if type(qty) is not int or qty!=item['qty']:return None
+            used.add(pos);matched[key]=line
+        return matched
+
+    @staticmethod
+    def printify_total(order,current):
+        lines=Commerce.printify_lines(order,current)
+        if lines is None:return None
+        costs=[]
+        for line in lines.values():
+            cost=line.get('cost')
+            if type(cost) is not int or cost<0:return None
+            costs.append(cost*line['quantity'])
         shipping=current.get('total_shipping');tax=current.get('total_tax')
-        if actual!=expected or type(shipping) is not int or shipping<0 or type(tax) is not int or tax<0:return None
+        if type(shipping) is not int or shipping<0 or type(tax) is not int or tax<0:return None
         return sum(costs)+shipping+tax
 
     def check_printify_cost(self,order,supplier,current=None):
@@ -457,12 +479,14 @@ class Commerce:
         if charged is None:
             charged=order['shipping'] if all(i.get('kind') in {'printify','digital'} for i in json.loads(order['items'])) else 0
         goods=0;bad=[]
+        actual_lines=self.printify_lines(order,current) if current is not None else None
+        if current is not None and actual_lines is None:raise PrintifyUnavailable('Printify order lines changed. Review before production.')
         for item in items:
             if current is None:
                 variant=next((v for v in supplier.product(item['product_id'])['variants'] if v['id']==item['variant_id']),{})
                 cost=variant.get('costCents')
             else:
-                line=next((v for v in current.get('line_items',[]) if v.get('product_id')==item['product_id'] and v.get('variant_id')==item['variant_id']),{})
+                line=actual_lines[item['id']+':'+item['variantId']]
                 if line.get('quantity')!=item['qty']:raise PrintifyUnavailable('Printify quantities changed. Review before production.')
                 cost=line.get('cost')
             if type(cost) is not int or cost<0:raise PrintifyUnavailable('Printify costs are not available. Production is held for review.')

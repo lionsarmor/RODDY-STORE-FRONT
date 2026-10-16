@@ -198,3 +198,26 @@ class AutomaticPricingTests(MouserAutomaticTests):
         self.assertEqual(self.quote().status_code,409)
         self.supplier.available=True;hoodie['merch']['variants'][0]['enabled']=False
         self.assertEqual(self.quote().status_code,409)
+
+    def test_printify_snapshot_ids_use_verified_external_lines_and_record_cost_once(self):
+        self.enable();self.items=[{'id':'hoodie','variantId':'10','qty':1}]
+        q=self.quote();paid=self.checkout(q.json());order=self.order(paid.json()['sessionId'])
+        original=self.supplier.order
+        def snapshot(sid):
+            current=original(sid);current['metadata']={'shop_order_id':'RODDY-'+order['request_id']}
+            for line in current['line_items']:
+                line['product_id']='supplier-snapshot-product'
+                line['metadata']={'external_id':line['external_id']}
+            return current
+        self.supplier.order=snapshot;self.provider.is_paid=True;self.tick();self.tick()
+        self.assertEqual(self.supplier.production,['supplier123'])
+        expenses=self.app.state.commerce.records.expenses(order['session'])
+        self.assertEqual(len(expenses),1);self.assertEqual(expenses[0]['amount'],2434)
+        for change in ['order','external','variant','quantity','extra']:
+            current=snapshot('supplier123')
+            if change=='order':current['metadata']['shop_order_id']='another-order'
+            elif change=='external':current['line_items'][0]['metadata']['external_id']='another-line'
+            elif change=='variant':current['line_items'][0]['variant_id']=99
+            elif change=='quantity':current['line_items'][0]['quantity']=2
+            else:current['line_items'].append(copy.deepcopy(current['line_items'][0]))
+            self.assertIsNone(self.app.state.commerce.printify_total(order,current),change)

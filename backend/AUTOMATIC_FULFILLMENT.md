@@ -84,7 +84,10 @@ address. A durable `mouser_purchases` intent stores a unique 20-character PO and
 claims the submitting state before the POST. The returned reference is saved
 before any subsequent call. All order records remain in the default All orders
 view. Supplier reference, status, shipment tracking and order-cost expense records
-remain owner-visible; customer receipts omit internal supplier details.
+remain owner-visible; customer receipts omit internal supplier details. Printify
+order snapshots can carry a different product ID; line matching then requires
+the original order reference plus documented `metadata.external_id`, exact
+variant and quantity, with no unmatched additional lines.
 
 A timeout/crash after the submission claim never triggers another submission.
 The worker looks up the exact PO in order history and validates reference, parts,
