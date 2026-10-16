@@ -4,14 +4,9 @@ import zipfile,shutil,hashlib,json
 ROOT=Path(__file__).resolve().parents[2]
 SOURCE=ROOT/'.tools/customer-docs/source'
 OUT=ROOT/'public/downloads'
-# The runtime stays byte-identical; only the old repository pointers in the quick-start change.
-with zipfile.ZipFile(SOURCE/'WEATHERCMD.zip') as src, zipfile.ZipFile(OUT/'software/WEATHERCMD-v0.2.1.zip','w',zipfile.ZIP_DEFLATED) as dst:
- for info in src.infolist():
-  data=src.read(info)
-  if info.filename.endswith('/START-HERE.TXT'):
-   data=data.decode().replace('https://github.com/lionsarmor/WEATHER-COMMANDER/releases','https://roddy.world/#/product/weather-commander-x16').replace('https://github.com/lionsarmor/WEATHER-COMMANDER','https://roddy.world/downloads/docs/weather-commander-guide.pdf').encode()
-  dst.writestr(info,data)
- dst.write(OUT/'docs/weather-commander-guide.pdf','WEATHERCMD/WEATHER_COMMANDER_GUIDE.pdf')
+# Version and native-only validation live in the dedicated Weather packager.
+import subprocess,sys
+subprocess.run([sys.executable,str(ROOT/'tools/package-weather.py'),str(SOURCE/'WEATHERCMD.zip')],check=True)
 shutil.copy2(SOURCE/'Shadow_Over_space.bin',OUT/'software/Shadow_Over_space-v0.1.0.bin')
 # Deliberate allowlist: printable shell geometry and a customer PDF, no board CAD,
 # purchasing material, build scripts or owner documentation.

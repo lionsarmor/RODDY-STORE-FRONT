@@ -289,7 +289,7 @@
   {
     "file": "weather-commander-guide.pdf",
     "title": "WEATHER COMMANDER",
-    "edition": "VERSION 0.2.1 · 15 OCT 2026",
+    "edition": "VERSION 0.2.2 · 16 OCT 2026",
     "pages": [
       {
         "title": "WEATHER\nCOMMANDER",
@@ -310,7 +310,8 @@
           {
             "title": "Demo and controls",
             "paragraphs": [
-              "The app starts with clearly labeled demo data when no live feed is available. Mouse selects controls; F5 opens Settings; Esc exits or goes back in setup. Demo forecasts and recorded radar are examples, not current weather."
+              "The app starts with clearly labeled demo data when no live feed is available. Mouse selects controls; F5 opens Settings; Esc exits or goes back in setup. Demo forecasts and recorded radar are examples, not current weather.",
+              "Original ambient weather-channel-style music plays automatically. Press M to mute or resume, except while typing city or Wi-Fi details. Music stops on exit; the setting resets each launch."
             ]
           },
           {
