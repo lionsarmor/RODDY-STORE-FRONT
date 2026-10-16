@@ -1,0 +1,14 @@
+{
+  "kk": {
+    "source": "/home/roddy/Desktop/lionsarmor/KeychainKreatures/revisions/C7_P5-handheld/kicad/main/KK_main_module.kicad_pcb",
+    "sha256": "bae8c6ed841905f3a6af6817b16b049e9df7000dbd3e2fc97c1967d8e87d2e2b",
+    "removedModelBlocks": 99,
+    "method": "Native KiCad render of temporary copy with component 3D model assignments omitted. All footprints, pads, copper and board geometry retained. Source PCB unchanged."
+  },
+  "lc": {
+    "source": "/home/roddy/Desktop/lionsarmor/LINK-COMMANDER/revisions/E-ps2-through-hole/kicad/link-commander.kicad_pcb",
+    "sha256": "2817e7b2ddb2f9eae00a6d007b79d2daeccdd91bd1a383b49303ddf837f0198d",
+    "removedModelBlocks": 57,
+    "method": "Native KiCad render of temporary copy with component 3D model assignments omitted. All footprints, pads, copper and board geometry retained. Source PCB unchanged."
+  }
+}

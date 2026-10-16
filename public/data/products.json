@@ -481,7 +481,7 @@
     {
       "id": "keychain-kreatures",
       "sku": "R-001",
-      "name": "KEYCHAIN KREATURES · ASSEMBLED",
+      "name": "KEYCHAIN KREATURES",
       "category": "labs",
       "price": 0,
       "stock": 0,
@@ -2791,7 +2791,7 @@
     {
       "id": "link-commander-e",
       "sku": "L-001",
-      "name": "LINK COMMANDER · ASSEMBLED",
+      "name": "LINK COMMANDER",
       "category": "labs",
       "price": 0,
       "stock": 0,
@@ -2853,7 +2853,7 @@
     {
       "id": "link-commander-snap-fit-enclosure",
       "sku": "L-002",
-      "name": "LINK COMMANDER SNAP FIT ENCLOSURE",
+      "name": "LINK COMMANDER · FREE SHELL STL",
       "category": "labs",
       "type": "digital",
       "status": "available",
@@ -2869,15 +2869,12 @@
         "new-tag-2"
       ],
       "shortDescription": "Print a home for Link Commander. Free snap-fit shell files for Rev E.",
-      "description": "A compact, two-piece enclosure for the current Link Commander Rev E through-hole and Rev F SMT boards. Download the files, print the fit coupon, then make the shell in your favorite color. The white case shown is a CAD-based illustration of one finish.\n\nThe ZIP includes base and lid STL files, editable STEP geometry, geometry-only 3MF plate layouts, snap-fit test pieces and printing and assembly instructions. Designed around unfilled ABS, an enclosed Bambu X1 Carbon and a 0.4 mm nozzle.\n\nThis is a digital file download. No printed case, circuit board, electronics, cables or printer is included. The common shell is an engineering prototype: check the fit coupon, your actual board and cable clearances before printing or assembling the full case.\n\nEnclosure A.1 adds an integral lid guard ahead of the internal programming port and a recessed 5V POWER marking above the correct rear socket. JP1 remains internal; assembled units are intended to arrive configured for normal operation.",
+      "description": "A compact, two-piece enclosure for the current Link Commander Rev E through-hole and Rev F SMT boards. Download the files, print the fit coupon, then make the shell in your favorite color. The case artwork illustrates one possible printed finish.\n\nThe ZIP includes base and lid STL files, editable STEP geometry, geometry-only 3MF plate layouts, snap-fit test pieces and printing and assembly instructions. Designed around unfilled ABS, an enclosed Bambu X1 Carbon and a 0.4 mm nozzle.\n\nThis is a digital file download. No printed case, circuit board, electronics, cables or printer is included. The common shell is an engineering prototype: check the fit coupon, your actual board and cable clearances before printing or assembling the full case.\n\nEnclosure A.1 adds an integral lid guard ahead of the internal programming port and a recessed 5V POWER marking above the correct rear socket. JP1 remains internal; assembled units are intended to arrive configured for normal operation.",
       "story": "One shell for both ways to build Link Commander. Print it yourself, inspect the design, and keep the hardware easy to open and work on.",
       "images": [
-        "img/products/link-commander/link-commander-white-open-v1.png",
-        "img/products/link-commander/link-commander-white-closed-v1.png",
-        "img/products/link-commander/enclosure-rear-cad-a1.png",
-        "img/products/link-commander/enclosure-service-guard-a1.png"
+        "img/products/kit-listings-01/lc-stl-v1.png"
       ],
-      "coverImage": "img/products/link-commander/link-commander-white-open-v1.png",
+      "coverImage": "img/products/kit-listings-01/lc-stl-v1.png",
       "specs": {
         "Download": "Free ZIP · STL / STEP / 3MF + instructions",
         "Fits": "Current 100 × 75 mm Link Commander Rev E and Rev F boards",
@@ -2893,7 +2890,7 @@
       "downloadUrl": "https://roddy.world/downloads/3d-print/LINK_COMMANDER_ENCLOSURE_A1.zip",
       "githubUrl": "",
       "documentationUrl": "https://roddy.world/downloads/docs/link-commander-enclosure-guide.pdf",
-      "releaseNote": "Instant free download. Images are CAD-based previews with example electronics. Print and check the snap-fit coupon first. No account or checkout required.",
+      "releaseNote": "Free download, no checkout required. Branding illustrates 3D-printed case parts; the download contains digital files only. Print and check the fit coupons first. Physical fit testing is incomplete.",
       "relatedProductIds": [
         "link-commander-e"
       ],
@@ -2904,7 +2901,9 @@
       "keycaps": null,
       "merch": null,
       "safetyNotice": "Includes an internal guard for the RP2040 service USB and a rear 5V POWER marking. Fit-test the printed guard against your actual module. The guard is not electrical isolation; disconnect all power before opening the shell.",
-      "designOrigin": "original"
+      "designOrigin": "original",
+      "cardImage": "img/products/kit-listings-01/lc-stl-v1.png",
+      "cardImageNote": "Print your own case. Free digital files; no physical parts or printer included."
     },
     {
       "id": "aula-f87-pro",
@@ -3484,7 +3483,7 @@
     {
       "id": "keychain-kreatures-hardware-bundle",
       "sku": "KK-HW-C7P5",
-      "name": "KEYCHAIN KREATURES · HARDWARE BUNDLE",
+      "name": "KEYCHAIN KREATURES · BOARD KIT",
       "category": "labs",
       "price": 0,
       "stock": 0,
@@ -3500,17 +3499,7 @@
         "Required separately": "Matching completion parts kit, printed case, tools and firmware"
       },
       "images": [
-        "img/products/keychain-kreatures/collection-01/MYSTERY_TEASER.png",
-        "img/products/keychain-kreatures/collection-01/HARDWARE_NATIVE_EXPLODED.png",
-        "img/products/keychain-kreatures/collection-01/RETRO_TRIO_X16_BLUE_BACK.png",
-        "img/products/keychain-kreatures/creature-colourways-v1.png",
-        "img/products/keychain-kreatures/collection-01/PASTEL_TRIO.png",
-        "img/products/keychain-kreatures/roddy-creature-hero-v1.png",
-        "img/products/keychain-kreatures/collection-01/AVOCADO.png",
-        "img/products/keychain-kreatures/collection-01/PASTEL_PURPLE.png",
-        "img/products/keychain-kreatures/collection-01/PINK.png",
-        "img/products/keychain-kreatures/collection-01/COMMODORE.png",
-        "img/products/keychain-kreatures/collection-01/SPECTRUM_NEXT.png"
+        "img/products/kit-listings-01/kk-board-v1.png"
       ],
       "type": "physical",
       "status": "coming-soon",
@@ -3524,7 +3513,7 @@
       "pricePending": true,
       "shortDescription": "Bare mainboard, ESP32-S3 SuperMini, 2.8-inch screen and populated SMT power board. Shipped by RODDY.",
       "releaseNote": "Hardware-bundle pricing and stock will be published when confirmed. Physical testing and firmware are incomplete.",
-      "coverImage": "img/products/keychain-kreatures/collection-01/HARDWARE_NATIVE_EXPLODED.png",
+      "coverImage": "img/products/kit-listings-01/kk-board-v1.png",
       "compareAtPrice": 0,
       "downloadUrl": "",
       "githubUrl": "",
@@ -3543,12 +3532,13 @@
         "keychain-kreatures-parts-kit",
         "keychain-kreatures-snap-fit-enclosure"
       ],
-      "cardImageNote": "Design reference. Bundle includes bare mainboard, controller, screen and populated power board; no printed case."
+      "cardImageNote": "Native CAD preview of the bare mainboard. Included modules are listed; completion components and case are separate.",
+      "cardImage": "img/products/kit-listings-01/kk-board-v1.png"
     },
     {
       "id": "keychain-kreatures-parts-kit",
       "sku": "KK-PARTS",
-      "name": "KEYCHAIN KREATURES · COMPLETION PARTS KIT",
+      "name": "KEYCHAIN KREATURES · PARTS KIT",
       "category": "labs",
       "price": 0,
       "stock": 0,
@@ -3563,17 +3553,7 @@
         "Testing": "Incomplete; assembly and firmware work required"
       },
       "images": [
-        "img/products/keychain-kreatures/collection-01/MYSTERY_TEASER.png",
-        "img/products/keychain-kreatures/collection-01/HARDWARE_NATIVE_EXPLODED.png",
-        "img/products/keychain-kreatures/collection-01/RETRO_TRIO_X16_BLUE_BACK.png",
-        "img/products/keychain-kreatures/creature-colourways-v1.png",
-        "img/products/keychain-kreatures/collection-01/PASTEL_TRIO.png",
-        "img/products/keychain-kreatures/roddy-creature-hero-v1.png",
-        "img/products/keychain-kreatures/collection-01/AVOCADO.png",
-        "img/products/keychain-kreatures/collection-01/PASTEL_PURPLE.png",
-        "img/products/keychain-kreatures/collection-01/PINK.png",
-        "img/products/keychain-kreatures/collection-01/COMMODORE.png",
-        "img/products/keychain-kreatures/collection-01/SPECTRUM_NEXT.png"
+        "img/products/kit-listings-01/kk-parts-v1.png"
       ],
       "type": "physical",
       "status": "coming-soon",
@@ -3586,8 +3566,8 @@
       ],
       "pricePending": true,
       "shortDescription": "The remaining components for the RODDY hardware bundle, shipped directly by Mouser.",
-      "releaseNote": "Exact completion-kit sourcing is in progress. Prototype testing remains incomplete. Current images are design references, not a photograph of supplied kit contents.",
-      "coverImage": "img/products/keychain-kreatures/collection-01/MYSTERY_TEASER.png",
+      "releaseNote": "Parts-kit sourcing is being checked against the current revision. Artwork illustrates loose component types, not final quantities or a finished device. Prototype testing is incomplete.",
+      "coverImage": "img/products/kit-listings-01/kk-parts-v1.png",
       "compareAtPrice": 0,
       "downloadUrl": "",
       "githubUrl": "",
@@ -3606,12 +3586,13 @@
         "keychain-kreatures-hardware-bundle",
         "keychain-kreatures-snap-fit-enclosure"
       ],
-      "cardImageNote": "Completion parts only. Mainboard, ESP32, screen and populated power board come in the separate RODDY bundle."
+      "cardImageNote": "Illustrative component selection; final contents follow the revision-specific BOM. Board kit and printed case excluded.",
+      "cardImage": "img/products/kit-listings-01/kk-parts-v1.png"
     },
     {
       "id": "link-commander-bare-boards",
       "sku": "LC-PCB",
-      "name": "LINK COMMANDER · BARE BOARD + RP2040",
+      "name": "LINK COMMANDER · BOARD KIT",
       "category": "labs",
       "price": 0,
       "stock": 0,
@@ -3626,17 +3607,11 @@
         "Revision status": "Current prototype hardware; exact sourcing under review"
       },
       "images": [
-        "img/products/link-commander/link-commander-mystery-v1.png",
-        "img/products/link-commander/link-commander-board-v1.png",
-        "img/products/link-commander/link-commander-white-open-v1.png",
-        "img/products/link-commander/link-commander-white-closed-v1.png",
-        "img/products/link-commander/rev-e-cad.png",
-        "img/products/link-commander/enclosure-rear-cad-a1.png",
-        "img/products/link-commander/enclosure-service-guard-a1.png"
+        "img/products/kit-listings-01/lc-board-v1.png"
       ],
       "status": "coming-soon",
       "type": "physical",
-      "coverImage": "img/products/link-commander/rev-e-cad.png",
+      "coverImage": "img/products/kit-listings-01/lc-board-v1.png",
       "tags": [
         "new-tag-2"
       ],
@@ -3663,7 +3638,8 @@
       "safetyNotice": "POWER: Use only the rear USB-C socket marked 5V POWER. The internal RP2040 USB port and JP1 jumper are service-only. Do not open the case or change the jumper for normal use. Disconnect all power before connecting or disconnecting PS/2 cables.",
       "designOrigin": "original",
       "prototypeWarning": "Prototype hardware: testing has not been completed. Assembly, fault-finding and firmware development are required. This is not a finished working device; parts or board revisions may need changes.",
-      "cardImageNote": "Reference CAD shows populated hardware. RODDY ships a bare board and loose RP2040-Zero module."
+      "cardImageNote": "Native CAD preview of the bare mainboard. Included modules are listed; completion components and case are separate.",
+      "cardImage": "img/products/kit-listings-01/lc-board-v1.png"
     },
     {
       "id": "link-commander-parts-kit",
@@ -3685,17 +3661,11 @@
         "RP2040 module": "Excluded here; RODDY includes it with the bare board"
       },
       "images": [
-        "img/products/link-commander/link-commander-mystery-v1.png",
-        "img/products/link-commander/link-commander-board-v1.png",
-        "img/products/link-commander/link-commander-white-open-v1.png",
-        "img/products/link-commander/link-commander-white-closed-v1.png",
-        "img/products/link-commander/rev-e-cad.png",
-        "img/products/link-commander/enclosure-rear-cad-a1.png",
-        "img/products/link-commander/enclosure-service-guard-a1.png"
+        "img/products/kit-listings-01/lc-parts-v1.png"
       ],
       "status": "coming-soon",
       "type": "physical",
-      "coverImage": "img/products/link-commander/link-commander-mystery-v1.png",
+      "coverImage": "img/products/kit-listings-01/lc-parts-v1.png",
       "tags": [
         "new-tag-2"
       ],
@@ -3704,7 +3674,7 @@
       "shortDescription": "Component kit shipped directly by Mouser. Bare boards and printed case are not included.",
       "story": "",
       "documentationUrl": "https://roddy.world/downloads/docs/hardware-kit-options.pdf",
-      "releaseNote": "Parts-kit purchasing is waiting on a complete compatible BOM, not on finished prototype testing. Current images show the existing device concept; a finished device and case are not included.",
+      "releaseNote": "Parts-kit sourcing is being checked against the current revision. Artwork illustrates loose component types, not final quantities or a finished device. Prototype testing is incomplete.",
       "downloadUrl": "",
       "githubUrl": "",
       "merch": null,
@@ -3722,7 +3692,8 @@
       "safetyNotice": "POWER: Use only the rear USB-C socket marked 5V POWER. The internal RP2040 USB port and JP1 jumper are service-only. Do not open the case or change the jumper for normal use. Disconnect all power before connecting or disconnecting PS/2 cables.",
       "designOrigin": "original",
       "prototypeWarning": "Prototype hardware: testing has not been completed. Assembly, fault-finding and firmware development are required. This is not a finished working device; parts or board revisions may need changes.",
-      "cardImageNote": "Design reference. Parts kit excludes bare boards and the printed case."
+      "cardImageNote": "Illustrative component selection; final contents follow the revision-specific BOM. Board kit and printed case excluded.",
+      "cardImage": "img/products/kit-listings-01/lc-parts-v1.png"
     },
     {
       "id": "keychain-kreatures-snap-fit-enclosure",
@@ -3746,10 +3717,9 @@
       "description": "Free 3D-print files for Keychain Kreatures enclosure B: rounded shell, reinforced top keyring eyelet, replaceable bezel, internal carriers and fit-test parts. Designed for unfilled ABS with a 0.4 mm nozzle on an enclosed printer.\n\nThese files fit the current C7/P5 prototype geometry. Print the fit coupons and verify your actual components before a full build. No printed case, bare boards or electronic parts are included.",
       "story": "",
       "images": [
-        "img/products/keychain-kreatures/creature-colourways-v1.png",
-        "img/products/keychain-kreatures/roddy-creature-hero-v1.png"
+        "img/products/kit-listings-01/kk-stl-v1.png"
       ],
-      "coverImage": "img/products/keychain-kreatures/creature-colourways-v1.png",
+      "coverImage": "img/products/kit-listings-01/kk-stl-v1.png",
       "specs": {
         "Revision": "Enclosure B · C7 main / P5 power baseline",
         "Download": "Free STL print bundle with instructions and manifest",
@@ -3759,7 +3729,7 @@
       "downloadUrl": "https://roddy.world/downloads/3d-print/KEYCHAIN_KREATURES_SHELL_B_PRINT.zip",
       "githubUrl": "",
       "documentationUrl": "https://roddy.world/downloads/docs/hardware-kit-options.pdf",
-      "releaseNote": "Free download, no checkout required. Concept images show an assembled device; download contains print files only.",
+      "releaseNote": "Free download, no checkout required. Branding illustrates 3D-printed case parts; the download contains digital files only. Print and check the fit coupons first. Physical fit testing is incomplete.",
       "relatedProductIds": [
         "keychain-kreatures",
         "keychain-kreatures-hardware-bundle",
@@ -3773,7 +3743,9 @@
       "merch": null,
       "safetyNotice": "",
       "designOrigin": "original",
-      "prototypeWarning": "Physical print fit and hardware testing are incomplete. These files are for C7/P5 only; check the included fit coupons and actual components."
+      "prototypeWarning": "Physical print fit and hardware testing are incomplete. These files are for C7/P5 only; check the included fit coupons and actual components.",
+      "cardImage": "img/products/kit-listings-01/kk-stl-v1.png",
+      "cardImageNote": "Print your own case. Free digital files; no physical parts or printer included."
     }
   ],
   "keycapProfiles": [

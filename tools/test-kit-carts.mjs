@@ -26,7 +26,7 @@ try {
  await page.setViewportSize({width:390,height:844});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
  for(const mode of ['card','product','cart']){
   await page.goto(url+'?mode='+mode);await page.getByText('TESTING NOT COMPLETE',{exact:true}).waitFor();
-  const colors=await page.locator('.prototype-notice').evaluate(e=>({background:getComputedStyle(e).backgroundColor,text:getComputedStyle(e).color}));assert.deepEqual(colors,{background:'rgb(80, 25, 29)',text:'rgb(255, 243, 243)'});
+  const warning=await page.locator('.prototype-notice strong').evaluate(e=>({text:getComputedStyle(e).color,underline:getComputedStyle(e).borderBottomWidth}));assert.deepEqual(warning,{text:'rgb(255, 119, 119)',underline:'2px'});
   if(mode==='product')assert.ok(await page.getByRole('button',{name:'Add to cart +',exact:true}).isEnabled());
   if(mode==='cart')assert.ok(await page.getByRole('button',{name:'Update prices & shipping'}).isEnabled());
  }
