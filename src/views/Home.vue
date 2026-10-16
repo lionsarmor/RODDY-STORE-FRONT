@@ -11,14 +11,14 @@ const theme = useThemeStore();
 const ui = useUiStore();
 const settings = computed(() => catalog.settings);
 const featured = computed(() =>
-  catalog.products.filter((p) => p.featured && p.active),
+  catalog.visibleProducts.filter((p) => p.featured),
 );
 const spotlight = computed(() => catalog.byId(settings.value.heroProductId));
 const heroImage = computed(
   () => settings.value.heroImage || spotlight.value?.coverImage,
 );
 const divisions = computed(() =>
-  catalog.categories.filter((c) => catalog.byCategory(c.id).length),
+  catalog.visibleCategories.filter((c) => catalog.byCategory(c.id).length),
 );
 </script>
 <template>

@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "test": "node --test src/catalog-model.test.js src/checkout-links.test.js src/admin/catalog-merge.test.js src/merch.test.js src/forum-api.test.js src/admin/supplier-model.test.js src/keycaps.test.js src/admin/catalog-sourcing.test.js src/admin/order-mail.test.js src/shipping-destinations.test.js",
+    "test": "node --test src/catalog-model.test.js src/checkout-links.test.js src/admin/catalog-merge.test.js src/merch.test.js src/forum-api.test.js src/admin/supplier-model.test.js src/keycaps.test.js src/admin/catalog-sourcing.test.js src/admin/order-mail.test.js src/shipping-destinations.test.js src/category-visibility.test.js",
     "test:backend": "python3 -m unittest discover -s backend -p 'test_*.py'",
     "dev": "vite",
     "build": "vite build",

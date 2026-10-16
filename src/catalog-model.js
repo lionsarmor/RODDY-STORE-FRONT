@@ -1,3 +1,4 @@
+import { validPreviewKey } from './category-visibility.js';
 import { shippingCountries } from './shipping-destinations.js';
 import { PRODUCT_ORIGINS } from './product-origin.js';
 import {catalogColorId} from './keycap-palette.js';
@@ -71,7 +72,7 @@ export function normalizeCatalog(data) {
       if(DISABLED_MARKS.includes(clean.defaults?.mark))clean.defaults={...clean.defaults,mark:defaultDesign(clean).mark};
       return clean;
     }) : [],
-    categories: Array.isArray(data.categories) ? data.categories : [],
+    categories: Array.isArray(data.categories) ? data.categories.map(c => ({ ...c, visible: c.visible ?? true })) : [],
     products: (data.products || []).map(normalizeProduct),
     tags: Array.isArray(data.tags) ? data.tags : structuredClone(DEFAULT_TAGS),
     settings: { ...DEFAULT_SETTINGS, ...data.settings },
@@ -114,6 +115,13 @@ export function validateCatalog(data) {
       if (!(item.name || item.label)?.trim())
         errors.push(`${label} ${item.id} needs a name.`);
     }
+  }
+  const categoryKeys = new Set();
+  for (const category of data.categories) {
+    if (category.visible !== undefined && typeof category.visible !== 'boolean') errors.push(`${category.name}: choose public or unlisted visibility.`);
+    if (category.visible === false && !validPreviewKey(category.previewKey)) errors.push(`${category.name}: generate an unlisted preview link before publishing.`);
+    if (category.previewKey && (!validPreviewKey(category.previewKey) || categoryKeys.has(category.previewKey))) errors.push(`${category.name}: preview links must have unique valid keys.`);
+    if (category.previewKey) categoryKeys.add(category.previewKey);
   }
   for (const profile of data.keycapProfiles || []) {
     if (!KEYCAP_PREVIEWS[profile.templateId] || !/^[a-zA-Z0-9._-]{1,40}$/.test(profile.revision || '')) errors.push(`${profile.name}: choose a validated template and revision.`);

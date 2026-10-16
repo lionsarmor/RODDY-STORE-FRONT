@@ -400,7 +400,7 @@ async function buyNow() {
         <p class="launch-signoff">INDEPENDENT IDEAS. A VERY PERSONAL FUTURE.</p>
       </div>
     </div>
-    <KeycapConfigurator v-if="product.keycaps" :key="product.id" :profile="keyboardProfile" :profiles="catalog.keycapProfiles" :products="catalog.products" @change="keycapSelection=$event" @save="addToCart" />
+    <KeycapConfigurator v-if="product.keycaps" :key="product.id" :profile="keyboardProfile" :profiles="catalog.keycapProfiles" :products="catalog.visibleProducts" @change="keycapSelection=$event" @save="addToCart" />
     <section
       v-if="specifications.length"
       class="product-highlights"

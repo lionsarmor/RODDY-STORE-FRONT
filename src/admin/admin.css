@@ -732,3 +732,7 @@
 .merch-variant-table input[type="checkbox"] { width: 18px; min-height: 18px; }
 .merch-editor .admin-actions { align-items: center; }
 .merch-editor .help-copy { margin: 0; }
+
+.category-sharing { margin-top: 14px; }
+.category-sharing input { width: 100%; min-width: 0; font-family: var(--font-mono); font-size: 12px; }
+.category-sharing .admin-actions { margin-top: 12px; }

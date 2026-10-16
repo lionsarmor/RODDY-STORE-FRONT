@@ -49,7 +49,9 @@
     {
       "id": "kits",
       "name": "Kits",
-      "code": "BUILD IT. MAKE IT YOURS."
+      "code": "BUILD IT. MAKE IT YOURS.",
+      "visible": false,
+      "previewKey": "-ZTLCk3xMLn0BxRM9pFbCVR28X_MeUVH"
     },
     {
       "id": "merch",
@@ -3574,7 +3576,7 @@
       "officeShipping": {},
       "supplier": null,
       "fulfillment": "automatic",
-      "fulfillmentRef": "0e28d62e375d308ebd12f71d18596967e752fb5a0823a1ad497d7782b8778127",
+      "fulfillmentRef": "607d4976e0d6df4ec101e0cf64642cce98feb9cf3b9b3bd99b7fc88d186a724d",
       "keycaps": null,
       "designOrigin": "original",
       "prototypeWarning": "Prototype hardware: testing has not been completed. Assembly, fault-finding and firmware development are required. This is not a finished working device; parts or board revisions may need changes.",
@@ -3679,7 +3681,7 @@
       "officeShipping": {},
       "supplier": null,
       "fulfillment": "automatic",
-      "fulfillmentRef": "0f70750b827537029ffa88de690d936db12b8088701cb96ceb471733e7607b7b",
+      "fulfillmentRef": "2d3c79e91a78033441f66c9f6ab41e8e4868feb186e73a3cc03488b4b3f955a7",
       "keycaps": null,
       "relatedProductIds": [
         "link-commander-e",

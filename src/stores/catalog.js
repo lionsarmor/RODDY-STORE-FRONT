@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { CATALOG_URL, rawAssetUrl } from "../config";
 import { normalizeCatalog, DEFAULT_SETTINGS } from '../catalog-model.js';
+import { CATEGORY_PREVIEW_PARAM, categoryVisible, visibleProducts } from '../category-visibility.js';
 export { normalizeProduct } from '../catalog-model.js';
 
 /** Older catalog data (or a repo that hasn't been re-published since the
@@ -16,9 +17,16 @@ export const useCatalogStore = defineStore("catalog", {
     keycapProfiles: [],
     settings: { ...DEFAULT_SETTINGS },
     preview: false,
+    categoryPreviewKey: new URLSearchParams(location.search).get(CATEGORY_PREVIEW_PARAM) || "",
     loaded: false,
     error: null,
   }),
+
+  getters: {
+    visibleCategories: state => state.categories.filter(c => categoryVisible(c, state.categoryPreviewKey, state.preview)),
+    visibleProducts: state => visibleProducts(state.products, state.categories, state.categoryPreviewKey, state.preview),
+    unlistedCategory: state => state.categories.find(c => c.visible === false && categoryVisible(c, state.categoryPreviewKey)) || null,
+  },
 
   actions: {
     async load() {
@@ -69,16 +77,16 @@ export const useCatalogStore = defineStore("catalog", {
     },
 
     byId(id) {
-      return this.products.find((p) => p.id === id && p.active) || null;
+      return this.visibleProducts.find((p) => p.id === id) || null;
     },
 
     byCategory(categoryId) {
-      if (!categoryId || categoryId === "all") return this.products.filter((p) => p.active);
-      return this.products.filter((p) => p.active && p.category === categoryId);
+      if (!categoryId || categoryId === "all") return this.visibleProducts;
+      return this.visibleProducts.filter((p) => p.category === categoryId);
     },
 
     categoryMeta(id) {
-      return this.categories.find((c) => c.id === id) || null;
+      return this.visibleCategories.find((c) => c.id === id) || null;
     },
   },
 });

@@ -20,6 +20,8 @@ import { importPrintifyProduct, priceLabel } from "../merch.js";
 import SaleNotifications from './SaleNotifications.vue';
 import KeycapManager from './KeycapManager.vue';
 import PcbWizard from './PcbWizard.vue';
+import CategoryManager from './CategoryManager.vue';
+import { categoryVisible } from '../category-visibility.js';
 import ProductEditor from "./ProductEditor.vue";
 import MediaEditor from "./MediaEditor.vue";
 import { useThemeStore } from "../stores/theme";
@@ -44,7 +46,7 @@ const tab = ref("overview");
 const tabs = [
   { id: "overview", label: "Overview", icon: "◫" },
   { id: "products", label: "Products", icon: "▦" },
-  { id: "categories", label: "Departments", icon: "⌘" },
+  { id: "categories", label: "Categories", icon: "⌘" },
   { id: "tags", label: "Tags & colors", icon: "◉" },
   { id: "homepage", label: "Homepage", icon: "↗" },
   { id: "checkout", label: "Checkout & Square", icon: "▣" },
@@ -106,7 +108,7 @@ const filtered = computed(() =>
       (!categoryFilter.value || p.category === categoryFilter.value) &&
       (!stateFilter.value ||
         (stateFilter.value === "hidden"
-          ? !p.active
+          ? !p.active || !categoryVisible(catalog.value.categories.find(c => c.id === p.category))
           : p.active && p.status === stateFilter.value)),
   ),
 );
@@ -126,7 +128,7 @@ const stats = computed(() => [
   },
   {
     label: "Live in catalog",
-    value: catalog.value?.products.filter((p) => p.active).length || 0,
+    value: catalog.value?.products.filter((p) => p.active && categoryVisible(catalog.value.categories.find(c => c.id === p.category))).length || 0,
     tab: "products",
   },
   {
@@ -137,7 +139,7 @@ const stats = computed(() => [
     tab: "products",
   },
   {
-    label: "Departments",
+    label: "Categories",
     value: catalog.value?.categories.length || 0,
     tab: "categories",
   },
@@ -444,34 +446,10 @@ function uniqueId(base, list) {
   while (list.some((x) => x.id === id)) id = base + "-" + i++;
   return id;
 }
-function addCategory() {
-  catalog.value.categories.push({
-    id: uniqueId("new-department", catalog.value.categories),
-    name: "New department",
-    code: "",
-  });
-}
-function removeCategory(c) {
-  if (catalog.value.products.some((p) => p.category === c.id)) {
-    error.value =
-      "Move products to another department before deleting this one.";
-    return;
-  }
-  catalog.value.categories = catalog.value.categories.filter(
-    (item) => item !== c,
-  );
-}
 function move(list, i, direction) {
   const target = i + direction;
   if (target >= 0 && target < list.length)
     [list[i], list[target]] = [list[target], list[i]];
-}
-function renameCategory(c, value) {
-  const previous = c.id;
-  c.id = slugify(value);
-  catalog.value.products.forEach((p) => {
-    if (p.category === previous) p.category = c.id;
-  });
 }
 function addTag() {
   catalog.value.tags.push({
@@ -908,6 +886,7 @@ function syncPrintify(source, targetId) {
                           catalog.categories.find((c) => c.id === p.category)
                             ?.name
                         }}
+                        <small v-if="!categoryVisible(catalog.categories.find(c => c.id === p.category))" class="help-copy"> · Unlisted</small>
                       </td>
                       <td>
                         {{ priceLabel(p) }}
@@ -979,57 +958,7 @@ function syncPrintify(source, targetId) {
             />
           </template>
           <KeycapManager v-if="tab === 'keycaps'" :catalog="catalog" :endpoint="catalog.settings.checkoutEndpoint" :token="form.token" :connected="connected" @edit-product="selected=$event;tab='products'" @open-orders="tab='orders'" />
-          <template v-if="tab === 'categories'"
-            ><div class="section-heading">
-              <p class="help-copy">
-                Departments control navigation and catalog filtering. Reorder
-                them to change their order across the storefront.
-              </p>
-              <button class="button primary small" @click="addCategory">
-                Add department +
-              </button>
-            </div>
-            <section
-              v-for="(c, i) in catalog.categories"
-              :key="i"
-              class="admin-section category-row"
-            >
-              <span class="category-index">{{
-                String(i + 1).padStart(2, "0")
-              }}</span
-              ><label>Name<input v-model="c.name" /></label
-              ><label
-                >ID<input
-                  :value="c.id"
-                  @change="renameCategory(c, $event.target.value)" /></label
-              ><label>Department caption<input v-model="c.code" /></label
-              ><span class="help-copy"
-                >{{
-                  catalog.products.filter((p) => p.category === c.id).length
-                }}
-                products</span
-              >
-              <div class="admin-actions">
-                <button
-                  class="button small"
-                  :disabled="i === 0"
-                  aria-label="Move department up"
-                  @click="move(catalog.categories, i, -1)"
-                >
-                  ↑</button
-                ><button
-                  class="button small"
-                  :disabled="i === catalog.categories.length - 1"
-                  aria-label="Move department down"
-                  @click="move(catalog.categories, i, 1)"
-                >
-                  ↓</button
-                ><button class="button small" @click="removeCategory(c)">
-                  Delete
-                </button>
-              </div>
-            </section></template
-          >
+          <CategoryManager v-if="tab === 'categories'" :catalog="catalog" />
           <template v-if="tab === 'tags'"
             ><div class="section-heading">
               <p class="help-copy">

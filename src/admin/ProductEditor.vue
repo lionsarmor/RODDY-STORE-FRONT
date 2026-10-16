@@ -73,7 +73,7 @@ function toggleTag(id) {
             <option v-for="c in catalog.categories" :key="c.id" :value="c.id">
               {{ c.name }}
             </option>
-          </select></label
+          </select><small v-if="catalog.categories.find(c => c.id === product.category)?.visible === false">Unlisted category. Share its preview link from Categories.</small></label
         ><label
           >Product type<select v-model="product.type">
             <option value="physical">Physical / shipped</option>

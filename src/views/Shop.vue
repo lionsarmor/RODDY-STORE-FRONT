@@ -1,4 +1,5 @@
 <script setup>
+import NotFound from "./NotFound.vue";
 import { priceLabel } from "../merch.js";
 import { computed, ref } from "vue";
 import { useRoute } from "vue-router";
@@ -51,7 +52,7 @@ const list = computed(() => {
 });
 const chips = computed(() => [
   { id: "all", name: "All departments" },
-  ...catalog.categories,
+  ...catalog.visibleCategories,
 ]);
 const spotlight = computed(() =>
   activeCat.value === "all" && !filtered.value
@@ -69,7 +70,8 @@ function clearFilters() {
 </script>
 
 <template>
-  <div class="shop-directory" :data-motif="direction.motif">
+  <NotFound v-if="catalog.loaded && activeCat !== 'all' && !category" />
+  <div v-else-if="catalog.loaded" class="shop-directory" :data-motif="direction.motif">
     <header class="directory-masthead">
       <div class="publication-line">
         <span>RODDY / {{ direction.label }}</span
