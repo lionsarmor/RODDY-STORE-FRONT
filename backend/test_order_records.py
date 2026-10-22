@@ -30,6 +30,51 @@ class OrderRecordTests(unittest.TestCase):
             if not cursor:break
         self.assertEqual(len(found),125);self.assertEqual(set(found),expected)
         self.assertEqual(len(list(csv.DictReader(io.StringIO(self.records.export().decode('utf-8-sig'))))),125)
+    def test_archived_canceled_tests_leave_admin_but_remain_in_exports(self):
+        paid=self.order();canceled=self.order(paid=0);unconfirmed=self.order(paid=0)
+        with self.connect() as db:
+            db.execute('UPDATE orders SET cancelled=1 WHERE session=?',(canceled['session'],))
+            db.execute('INSERT INTO order_admin_archives VALUES(?,?,?)',(canceled['session'],100,'Canceled test checkout'))
+        rows,page=self.records.page()
+        self.assertEqual({r['request_id'] for r in rows},{paid['request_id'],unconfirmed['request_id']})
+        self.assertEqual(page['total'],2)
+        self.assertEqual(self.records.page(status='canceled')[1]['total'],0)
+        self.assertEqual(self.records.page(search=canceled['request_id'])[1]['total'],0)
+        self.assertEqual(self.records.dashboard()['all'],2)
+        self.assertEqual(self.records.dashboard()['capturedCents'],paid['amount'])
+        exported=list(csv.DictReader(io.StringIO(self.records.export().decode('utf-8-sig'))))
+        self.assertEqual(len(exported),3)
+        self.assertIn('RODDY-'+canceled['request_id'],{r['order_reference'] for r in exported})
+        with self.connect() as db:self.assertEqual(db.execute('SELECT COUNT(*) FROM orders').fetchone()[0],3)
+    def test_unconfirmed_test_can_be_archived_without_cancelling_its_payment(self):
+        o=self.order(paid=0)
+        with self.connect() as db:
+            db.execute('INSERT INTO order_admin_archives VALUES(?,?,?)',(o['session'],100,'Unconfirmed test checkout'))
+        self.assertEqual(self.records.page()[1]['total'],0)
+        self.assertEqual(self.records.dashboard()['all'],0)
+        exported=list(csv.DictReader(io.StringIO(self.records.export().decode('utf-8-sig'))))
+        self.assertEqual(len(exported),1)
+        self.assertEqual(exported[0]['payment_status'],'unconfirmed')
+        with self.connect() as db:
+            self.assertEqual(db.execute('SELECT cancelled FROM orders WHERE session=?',(o['session'],)).fetchone()[0],0)
+    def test_archive_cannot_hide_paid_refunded_or_processing_orders(self):
+        o=self.order(paid=0)
+        with self.connect() as db:
+            db.execute('INSERT INTO order_admin_archives VALUES(?,?,?)',(o['session'],100,'Canceled test checkout'))
+        self.assertEqual(self.records.page()[1]['total'],0)
+        self.records.record(o,{'status':'processing','captured':0,'refunded':0})
+        self.assertEqual(self.records.page()[1]['total'],1)
+        with self.connect() as db:db.execute('DELETE FROM order_finance WHERE session=?',(o['session'],))
+        with self.connect() as db:db.execute('UPDATE orders SET cancelled=1 WHERE session=?',(o['session'],))
+        self.assertEqual(self.records.page()[1]['total'],0)
+        for report in [{'status':'paid','captured':11500,'refunded':0},
+                       {'status':'refunded','captured':11500,'refunded':11500}]:
+            self.records.record(o,report)
+            self.assertEqual(self.records.page()[1]['total'],1)
+        with self.connect() as db:
+            db.execute('DELETE FROM order_finance WHERE session=?',(o['session'],))
+            db.execute('UPDATE orders SET paid=1 WHERE session=?',(o['session'],))
+        self.assertEqual(self.records.page()[1]['total'],1)
     def test_refund_keeps_captured_revenue_and_missing_fees_blank(self):
         o=self.order();report={'status':'paid','captured':11500,'refunded':0,'fees':None,'tax':0,'paidAt':'2026-10-14T12:00:00Z','payments':[]}
         self.records.record(o,report);self.records.record(o,report)

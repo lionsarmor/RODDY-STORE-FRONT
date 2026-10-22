@@ -19,7 +19,7 @@ import httpx
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, JSONResponse, Response
+from fastapi.responses import FileResponse, JSONResponse, Response, RedirectResponse
 
 from .square import Square, PaymentUnavailable, PaymentInputError
 from .printify import load_connection, PrintifyUnavailable
@@ -35,6 +35,7 @@ from .customers import register_customers
 from .pcb_projects import register_pcb_projects
 from .project_workshop import register_project_workshop
 from .catalog_sourcing import register_catalog_sourcing
+from .free_downloads import FreeDownloads
 
 
 def checkout_url(value):
@@ -247,14 +248,14 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
             items.append(item)
         return items
 
-    def get_order(session):
+    def get_order(session, *, allow_expired=False):
         if not re.fullmatch(r"[A-Za-z0-9_-]{43}", session):
             raise HTTPException(404, "Order not found.")
         with connect() as db:
             row = db.execute("SELECT * FROM orders WHERE session=?", (session,)).fetchone()
         if not row:
             raise HTTPException(404, "Order not found.")
-        if row["created"] < time.time() - 30 * 86400:
+        if not allow_expired and row["created"] < time.time() - 30 * 86400:
             raise HTTPException(410, "This order link has expired. Contact RODDY with your payment receipt.")
         return dict(row)
 
@@ -267,6 +268,19 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
     commerce = Commerce(connect, catalog_loader, price_cart, provider, printify_factory, physical_enabled, order_packets)
     app.state.order_packets = order_packets
     app.state.commerce = commerce
+    free_downloads = FreeDownloads(connect, catalog_loader, public_url)
+
+    @app.post('/free-downloads')
+    def free_download_order(request: Request, body: dict):
+        rate_limit(request, 'free-download-order', 10)
+        if request.headers.get('origin') not in origins:
+            raise HTTPException(403, 'Start your download from the RODDY store.')
+        return free_downloads.create(body)
+
+    @app.get('/free-download/{ticket}')
+    def free_download_file(ticket: str, request: Request):
+        rate_limit(request, 'free-download', 60)
+        return RedirectResponse(free_downloads.redeem(ticket), status_code=303)
 
     @app.post("/quote")
     def quote(request: Request, body: dict):
@@ -326,6 +340,8 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
         return finish_checkout(order)
 
     def finish_checkout(order):
+        if order['amount'] == 0:
+            raise HTTPException(409, 'Free downloads do not require payment checkout.')
         if order.get("cancelled"):
             raise HTTPException(409, "This checkout was canceled. Start again from your cart.")
         if not order["url"]:
@@ -344,26 +360,28 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
 
     commerce.recover = finish_checkout
 
+    def download_links(order, items, lifetime=900):
+        # Always use the purchased file snapshot, including for support reissues.
+        for item in items:
+            private_file(item)
+        now = int(time.time())
+        links = []
+        with connect() as db:
+            db.execute("DELETE FROM tickets WHERE expires < ?", (now,))
+            for item in items:
+                ticket = secrets.token_urlsafe(32)
+                db.execute("INSERT INTO tickets VALUES(?,?,?,?)",
+                           (hashlib.sha256(ticket.encode()).hexdigest(), order["session"], item["id"], now + lifetime))
+                links.append({"name": item["name"], "filename": item["file"],
+                              "url": public_url + "/download/" + ticket, "expiresAt": now + lifetime})
+        return links
+
     @app.post("/order")
     def order_status(request: Request, body: dict):
         rate_limit(request, "order", 30)
         order = get_order(str(body.get("sessionId", "")))
         paid = verify(order)
-        downloads = []
-        now = int(time.time())
-        if paid:
-            with connect() as db:
-                db.execute("DELETE FROM tickets WHERE expires < ?", (now,))
-                for item in json.loads(order["items"]):
-                    if item.get("kind", "digital") != "digital":
-                        continue
-                    private_file(item)
-                    ticket = secrets.token_urlsafe(32)
-                    db.execute("INSERT INTO tickets VALUES(?,?,?,?)",
-                               (hashlib.sha256(ticket.encode()).hexdigest(), order["session"], item["id"], now + 900))
-                    downloads.append({"name": item["name"], "filename": item["file"],
-                                      "url": public_url + "/download/" + ticket,
-                                      "expiresAt": now + 900})
+        downloads = download_links(order, [i for i in json.loads(order["items"]) if i.get("kind", "digital") == "digital"]) if paid else []
         return {"paid": paid, "amountTotal": order["amount"], "currency": "USD", "downloads": downloads,
                 "mode": provider.mode, "shipping": order.get("shipping", 0),
                 "items": [{"id": i["id"], "variantId": i.get("variantId", ""), "name": i["name"], "qty": i.get("qty", 1), "kind": i.get("kind", "digital") if i.get("kind") in {"digital","keycaps"} else "physical", "label": i.get("label", ""), **({"design": i["designSnapshot"]["selection"]} if i.get("kind") == "keycaps" else {})} for i in json.loads(order["items"])],
@@ -379,7 +397,9 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
                              (hashlib.sha256(ticket.encode()).hexdigest(), int(time.time()))).fetchone()
         if not row:
             raise HTTPException(410, "Download link expired. Check your order again for a fresh link.")
-        order = get_order(row["session"])
+        # Ticket expiry governs downloads. Owner-issued support tickets can
+        # serve older purchases without extending the public receipt's lifetime.
+        order = get_order(row["session"], allow_expired=True)
         # Re-query Square to revoke new downloads after a refund. Never trust a cached 'paid' flag.
         if not verify(order):
             raise HTTPException(403, "Payment is not confirmed for this download.")
@@ -398,6 +418,26 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
                 raise HTTPException(403, "This GitHub account cannot access store administration.")
         except (httpx.HTTPError, ValueError) as exc:
             raise HTTPException(401, "Could not verify GitHub sign-in.") from exc
+
+    @app.post("/admin/orders/{reference}/downloads")
+    def admin_download(reference: str, request: Request, body: dict):
+        require_admin(request)
+        purpose = body.get("purpose", "download")
+        if not isinstance(purpose, str) or purpose not in {"download", "share"}:
+            raise HTTPException(400, "Choose a download or customer link.")
+        with connect() as db:
+            row = db.execute("SELECT * FROM orders WHERE request_id=?", (reference,)).fetchone()
+        if not row:
+            raise HTTPException(404, "Order not found.")
+        order = dict(row)
+        item = next((i for i in json.loads(order["items"]) if i["id"] == body.get("productId") and i.get("kind", "digital") in {"digital", "free-digital"}), None)
+        if not item:
+            raise HTTPException(404, "This digital item does not belong to the order.")
+        if order['amount'] == 0:
+            return free_downloads.issue(order, item, 7 * 86400 if purpose == 'share' else 900)
+        if not verify(order):
+            raise HTTPException(409, "Payment must be confirmed and not refunded before issuing a download.")
+        return download_links(order, [item], 7 * 86400 if purpose == "share" else 900)[0]
 
     @app.get("/admin/printify")
     def printify_inventory(request: Request, page: int = 1):
@@ -428,9 +468,12 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
         data=[]
         for row in rows:
             finance=commerce.records.summary(row)
+            with connect() as db:
+                download_receipt=db.execute('SELECT started FROM free_download_receipts WHERE session=?',(row['session'],)).fetchone() if row['amount']==0 else None
             data.append({"id":row["request_id"],"providerId":row["provider_id"],"created":row["created"],
                          "amount_total":row["amount"],"shipping":row["shipping"],"currency":"USD",
                          "payment_status":finance['status'],"finance":finance,
+                         "downloadOpenedAt":download_receipt['started'] if download_receipt else None,
                          "address":json.loads(row["address"]) if row["address"] else None,
                          "items":[{"id":i["id"],"name":i["name"],"qty":i.get("qty",1),"kind":i.get("kind","digital"),"label":i.get("label",""),"unitPrice":i["cents"],**({"supplier":i["supplier"],"procurement":i["procurement"]} if i.get("kind") in {"aliexpress","mouser"} else {})} for i in json.loads(row["items"])],
                          "expenses":commerce.records.expenses(row['session']),

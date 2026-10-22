@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {thankYouDraft,mailtoDraft,hasCurrentMessage} from './order-mail.js';
+import {thankYouDraft,mailtoDraft,hasCurrentMessage,digitalDownloadDraft} from './order-mail.js';
 const order=()=>({id:'order-12345678',address:{first_name:'Sam',email:'sam@example.com'},messageContext:'current',messages:[],items:[{name:'RODDY keycaps',qty:2,supplier:{productUrl:'https://private-maker.example',supplierSku:'SECRET-SKU'},designSnapshot:{json:'SECRET-RECIPE'},procurement:{unitCostCents:1234}}],fulfillments:[{kind:'keycaps',supplierId:'SECRET-REFERENCE',state:'shipped',shipments:[{carrier:'UPS',number:'TRACK-123',url:'https://www.ups.com/track?number=TRACK-123'}]}]});
 test('customer thank-you includes exact order and tracking while excluding every supplier field',()=>{
  const o=order(),d=thankYouDraft(o);assert.match(d.body,/Hi Sam/);assert.match(d.body,/2 × RODDY keycaps/);assert.match(d.body,/TRACK-123/);assert.match(d.body,/https:\/\/www.ups.com/);assert.match(d.subject,/#12345678/);
@@ -22,4 +22,14 @@ test('mailto fields cannot inject recipients or headers; edited body stays intac
 });
 test('updated tracking requires a new sent confirmation, while prior messages stay in history',()=>{
  const o=order();o.messages=[{context:'previous',body:'Previous tracking'}];assert.equal(hasCurrentMessage(o),false);o.messages.push({context:'current'});assert.equal(hasCurrentMessage(o),true);assert.equal(o.messages.length,2);
+});
+test('digital resend draft includes only the purchased download, its expiry and customer reference',()=>{
+ const o=order(),item={id:'desk',name:'DESK COMMANDER'},link={url:'https://api.example.test/download/private-ticket',expiresAt:1793000000};
+ const draft=digitalDownloadDraft(o,item,link,'https://api.example.test');
+ assert.match(draft.subject,/DESK COMMANDER/);assert.match(draft.body,/https:\/\/api.example.test\/download\/private-ticket/);assert.match(draft.body,/expires/);assert.match(draft.body,/RODDY-order-12345678/);
+ assert.ok(!draft.body.includes('SECRET'));assert.ok(!draft.body.includes('TRACK-123'));
+ o.address=null;const noEmail=digitalDownloadDraft(o,item,link,'https://api.example.test');
+ assert.equal(mailtoDraft(noEmail),'');assert.match(mailtoDraft(noEmail,{allowEmptyRecipient:true}),/^mailto:\?subject=/);
+ assert.equal(mailtoDraft({...noEmail,recipient:'x@example.com?bcc=bad@example.com'},{allowEmptyRecipient:true}),'');
+ for(const url of ['javascript:alert(1)','https://other.example/download/token','https://api.example.test/admin/orders'])assert.throws(()=>digitalDownloadDraft(o,item,{...link,url},'https://api.example.test'));
 });

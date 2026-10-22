@@ -22,7 +22,7 @@ export function downloadDestination(value, endpoint) {
       !url.username &&
       !url.password &&
       url.origin === base.origin &&
-      url.pathname.startsWith(base.pathname + "download/")
+      ["download/", "free-download/"].some(path=>url.pathname.startsWith(base.pathname + path))
       ? url.href
       : "";
   } catch {

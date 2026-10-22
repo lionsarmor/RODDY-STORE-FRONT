@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue';
 import { customerLink } from '../catalog-model.js';
+import FreeDownload from './FreeDownload.vue';
 const props = defineProps({ product: { type: Object, required: true } });
 const editions = computed(() => (Array.isArray(props.product.videoEditions) ? props.product.videoEditions : []).map(edition => ({
   ...edition,
@@ -24,10 +25,10 @@ const checksumsUrl = computed(() => customerLink(props.product.checksumsUrl));
         <p class="edition-byline"><small>{{ edition.creditRole }}</small><strong>{{ edition.credit }}</strong></p>
         <p>{{ edition.description }}</p>
         <span class="edition-status">{{ edition.status }}</span>
-        <a v-for="file in edition.downloads" :key="file.url" :href="file.url" target="_blank" rel="noopener noreferrer" class="edition-download">
+        <FreeDownload v-for="file in edition.downloads" :key="file.url" :product="product" :url="file.url" :label="file.label" button-class="edition-download">
           <strong>↓ {{ file.label }}</strong>
           <small>FREE · {{ file.format }} · {{ file.size }}</small>
-        </a>
+        </FreeDownload>
       </article>
     </div>
     <p class="edition-footnote">Original film: Edward D. Wood Jr. {{ product.videoReleaseNote || 'The X16 editions are in preparation; the original film stays black and white.' }} <a v-if="checksumsUrl" :href="checksumsUrl" target="_blank" rel="noopener noreferrer">Download file checksums ↗</a></p>
@@ -53,7 +54,7 @@ const checksumsUrl = computed(() => customerLink(props.product.checksumsUrl));
 .edition-byline{display:flex;flex-direction:column;gap:3px;padding:10px 0;border-block:1px solid #20133750;width:100%}.edition-byline small{font:10px var(--font-mono);text-transform:uppercase;letter-spacing:.06em}.edition-byline strong{font-size:16px}
 .edition-card>p:not(.eyebrow){margin-bottom:22px;font-size:14px}
 .edition-status{margin-top:auto;font:11px/1.5 var(--font-mono);text-transform:uppercase;border-top:1px solid var(--rule);padding-top:12px;width:100%}
-.edition-download{display:flex;flex-direction:column;gap:7px;width:100%;margin-top:14px;padding:14px 12px;background:#201337;color:#fff;border:2px solid #201337;text-decoration:none;box-sizing:border-box}.edition-download:hover{background:#ffe274;color:#201337}.edition-download:focus-visible{outline:3px solid #201337;outline-offset:4px}.edition-download strong{font-size:14px}.edition-download small{font:10px/1.5 var(--font-mono)}.edition-footnote a{text-decoration:underline;font-weight:700}
+:deep(.edition-download){width:100%;text-align:left;display:flex;flex-direction:column;gap:7px;margin-top:14px;padding:14px 12px;background:#201337;color:#fff;border:2px solid #201337;text-decoration:none;box-sizing:border-box}:deep(.edition-download):hover{background:#ffe274;color:#201337}:deep(.edition-download):focus-visible{outline:3px solid #201337;outline-offset:4px}:deep(.edition-download) strong{font-size:14px}:deep(.edition-download) small{font:10px/1.5 var(--font-mono)}.edition-footnote a{text-decoration:underline;font-weight:700}
 .video-project-credit{display:flex;align-items:center;justify-content:space-between;gap:24px;margin-top:36px;padding:clamp(18px,3vw,32px);border:2px solid #201337;background:#88e7ef;box-shadow:6px 6px 0 #f47cb5}
 .video-project-credit>div{max-width:650px}.video-project-credit h3{font-size:clamp(32px,4vw,48px);font-weight:900;line-height:1.05;margin:12px 0}.video-project-credit .button{flex-shrink:0;background:#201337;color:#fff;border-color:#201337}.video-project-credit .button:hover{background:#53257c;color:#fff}
 .edition-footnote{font-size:12px;margin:24px 0 0;color:#51306e}

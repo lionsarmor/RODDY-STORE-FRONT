@@ -954,6 +954,7 @@ function syncPrintify(source, targetId) {
               :product="selected"
               :catalog="catalog"
               :library="library"
+              :token="form.token"
               @close="selected = null"
               @duplicate="duplicate"
               @delete="removeProduct"

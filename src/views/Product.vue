@@ -22,6 +22,7 @@ import ProductArtwork from "../components/ProductArtwork.vue";
 import VideoEditions from "../components/VideoEditions.vue";
 import ProductCard from "../components/ProductCard.vue";
 import RoddyLogo from "../components/RoddyLogo.vue";
+import FreeDownload from '../components/FreeDownload.vue';
 import { departmentDirection } from "../department-data";
 const props = defineProps({ id: { type: String, required: true } });
 const catalog = useCatalogStore();
@@ -346,14 +347,10 @@ async function buyNow() {
         </p>
         <p v-if="product.type === 'physical'" class="release-note">{{ shippingLabel(product) }}.</p>
         <div v-if="purchasable" class="purchase-actions">
-          <a
+          <FreeDownload
             v-if="freeDownload"
-            :href="freeDownload"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="button primary"
-            >↓ {{ product.downloadLabel || 'Free download' }} <span>↗</span></a
-          >
+            :product="product" :url="freeDownload" :label="product.downloadLabel || 'Free download'"
+          />
           <template v-else>
             <label class="quantity-field"
               >Quantity<input

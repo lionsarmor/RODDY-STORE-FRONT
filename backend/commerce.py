@@ -433,8 +433,12 @@ class Commerce:
         shipments = [{"carrier": str(s.get("carrier", ""))[:100], "number": str(s.get("number", ""))[:150],
                       "url": s.get("url", "") if re.match(r"^https?://", str(s.get("url", ""))) else "",
                       "deliveredAt": s.get("delivered_at")} for s in current.get("shipments", [])]
-        self.update(order["session"], "printify", "delivered" if shipments and all(s["deliveredAt"] for s in shipments) else status,
-                    supplier_id, issue, shipments)
+        # Printify keeps its order status at fulfilled while parcels travel.
+        # Normalize it for our shipment lanes, but never complete a partially
+        # fulfilled order just because its first package has been delivered.
+        if status == "fulfilled" and shipments:
+            status = "delivered" if all(s["deliveredAt"] for s in shipments) else "shipped"
+        self.update(order["session"], "printify", status, supplier_id, issue, shipments)
 
     @staticmethod
     def printify_lines(order,current):
@@ -513,7 +517,7 @@ class Commerce:
             return
         try:
             with self.connect() as db:
-                rows = db.execute("SELECT * FROM orders WHERE cancelled=0 AND (created>? OR EXISTS(SELECT 1 FROM sale_events e WHERE e.session=orders.session)) AND checked<? ORDER BY checked LIMIT 50", (int(time.time()) - 30 * 86400, int(time.time()) - 30)).fetchall()
+                rows = db.execute("SELECT * FROM orders WHERE amount>0 AND cancelled=0 AND (created>? OR EXISTS(SELECT 1 FROM sale_events e WHERE e.session=orders.session)) AND checked<? ORDER BY checked LIMIT 50", (int(time.time()) - 30 * 86400, int(time.time()) - 30)).fetchall()
             for row in rows:
                 order = dict(row)
                 try:

@@ -13,6 +13,11 @@ payments every 30 seconds and paid orders every five minutes, independently of
 whether customers return to their receipt page. Keep the droplet and its SQLite
 DB backed up; use SQLite's backup API rather than copying a live WAL database.
 
+Printify's `fulfilled` status with shipment tracking appears as **Shipped** in
+the admin and customer receipt. It becomes **Delivered** once every package has
+a delivery timestamp. Partially fulfilled orders stay in Processing, even when
+the packages dispatched so far have arrived.
+
 Printify requires `shops.read`, `products.read`, `catalog.read`, `orders.read`
 and `orders.write`. Tokens stay in `/etc/roddy-store/printify.json`; Square
 credentials stay in `/etc/roddy-store/store.env`. A funded Printify account/payment

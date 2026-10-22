@@ -9,7 +9,8 @@ import MediaEditor from "./MediaEditor.vue";
 import ProductTags from "../components/ProductTags.vue";
 import { specsToText, textToSpecs } from "./utils";
 import { PRODUCT_ORIGINS, productOrigin } from '../product-origin.js';
-const props = defineProps({ product: Object, catalog: Object, library: Array });
+import LiveProductPrice from './LiveProductPrice.vue';
+const props = defineProps({ product: Object, catalog: Object, library: Array, token:String });
 defineEmits(["close", "duplicate", "delete", "media-busy"]);
 const tab = ref("details");
 const specs = computed({
@@ -163,6 +164,7 @@ function toggleTag(id) {
       </button>
     </div>
     <div v-if="tab === 'pricing'" class="editor-content">
+      <LiveProductPrice v-if="(product.merch||product.supplier?.fulfillment==='automatic'||product.fulfillment==='automatic')&&product.pricingMode!=='fixed'" :product="product" :endpoint="catalog.settings.checkoutEndpoint" :token="token" />
       <p v-if="product.merch" class="notice">Merchandise prices are set per color and size in Options & shipping. The base price is the lowest enabled variant price.</p>
       <div class="form-grid">
         <label

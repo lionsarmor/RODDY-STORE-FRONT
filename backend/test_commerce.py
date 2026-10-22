@@ -28,6 +28,7 @@ class Supplier:
         self.submitted = []
         self.production = []
         self.found = None
+        self.shipments = []
     def product(self, pid):
         return {'variants': [{'id': 10, 'enabled': True, 'available': self.available, 'costCents': self.cost}]}
     def quote_shipping(self, lines, address):
@@ -42,7 +43,7 @@ class Supplier:
     def order(self, sid):
         return {'id': sid, 'status': self.status,
                 'line_items': [{**line,'cost':self.cost} for line in self.submitted[0][1]] if self.submitted else [],
-                'total_shipping':1234,'total_tax':self.tax,'shipments': []}
+                'total_shipping':1234,'total_tax':self.tax,'shipments': copy.deepcopy(self.shipments)}
     def send_to_production(self, sid):
         self.production.append(sid)
         self.status = 'in-production'
@@ -111,6 +112,58 @@ class MixedCheckoutTests(unittest.TestCase):
         self.assertIn('hoodie',self.client.get('/inventory').json()['suspendedProducts'])
         self.tick();self.assertEqual(len(self.supplier.submitted),1)
         self.assertEqual(self.supplier.production,[])
+
+    def test_printify_tracking_moves_fulfilled_order_to_shipped_then_delivered(self):
+        items=[{'id':'hoodie','variantId':'10','qty':1}]
+        result=self.checkout(self.quote(items).json(),items).json()
+        self.provider.is_paid=True;self.tick()
+        self.supplier.status='fulfilled'
+        self.supplier.shipments=[{'carrier':'usps','number':'tracking123',
+                                 'url':'https://example.com/tracking123','delivered_at':None}]
+        self.tick()
+        shipped=self.admin('GET','/admin/orders?view=shipped').json()
+        self.assertEqual(shipped['total'],1)
+        fulfillment=shipped['data'][0]['fulfillments'][0]
+        self.assertEqual(fulfillment['state'],'shipped')
+        self.assertEqual(fulfillment['shipments'][0]['number'],'tracking123')
+        self.assertEqual(shipped['summary']['shipped'],1)
+        self.assertEqual(self.admin('GET','/admin/orders?view=progress').json()['total'],0)
+        customer=self.client.post('/order',json={'sessionId':result['sessionId']}).json()
+        self.assertEqual(customer['fulfillments'][0]['state'],'shipped')
+        self.supplier.shipments[0]['delivered_at']='2026-10-22 12:00:00+00:00'
+        self.tick()
+        delivered=self.admin('GET','/admin/orders?view=shipped').json()
+        self.assertEqual(delivered['data'][0]['fulfillments'][0]['state'],'delivered')
+        self.assertEqual(len(self.supplier.submitted),1)
+        self.assertEqual(len(self.supplier.production),1)
+
+    def test_printify_partial_delivery_does_not_complete_whole_order(self):
+        items=[{'id':'hoodie','variantId':'10','qty':2}]
+        result=self.checkout(self.quote(items).json(),items).json()
+        self.provider.is_paid=True;self.tick()
+        self.supplier.status='partially-fulfilled'
+        self.supplier.shipments=[{'carrier':'usps','number':'partial123',
+                                 'delivered_at':'2026-10-22 12:00:00+00:00'}]
+        self.tick()
+        fulfillment=self.app.state.commerce.fulfillments(result['sessionId'])[0]
+        self.assertEqual(fulfillment['state'],'partially-fulfilled')
+        self.assertEqual(fulfillment['shipments'][0]['number'],'partial123')
+        self.assertEqual(self.admin('GET','/admin/orders?view=shipped').json()['total'],0)
+        self.assertEqual(self.admin('GET','/admin/orders?view=progress').json()['total'],1)
+
+    def test_printify_completed_order_needs_tracking_and_all_packages_delivered(self):
+        items=[{'id':'hoodie','variantId':'10','qty':2}]
+        result=self.checkout(self.quote(items).json(),items).json()
+        self.provider.is_paid=True;self.tick()
+        self.supplier.status='fulfilled';self.tick()
+        self.assertEqual(self.app.state.commerce.fulfillments(result['sessionId'])[0]['state'],'fulfilled')
+        self.supplier.shipments=[{'carrier':'usps','number':'first','delivered_at':'2026-10-22 12:00:00+00:00'},
+                                 {'carrier':'usps','number':'second','delivered_at':None}]
+        self.tick()
+        self.assertEqual(self.app.state.commerce.fulfillments(result['sessionId'])[0]['state'],'shipped')
+        self.supplier.shipments[1]['delivered_at']='2026-10-22 13:00:00+00:00'
+        self.tick()
+        self.assertEqual(self.app.state.commerce.fulfillments(result['sessionId'])[0]['state'],'delivered')
 
     def test_mixed_order_total_repriced_shipping_and_no_production_before_payment(self):
         q=self.quote(); self.assertEqual(q.status_code,200,q.text); q=q.json()

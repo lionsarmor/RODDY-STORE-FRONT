@@ -28,6 +28,7 @@ test("paid download links must belong to the configured backend download path", 
     downloadDestination(endpoint + "/download/token", endpoint),
     endpoint + "/download/token",
   );
+  assert.equal(downloadDestination(endpoint+'/free-download/token',endpoint),endpoint+'/free-download/token');
   for (const url of [
     "https://evil.test/store/download/token",
     endpoint + "/admin/orders",

@@ -12,6 +12,12 @@ digital purchases, unpaid attempts, refunds and manual shipments. It refreshes
 every 30 seconds while visible; loaded history pages remain loaded. Use
 **Show all / clear filters** to return to the complete history.
 
+Explicitly archived canceled or unconfirmed test checkouts are omitted from the admin list,
+search, and dashboard counts. Their records remain in the database and CSV
+exports. Other unconfirmed checkouts, paid orders, refunds, and payments in
+progress remain visible. An archived test reappears if payment processing, a
+payment, or a refund is later recorded. Archiving alone does not cancel payment links.
+
 1. Open **Orders → Needs your action**. Copy delivery details or download the private
    packet. Keycap packets contain the frozen manufacturing JSON for each design;
    Mouser/AliExpress packets contain exact part/listing/variant IDs and quantities.
@@ -36,6 +42,30 @@ API access, MOQ/order-multiple compliance and configured US/Canada shipping rate
 Pending Order/Cart API approval does not block manual Mouser purchasing.
 
 ## Records and exports
+
+Paid digital items have **Download ZIP** and **Create customer link** controls on
+their order cards, including mixed orders. Each action rechecks payment against
+Square and uses the exact purchased file snapshot. Owner downloads last 15
+minutes; customer links last seven days and can be copied or opened in an email
+draft. Every download rechecks refunds. Owner reissues work after the public
+receipt's 30-day expiry without extending that receipt. No email is sent by
+opening a draft, and public order lists/CSV exports contain no download tickets.
+
+Free product and movie-edition downloads now collect an email and create a **$0
+Free** order. The original edition is saved, duplicate request retries do not
+create extra orders, and these records never enter Square checkout or supplier
+fulfillment. The admin can filter free orders, search by email, issue another
+download link, write a thank-you, and record the sent message. Revenue and paid
+sale counts remain separate. A recorded download opening means the server
+redirected to the public file; it does not prove the full transfer completed.
+Existing direct asset URLs and historical downloads are not backfilled.
+
+The free-download form's optional updates checkbox uses the existing newsletter
+consent wording and saves an opt-in with source `free-download`. It starts
+unchecked. Declining it still allows the download, and suppressed addresses are
+never silently reactivated. Thank-you drafts are editable; occasional releases,
+offers or giveaway links can be prepared through the existing newsletter tools
+for the opted-in audience. Creating a free order does not send email.
 
 **Reports, CSV exports & tools** exports every matching record across all workflow
 stages, regardless of the current lane. Dates, search and payment filters apply;

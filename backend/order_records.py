@@ -45,6 +45,17 @@ class OrderRecords:
               amount INTEGER NOT NULL, currency TEXT NOT NULL, note TEXT NOT NULL
             );
             CREATE INDEX IF NOT EXISTS order_created ON orders(created DESC,request_id DESC);
+            CREATE TABLE IF NOT EXISTS order_admin_archives (
+              session TEXT PRIMARY KEY REFERENCES orders(session),
+              created INTEGER NOT NULL, reason TEXT NOT NULL
+            );
+            CREATE TABLE IF NOT EXISTS free_download_tickets (
+              digest TEXT PRIMARY KEY, session TEXT NOT NULL REFERENCES orders(session),
+              product TEXT NOT NULL, expires INTEGER NOT NULL, started INTEGER
+            );
+            CREATE TABLE IF NOT EXISTS free_download_receipts (
+              session TEXT PRIMARY KEY REFERENCES orders(session), started INTEGER NOT NULL
+            );
             CREATE TABLE IF NOT EXISTS order_messages (
               id TEXT PRIMARY KEY, session TEXT NOT NULL REFERENCES orders(session),
               created INTEGER NOT NULL, recipient TEXT NOT NULL, subject TEXT NOT NULL,
@@ -72,6 +83,9 @@ class OrderRecords:
                 (order['session'],now,hashlib.sha256(encoded.encode()).hexdigest(),encoded))
 
     def summary(self, order):
+        if order['amount'] == 0:
+            return {'status':'free','captured':0,'refunded':0,'fees':0,'tax':0,
+                    'verified':None,'paidAt':None,'netAfterFees':0}
         with self.connect() as db:
             row = db.execute('SELECT * FROM order_finance WHERE session=?',(order['session'],)).fetchone()
         if row:
@@ -82,12 +96,17 @@ class OrderRecords:
                 'captured':order['amount'] if order['paid'] else 0,'refunded':0,'fees':None,'tax':None,
                 'verified':None,'paidAt':None,'netAfterFees':None}
 
-    def criteria(self, *, view='all', status='all', start=0, end=0, search=''):
-        if not isinstance(view,str) or not isinstance(status,str) or view not in {'all','keycaps','office','attention','inbox','progress','shipped'} or status not in {'all','paid','refunded','partially-refunded','unconfirmed','canceled','processing','failed','payment-review'}:
+    def criteria(self, *, view='all', status='all', start=0, end=0, search='', include_archived=False):
+        if not isinstance(view,str) or not isinstance(status,str) or view not in {'all','keycaps','office','attention','inbox','progress','shipped','free'} or status not in {'all','paid','free','refunded','partially-refunded','unconfirmed','canceled','processing','failed','payment-review'}:
             raise HTTPException(400,'Choose valid order filters.')
-        if type(start) is not int or type(end) is not int or start<0 or end<0 or (end and end<=start) or not isinstance(search,str) or len(search)>100:
+        if type(start) is not int or type(end) is not int or start<0 or end<0 or (end and end<=start) or not isinstance(search,str) or len(search)>100 or type(include_archived) is not bool:
             raise HTTPException(400,'Check order dates and search.')
         where, args = ['1=1'], []
+        if view=='free':where.append('o.amount=0')
+        if not include_archived:
+            # Only explicitly archived, unpaid test attempts leave the desk.
+            # A later payment/refund observation makes the order visible again.
+            where.append("NOT EXISTS(SELECT 1 FROM order_admin_archives a WHERE a.session=o.session AND o.paid=0 AND COALESCE(f.captured,0)=0 AND COALESCE(f.refunded,0)=0 AND COALESCE(f.status,CASE WHEN o.cancelled=1 THEN 'canceled' ELSE 'unconfirmed' END) IN ('canceled','unconfirmed'))")
         if view=='inbox':where.append("o.paid=1 AND EXISTS(SELECT 1 FROM fulfillments q WHERE q.session=o.session AND (q.state IN ('ready-to-order','awaiting-submission','ready-to-ship','review') OR q.error<>''))")
         if view=='progress':where.append("o.paid=1 AND EXISTS(SELECT 1 FROM fulfillments q WHERE q.session=o.session AND q.state NOT IN ('ready-to-order','awaiting-submission','ready-to-ship','shipped','delivered','canceled'))")
         if view=='shipped':where.append("o.paid=1 AND EXISTS(SELECT 1 FROM fulfillments q WHERE q.session=o.session) AND NOT EXISTS(SELECT 1 FROM fulfillments q WHERE q.session=o.session AND q.state NOT IN ('shipped','delivered','canceled'))")
@@ -95,7 +114,7 @@ class OrderRecords:
         if view=='office':where.append("o.paid=1 AND EXISTS(SELECT 1 FROM fulfillments q WHERE q.session=o.session AND q.kind='office' AND q.state='ready-to-ship')")
         if view=='attention':where.append("EXISTS(SELECT 1 FROM fulfillments q WHERE q.session=o.session AND (q.error<>'' OR q.state='review'))")
         if status!='all':
-            where.append("COALESCE(f.status,CASE WHEN o.paid=1 THEN 'paid' WHEN o.cancelled=1 THEN 'canceled' ELSE 'unconfirmed' END)=?");args.append(status)
+            where.append("CASE WHEN o.amount=0 THEN 'free' ELSE COALESCE(f.status,CASE WHEN o.paid=1 THEN 'paid' WHEN o.cancelled=1 THEN 'canceled' ELSE 'unconfirmed' END) END=?");args.append(status)
         if start:where.append('o.created>=?');args.append(start)
         if end:where.append('o.created<?');args.append(end)
         if search:
@@ -123,12 +142,13 @@ class OrderRecords:
     def dashboard(self, start=0, end=0, search=''):
         totals={}
         with self.connect() as db:
-            for view in ['inbox','progress','shipped','attention','all']:
+            for view in ['inbox','progress','shipped','attention','all','free']:
                 where,args=self.criteria(view=view,start=start,end=end,search=search)
                 totals[view]=db.execute('SELECT COUNT(*) FROM orders o LEFT JOIN order_finance f ON f.session=o.session WHERE '+where,args).fetchone()[0]
             where,args=self.criteria(start=start,end=end,search=search)
             row=db.execute('SELECT COALESCE(SUM(COALESCE(f.captured,CASE WHEN o.paid=1 THEN o.amount ELSE 0 END)),0),COALESCE(SUM(f.refunded),0) FROM orders o LEFT JOIN order_finance f ON f.session=o.session WHERE '+where,args).fetchone()
             totals.update(capturedCents=row[0],refundedCents=row[1])
+            totals['freeStarted']=db.execute('SELECT COUNT(*) FROM orders o LEFT JOIN order_finance f ON f.session=o.session WHERE '+where+' AND o.amount=0 AND EXISTS(SELECT 1 FROM free_download_receipts d WHERE d.session=o.session)',args).fetchone()[0]
         return totals
 
     def expense(self, reference, body):
@@ -197,7 +217,7 @@ class OrderRecords:
             row=db.execute('SELECT * FROM orders WHERE request_id=?',(reference,)).fetchone()
             if not row:raise HTTPException(404,'Order not found.')
             order=dict(row)
-            if not order['paid'] or self.summary(order)['status']!='paid':raise HTTPException(409,'Only confirmed paid orders can be marked contacted here.')
+            if (order['amount'] != 0 and not order['paid']) or self.summary(order)['status'] not in {'paid','free'}:raise HTTPException(409,'Only paid purchases and free download orders can be marked contacted here.')
             address=json.loads(order['address']) if order['address'] else {}
             recipient=address.get('email','')
             if not re.fullmatch(r'[^\s@]+@[^\s@]+\.[^\s@]+',recipient):raise HTTPException(409,'This order has no valid customer email address.')
@@ -212,7 +232,7 @@ class OrderRecords:
 
     def export(self, kind='orders', **filters):
         if kind not in {'orders','items','expenses','payments'}:raise HTTPException(400,'Choose an export type.')
-        where,args=self.criteria(**filters);out=io.StringIO(newline='');writer=csv.writer(out)
+        where,args=self.criteria(include_archived=True,**filters);out=io.StringIO(newline='');writer=csv.writer(out)
         columns={'orders':['order_reference','square_order_id','created_utc','paid_at_utc','payment_status','currency','subtotal','shipping','tax','order_total','captured','refunded','processing_fees','net_after_fees','verified_utc','customer_email','fulfillment'],
                  'items':['order_reference','created_utc','payment_status','product_id','product_name','kind','variant','quantity','currency','unit_price','line_total','design_revision'],
                  'expenses':['order_reference','invoice_date','supplier','invoice_reference','amount','currency','note'],
