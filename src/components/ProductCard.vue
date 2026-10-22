@@ -1,5 +1,6 @@
 <script setup>
 import PrototypeNotice from './PrototypeNotice.vue';
+import BuddyListingArtwork from './BuddyListingArtwork.vue';
 import {
   stockState,
   stockLabel,
@@ -30,8 +31,9 @@ const catalog = useCatalogStore();
       >
     </div>
     <div class="product-card-image">
+      <BuddyListingArtwork v-if="product.id==='buddy'" :product="product" />
       <img
-        v-if="product.cardImage || product.coverImage || product.images?.[0]"
+        v-else-if="product.cardImage || product.coverImage || product.images?.[0]"
         :src="productImageUrl(product.cardImage || product.coverImage || product.images[0])"
         :alt="product.name"
         loading="lazy"

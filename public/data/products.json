@@ -253,10 +253,11 @@
       "launchSubheading": "Less scrolling. More “hey, you there?”",
       "editionIntro": "Choose your machine, meet its BUDDY, and unlock the matching alpha ZIP with your tester code. Every edition gets its own look, its own controls, and its own bit of magic.",
       "images": [
+        "img/buddy/login-night-shift.png",
         "img/buddy/x16-1.png",
         "img/buddy/windows98-2.png"
       ],
-      "coverImage": "img/buddy/x16-1.png",
+      "coverImage": "img/buddy/login-night-shift.png",
       "softwareFeatures": [
         {
           "title": "Made for your machine.",
@@ -380,7 +381,8 @@
           "image": "img/buddy/windows98-2.png",
           "caption": "Windows 98 · alternate alpha view"
         }
-      ]
+      ],
+      "cardImage": "img/buddy/login-night-shift.png"
     },
     {
       "id": "x16-keycaps",
