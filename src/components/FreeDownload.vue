@@ -1,5 +1,5 @@
 <script setup>
-import {ref} from 'vue';
+import {ref,watch,onUnmounted} from 'vue';
 import {useCatalogStore} from '../stores/catalog.js';
 import {useCustomerStore} from '../stores/customer.js';
 import {customerRequest} from '../customer-api.js';
@@ -7,17 +7,22 @@ import {downloadDestination} from '../checkout-links.js';
 const props=defineProps({product:Object,url:String,label:{type:String,default:'Free download'},buttonClass:{type:String,default:'button primary'}});
 const catalog=useCatalogStore(),customer=useCustomerStore();
 const dialog=ref(null),email=ref(''),firstName=ref(''),consent=ref(false),company=ref(''),busy=ref(false),error=ref(''),ready=ref(null);
-let requestId='';
-function open(){email.value=customer.profile?.email || '';firstName.value=customer.profile?.name?.split(' ')[0] || '';consent.value=false;company.value='';error.value='';ready.value=null;requestId=crypto.randomUUID();dialog.value.showModal();}
+let requestId='',generation=0;
+function open(){generation++;busy.value=false;email.value=customer.profile?.email || '';firstName.value=customer.profile?.name?.split(' ')[0] || '';consent.value=false;company.value='';error.value='';ready.value=null;requestId=crypto.randomUUID();dialog.value.showModal();}
+watch(()=>[props.product.id,props.url],()=>{generation++;dialog.value?.close();ready.value=null;error.value='';busy.value=false;});
+onUnmounted(()=>{generation++;});
 async function prepare(){
+  const current=generation,wantsUpdates=consent.value;
   busy.value=true;error.value='';
   try{
     if(catalog.preview)throw new Error('Download orders are unavailable in draft preview.');
-    const result=await customerRequest(catalog.settings.checkoutEndpoint,'/free-downloads','',{requestId,productId:props.product.id,downloadUrl:props.url,email:email.value,firstName:firstName.value,newsletterConsent:consent.value,company:company.value});
+    const result=await customerRequest(catalog.settings.checkoutEndpoint,'/free-downloads','',{requestId,productId:props.product.id,downloadUrl:props.url,email:email.value,firstName:firstName.value,newsletterConsent:wantsUpdates,company:company.value});
     const url=downloadDestination(result.url,catalog.settings.checkoutEndpoint);
     if(!url)throw new Error('The download link is invalid. Please try again.');
+    if(wantsUpdates){try{localStorage.setItem('roddy:newsletter:joined','yes');}catch{}window.dispatchEvent(new Event('roddy:newsletter:joined'));}
+    if(current!==generation)return;
     ready.value={...result,url};
-  }catch(e){error.value=e.message;}finally{busy.value=false;}
+  }catch(e){if(current===generation)error.value=e.message;}finally{if(current===generation)busy.value=false;}
 }
 </script>
 <template>

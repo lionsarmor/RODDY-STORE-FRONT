@@ -5,8 +5,8 @@ import assert from 'node:assert/strict';
 import {writeFileSync,unlinkSync} from 'node:fs';
 import {randomUUID} from 'node:crypto';
 const entry='.tools/digital-downloads-'+randomUUID()+'.mjs';
-writeFileSync(entry,`import {createApp,h} from 'vue';import {createPinia} from 'pinia';import OrderManager from '../src/admin/OrderManager.vue';import FreeDownload from '../src/components/FreeDownload.vue';import LiveProductPrice from '../src/admin/LiveProductPrice.vue';import {useCatalogStore} from '../src/stores/catalog';import '../src/styles/main.css';import '../src/admin/admin.css';
-const pinia=createPinia(),catalog=useCatalogStore(pinia);catalog.loaded=true;catalog.settings.checkoutEndpoint='https://downloads.test';const product={id:'free-game',name:'FREE GAME'};
+writeFileSync(entry,`import {createApp,h,reactive} from 'vue';import {createPinia} from 'pinia';import OrderManager from '../src/admin/OrderManager.vue';import FreeDownload from '../src/components/FreeDownload.vue';import LiveProductPrice from '../src/admin/LiveProductPrice.vue';import {useCatalogStore} from '../src/stores/catalog';import '../src/styles/main.css';import '../src/admin/admin.css';
+const pinia=createPinia(),catalog=useCatalogStore(pinia);catalog.loaded=true;catalog.settings.checkoutEndpoint='https://downloads.test';const product=reactive({id:'free-game',name:'FREE GAME'});window.fixtureProduct=product;
 createApp({render:()=>{const view=new URLSearchParams(location.search).get('view');return view==='free'?h(FreeDownload,{product,url:'https://roddy.world/game.zip',label:'Free game'}):view==='price'?h(LiveProductPrice,{product:{id:'de10'},endpoint:'https://downloads.test',token:'fixture'}):h(OrderManager,{endpoint:'https://downloads.test',token:'fixture',connected:true});}}).use(pinia).mount('#app');`);
 const server=await createServer({optimizeDeps:{noDiscovery:true,include:['vue']},server:{host:'127.0.0.1',port:0},plugins:[{name:'digital-download-fixture',configureServer(server){server.middlewares.use('/__digital_downloads',(_req,res)=>{res.setHeader('Content-Type','text/html');res.end(`<html><body><div id="app"></div><script type="module" src="/${entry}"></script></body></html>`);});}}]});
 await server.listen();const browser=await chromium.launch({headless:true});
@@ -57,6 +57,7 @@ try{
  await page.getByLabel('Email address',{exact:true}).fill('sam@example.com');await page.getByLabel(/I want occasional RODDY/).check();await page.getByRole('button',{name:'Get free download ↓'}).click();
  await page.getByRole('link',{name:'Download now ↓'}).waitFor();assert.match(await page.getByRole('link',{name:'Download now ↓'}).getAttribute('href'),/\/free-download\/fixture-ticket$/);
  assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'Free download dialog must fit mobile');
+ await page.evaluate(()=>{window.fixtureProduct.id='another-game';});await page.getByRole('dialog').waitFor({state:'hidden'});
  await page.goto(base+'?view=price');await page.getByText('$410.99 + quoted shipping',{exact:true}).waitFor();assert.match(await page.locator('body').innerText(),/30% markup[\s\S]*\$310.14[\s\S]*\$10.29/);
  assert.deepEqual(errors,[]);
  console.log('PASS: admin ZIP download, refund rejection, copy/resend links, email drafts, free-order thank-you, required email, optional offers opt-in, mobile, and live DE10 pricing details. Fixture APIs only.');
