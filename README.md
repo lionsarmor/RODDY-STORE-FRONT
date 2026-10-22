@@ -48,6 +48,21 @@ deliberate for `data/products.json` (so the admin page's GitHub commits go
 live without touching bundled JS) and for the large SVG library (no reason to
 run 240+ hand-authored logo files through an asset pipeline).
 
+## Secure hosting
+
+Keep GitHub Pages **Enforce HTTPS** enabled for `roddy.world`. Instagram and
+other in-app browsers can follow an `http://` link without upgrading it. The
+backend only accepts `https://roddy.world` and `https://www.roddy.world`, so an
+HTTP visit can display the storefront while newsletter signup, checkout,
+accounts and downloads fail. Secure contexts are also required for checkout's
+browser-generated request IDs.
+
+All three HTML entry points include an early HTTPS redirect as a fallback; it
+preserves product paths, tracking parameters, old hash links and private receipt
+fragments. Generated product pages inherit it. Local development stays on HTTP.
+After hosting changes, run `node tools/check-store-connections.mjs` to verify
+production redirects and API connectivity without creating orders or signups.
+
 ## Running it locally
 
 ```

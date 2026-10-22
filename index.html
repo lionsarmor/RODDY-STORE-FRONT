@@ -2,6 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<!-- Keep cached/in-app HTTP visits on the API's allowed secure origin. -->
+<script id="enforce-https">
+if (location.protocol === "http:" && ["roddy.world", "www.roddy.world"].includes(location.hostname)) {
+  location.replace("https://roddy.world" + location.pathname + location.search + location.hash);
+}
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>RODDY — Play. Build. Make it yours.</title>
 <meta name="description" content="RODDY: physical games, computers, electronic toys and programmable machines. Play it. Open it. Program it. Keep it.">
