@@ -1,5 +1,7 @@
 <script setup>
 import { onMounted, watch } from "vue";
+import {useRoute} from "vue-router";
+import {productMetadata,SITE_URL,STORE_TITLE,STORE_DESCRIPTION,STORE_IMAGE,updatePreviewMetadata} from "./social-previews.js";
 import AppHeader from "./components/AppHeader.vue";
 import AppFooter from "./components/AppFooter.vue";
 import ThemeOverlay from "./components/ThemeOverlay.vue";
@@ -8,6 +10,17 @@ import Toast from "./components/Toast.vue";
 import { useCatalogStore } from "./stores/catalog";
 
 const catalog = useCatalogStore();
+const route = useRoute();
+watch([()=>route.fullPath,()=>catalog.loaded],()=>{
+  if(!catalog.loaded) return;
+  const product=route.name==='product' ? catalog.byId(route.params.id) : null;
+  const metadata=product ? productMetadata(product) : {
+    title:STORE_TITLE,description:STORE_DESCRIPTION,image:STORE_IMAGE,
+    imageAlt:'RODDY logo — Play. Build. Make it yours.',
+    url:SITE_URL+(route.path==='/'?'/':route.path.replace(/\/$/,'')+'/'),
+  };
+  updatePreviewMetadata(document,metadata,catalog.preview || ['cart','account','not-found'].includes(route.name) || (route.name==='product' && !product));
+},{immediate:true});
 onMounted(() => catalog.load());
 watch(() => catalog.unlistedCategory, category => {
   let tag = document.querySelector('meta[data-unlisted-robots]');
@@ -17,7 +30,7 @@ watch(() => catalog.unlistedCategory, category => {
     document.head.appendChild(tag);
   } else if (!category) tag?.remove();
 });
-const publicStoreUrl = import.meta.env.BASE_URL + '#/';
+const publicStoreUrl = import.meta.env.BASE_URL;
 
 </script>
 

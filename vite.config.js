@@ -6,7 +6,7 @@ import { RODDY_THEME_IDS, RODDY_THEME_STORAGE_KEY } from "./src/theme-data.js";
 import { bootstrapTheme } from "./src/theme-bootstrap.js";
 
 export default defineConfig({
-  base: "./",
+  base: "/",
   plugins: [
     vue(),
     tailwindcss(),

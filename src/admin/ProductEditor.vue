@@ -25,6 +25,10 @@ const cover = computed({
     props.product.coverImage = value[0] || "";
   },
 });
+const socialCover = computed({
+  get: () => props.product.socialImage ? [props.product.socialImage] : [],
+  set: value => { props.product.socialImage = value[0] || ''; },
+});
 function toggleTag(id) {
   const tags = props.product.tags;
   if (tags.includes(id)) tags.splice(tags.indexOf(id), 1);
@@ -155,6 +159,8 @@ function toggleTag(id) {
         :library="library"
         @busy="$emit('media-busy', $event)"
       />
+      <MediaEditor v-model="socialCover" single title="Social link preview image (optional)" :library="library" @busy="$emit('media-busy', $event)" />
+      <p class="help-copy">Used when this product link is posted on Facebook, Discord and similar apps. Leave empty to use the listing or cover image. Publish your changes to update the preview page.</p>
       <button
         v-if="product.images.length"
         class="button small"

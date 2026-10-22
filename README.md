@@ -13,7 +13,7 @@ checkout, payment verification, and paid ZIP delivery.
 ## Stack
 
 - **Vue 3** (`<script setup>` SFCs) for components and routing (`vue-router`,
-  hash mode)
+  HTML5 history mode)
 - **Pinia** for state — theme, cart, catalog, UI (toast/overlay)
 - **Tailwind CSS v4** for styling, wired to runtime CSS custom properties so
   theme switching needs no rebuild
@@ -26,7 +26,7 @@ checkout, payment verification, and paid ZIP delivery.
 index.html, admin.html, order.html   Vite entry points (one per mini-app)
 src/main.js                            storefront entry — mounts App.vue via vue-router
 src/App.vue                            layout shell: header, footer, theme overlay, toast
-src/router.js                          hash-based routes: / /shop /product/:id /cart /about
+src/router.js                          clean routes: / /shop /product/:id /cart /about
 src/views/                             route components (Home, Shop, Product, Cart, About, NotFound)
 src/components/                        RoddyLogo, AppHeader, AppFooter, ThemeOverlay, Toast, ProductCard
 src/stores/                            Pinia stores: theme.js, catalog.js, cart.js, checkout.js, ui.js
@@ -87,11 +87,42 @@ Tailwind/Vue need a build step:
 3. Push to `main` — `.github/workflows/deploy.yml` runs `npm ci && npm run
    build` and deploys `dist/` automatically. First deploy takes a minute or
    two; check the **Actions** tab for progress.
-4. Your store is live at `https://<your-username>.github.io/<repo-name>/`.
+4. The custom-domain store is live at `https://roddy.world/`.
 
-`vite.config.js` uses `base: "./"` (relative asset paths), so it works
-correctly at any GitHub Pages subpath without needing the repo name hardcoded
-anywhere.
+`vite.config.js` uses `base: "/"` so assets load from nested product pages.
+`npm run build` runs Vite, then `tools/build-product-pages.mjs` generates an
+actual HTML file for each public product and every normal storefront route.
+This supplies direct-load support on GitHub Pages without server rewrites.
+`404.html` boots the same app for unknown and unlisted preview paths.
+
+## Product link previews
+
+Share ordinary product URLs such as `https://roddy.world/product/buddy/`.
+Each public active product gets its own title, description, Open Graph and
+Twitter card image, canonical URL, and no-JavaScript product summary in the
+initial HTML. Preview bots do not need to run the app. Prices are omitted
+from social metadata because supplier prices can change between builds.
+
+Admin → Product → Images has an optional **Social link preview image**.
+The default is the listing image, cover, then first suitable gallery image.
+Use a hosted JPG or PNG for broad compatibility. Local preview images have
+a content hash in their URL so a changed image gets a fresh asset URL.
+Publishing a catalog change automatically rebuilds the corresponding pages.
+Unlisted categories and inactive products are excluded from generated public
+product pages and the sitemap; preview-only browsing remains available.
+
+Old `/#/product/...` and `index.html#/...` bookmarks upgrade in the browser,
+including draft and unlisted query parameters. URL fragments are not sent to
+web servers, so **copy the new clean address** for a product-specific social
+preview; an old hash URL still gives bots the homepage's generic metadata.
+Admin and order-confirmation pages retain their existing addresses and hashes.
+
+Validation: `npm test`, `npm run build`, then
+`node tools/test-product-previews.mjs` with the local Playwright installation.
+The browser check serves the built files as plain static hosting, checks raw
+HTML/images with preview-bot user agents, and exercises normal navigation,
+refreshes, old links, cart persistence and draft/unlisted previews.
+See the [Open Graph protocol](https://ogp.me/) for the preview tag format.
 
 ## The theme system
 
@@ -219,7 +250,7 @@ update the running Python service.
 ## Brand reference
 
 The full brand map (mission, palettes, product families, the meaning of the
-dot) is summarized on the in-app **About** page (`#/about`).
+dot) is summarized on the in-app **About** page (`/about/`).
 
 ## Where this is headed
 

@@ -230,6 +230,17 @@ export function validateCatalog(data) {
       errors.push(
         `${p.name}: paid products must not have a public free-download URL.`,
       );
+    if (p.socialImage) {
+      let valid = false;
+      if (typeof p.socialImage === 'string') {
+        try {
+          const url = new URL(p.socialImage, 'https://roddy.world/');
+          valid = url.protocol === 'https:' && !url.username && !url.password && /\.(png|jpe?g|webp|gif)$/i.test(url.pathname) &&
+            (/^https:\/\//.test(p.socialImage) || (/^img\/[a-zA-Z0-9_./-]+$/i.test(p.socialImage) && !p.socialImage.split('/').includes('..')));
+        } catch { /* Show a useful catalog validation error. */ }
+      }
+      if (!valid) errors.push(`${p.name}: use a storefront or HTTPS JPG, PNG, WebP or GIF for the social preview.`);
+    }
     if (p.betaAccess !== undefined && typeof p.betaAccess !== 'boolean') errors.push(`${p.name}: alpha access must be enabled or disabled.`);
     if (p.betaAccess) {
       if (p.type !== 'digital' || p.price !== 0 || p.trackStock !== false || p.downloadUrl || p.pricePending || p.merch || p.supplier)

@@ -3781,7 +3781,8 @@
       "keycaps": null,
       "merch": null,
       "pricingMode": "automatic",
-      "pricingFloor": 0
+      "pricingFloor": 0,
+      "socialImage": "img/products/plan-9-vhs-render-social.png"
     },
     {
       "id": "keychain-kreatures-hardware-bundle",

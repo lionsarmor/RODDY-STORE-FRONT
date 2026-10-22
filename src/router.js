@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory } from "vue-router";
+import { createRouter, createWebHistory } from "vue-router";
 import Home from "./views/Home.vue";
 import Shop from "./views/Shop.vue";
 import Product from "./views/Product.vue";
@@ -8,8 +8,12 @@ import Contact from "./views/Contact.vue";
 import Newsletter from "./views/Newsletter.vue";
 import NotFound from "./views/NotFound.vue";
 
+import {legacyStoreTarget} from './legacy-links.js';
+const legacy = legacyStoreTarget(window.location.href);
+if (legacy) window.history.replaceState(window.history.state, '', legacy);
+
 const router = createRouter({
-  history: createWebHashHistory(import.meta.env.BASE_URL),
+  history: createWebHistory(import.meta.env.BASE_URL),
   scrollBehavior() {
     return { top: 0 };
   },
@@ -29,6 +33,21 @@ const router = createRouter({
     { path: "/contact", name: "contact", component: Contact },
     { path: "/:pathMatch(.*)*", name: "not-found", component: NotFound },
   ],
+});
+
+// Draft and unlisted previews must survive navigation and a browser refresh.
+router.beforeEach(to => {
+  const current = new URLSearchParams(window.location.search);
+  const sticky = {};
+  for (const key of ['preview', 'category-preview']) {
+    if (current.has(key) && to.query[key] === undefined) sticky[key] = current.get(key);
+  }
+  return Object.keys(sticky).length ? {path:to.path,query:{...to.query,...sticky},hash:to.hash,replace:true} : true;
+});
+// An old hash link clicked while already on the homepage may not reload JS.
+window.addEventListener('hashchange', () => {
+  const target = legacyStoreTarget(window.location.href);
+  if (target) router.replace(target);
 });
 
 export default router;
