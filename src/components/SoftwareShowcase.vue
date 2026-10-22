@@ -10,7 +10,7 @@ function enlarge(src,caption){selected.value={src,caption};lightbox.value.showMo
 function editions(){document.getElementById('software-editions')?.scrollIntoView({behavior:'smooth'});}
 </script>
 <template>
-  <article class="software-launch" :class="{'software-orbit':orbit,'buddy-centered':!orbit}">
+  <article class="software-launch" :class="{'software-orbit':orbit,'orbit-centered':orbit,'buddy-centered':!orbit}">
     <nav class="software-nav" aria-label="Breadcrumb"><RouterLink to="/shop">← Back to the store</RouterLink><span>RODDY SOFTWARE LAB / {{orbit?'002':'001'}}</span></nav>
     <section class="software-hero">
       <div class="software-intro"><p class="lab-label"><span /> ALPHA · INVITED TESTERS ONLY</p><h1>{{product.name}}<span aria-hidden="true">{{orbit?'◌':'_'}}</span></h1><h2>{{product.launchHeadline}}</h2><p class="hero-description">{{product.description}}</p><div class="software-actions"><button class="lab-button" @click="editions">{{orbit?'Get your alpha build':'Pick your machine'}} ↓</button><a href="https://discord.gg/YVKJ5srkj" target="_blank" rel="noopener noreferrer">Find your people on Discord ↗</a></div><p class="tiny-print">$0 tester downloads · Email + beta tester code required</p></div>
@@ -23,7 +23,7 @@ function editions(){document.getElementById('software-editions')?.scrollIntoView
       <div class="alpha-notice"><strong>Fresh from the workbench.</strong><p>{{product.releaseNote}} Tester codes unlock these downloads; they are separate from any in-app account or lounge invitation.</p><a href="https://discord.gg/YVKJ5srkj" target="_blank" rel="noopener noreferrer">Need a tester code? Ask in the RODDY Discord ↗</a></div>
     </section>
     <section class="software-screens" aria-labelledby="screens-heading"><p class="lab-label">{{orbit?'FRESH CAPTURES / REAL INTERFACE':'THE PIXELS SPEAK FOR THEMSELVES'}}</p><h2 id="screens-heading">{{orbit?'Same universe. Different moods.':'Old-school looks. New conversations.'}}</h2><p class="section-intro">{{orbit?'ORBIT, BUDDY and RODDY skins, chess, a shared whiteboard, lounge design, and a phone-sized peek. These are new browser captures of the working alpha, with demonstration data.':'Real development screenshots from the different clients. Demo contacts and conversations show the interface; emulator previews do not imply verified physical-hardware support.'}}</p><div class="software-screen-grid"><figure v-for="shot in product.softwareScreenshots" :key="shot.image"><button @click="enlarge(shot.image,shot.caption)" :aria-label="'Enlarge: '+shot.caption"><img :src="productImageUrl(shot.image)" :alt="shot.caption" loading="lazy" /></button><figcaption>{{shot.caption}} <span>⤢</span></figcaption></figure></div></section>
-    <DiscordCommunity :compact="!orbit" />
+    <DiscordCommunity compact />
     <div class="software-next"><span>MORE FROM THE RODDY LAB</span><RouterLink :to="'/product/'+(orbit?'buddy':'orbit')">{{orbit?'Meet BUDDY. Your old computer misses you.':'Meet ORBIT. Your people, in a new universe.'}} ↗</RouterLink></div>
     <dialog ref="lightbox" class="software-lightbox" aria-label="Software screenshot"><button class="lightbox-close" @click="lightbox.close()" aria-label="Close screenshot">Close ×</button><template v-if="selected"><img :src="productImageUrl(selected.src)" :alt="selected.caption" /><p>{{selected.caption}}</p></template></dialog>
   </article>
@@ -112,6 +112,66 @@ function editions(){document.getElementById('software-editions')?.scrollIntoView
   .buddy-centered .edition-image { height: 180px; }
   .buddy-centered .software-screen-grid figure > button { min-height: 0; height: 130px; padding: 8px; }
   .buddy-centered .software-screen-grid figcaption { font-size: 8px; }
+}
+
+/* ORBIT shares the centered feature frame, with room for its wide screenshots. */
+.software-launch.orbit-centered {
+  width: calc(100% - 48px);
+  max-width: 1040px;
+  margin: 24px auto 48px;
+  padding: 0 28px 24px;
+  border: 1px solid var(--lab-line);
+  border-radius: 12px;
+}
+.orbit-centered .software-nav { padding: 16px 0; font-size: 10px; }
+.orbit-centered .software-hero { grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 28px; padding: 32px 0; }
+.orbit-centered .software-intro h1 { font-size: clamp(48px, 5.8vw, 72px); margin: 14px 0; }
+.orbit-centered .software-intro h2 { font-size: clamp(22px, 2.6vw, 28px); max-width: 21ch; }
+.orbit-centered .hero-description { color: var(--lab-ink); font-size: 13px; line-height: 1.7; margin: 16px 0 20px; }
+.orbit-centered .hero-screen { width: 100%; max-width: 430px; margin: 0 auto; box-shadow: 6px 8px 0 var(--lab-line); }
+.orbit-centered .software-actions { gap: 14px; }
+.orbit-centered .software-actions a { font-size: 11px; }
+.orbit-centered .lab-button { padding: 11px 14px; font-size: 12px; }
+.orbit-centered .tiny-print { font-size: 9px; line-height: 1.6; margin-top: 14px; }
+.orbit-centered .software-ticker { margin: 0 -28px; padding: 10px 18px; font-size: 10px; }
+.orbit-centered .software-story,
+.orbit-centered .software-editions,
+.orbit-centered .software-screens { padding: 32px 0; }
+.orbit-centered .software-story > h2,
+.orbit-centered .edition-heading h2,
+.orbit-centered .software-screens > h2 { font-size: clamp(24px, 3vw, 30px); margin: 10px 0 20px; max-width: 29ch; }
+.orbit-centered .feature-row h3 { font-size: 16px; margin: 9px 0 7px; }
+.orbit-centered .feature-row p,
+.orbit-centered .section-intro { font-size: 12px; line-height: 1.7; }
+.orbit-centered .section-intro { margin-bottom: 20px; max-width: 85ch; }
+.orbit-centered .alpha-stamp { font-size: 11px; padding: 10px; }
+.orbit-centered .edition-image { min-height: 240px; padding: 16px; }
+.orbit-centered .edition-copy { padding: 20px; }
+.orbit-centered .edition-copy h3 { font-size: 24px; }
+.orbit-centered .edition-copy > p:not(.edition-tagline) { font-size: 13px; }
+.orbit-centered .alpha-notice { margin-top: 22px; padding: 14px 18px; font-size: 11px; }
+.orbit-centered .software-screen-grid { gap: 16px; }
+.orbit-centered .software-screen-grid figure > button { height: 230px; padding: 12px; }
+.orbit-centered .software-screen-grid figcaption { font-size: 10px; padding: 12px; }
+.orbit-centered .software-next { margin-top: 24px; padding: 20px 0 0; }
+.orbit-centered .software-next > a { font-size: 18px; }
+@media (max-width: 850px) {
+  .orbit-centered .software-hero { grid-template-columns: 1fr; gap: 24px; }
+  .orbit-centered .hero-screen { max-width: 480px; }
+  .orbit-centered .edition-image { height: 250px; min-height: 0; }
+}
+@media (max-width: 580px) {
+  .software-launch.orbit-centered { width: calc(100% - 24px); padding: 0 16px 20px; margin-top: 12px; }
+  .orbit-centered .software-nav { font-size: 9px; gap: 10px; }
+  .orbit-centered .software-hero { padding: 24px 0; }
+  .orbit-centered .software-intro h1 { font-size: 54px; }
+  .orbit-centered .software-intro h2 { font-size: 24px; }
+  .orbit-centered .software-ticker { margin: 0 -16px; }
+  .orbit-centered .software-story,
+  .orbit-centered .software-editions,
+  .orbit-centered .software-screens { padding: 26px 0; }
+  .orbit-centered .feature-row { gap: 18px; }
+  .orbit-centered .software-screen-grid figure > button { min-height: 0; height: 210px; }
 }
 
 </style>
