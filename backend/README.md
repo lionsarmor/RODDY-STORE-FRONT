@@ -207,3 +207,36 @@ API references: [create payment link](https://developer.squareup.com/reference/s
 [get payment](https://developer.squareup.com/reference/square/payments-api/get-payment).
 
 For mixed carts, Printify fulfillment, office shipping and inventory, see [COMMERCE.md](COMMERCE.md).
+
+## Invited alpha downloads
+
+BUDDY and ORBIT use the same email-associated `$0` order flow, with
+`betaAccess: true` and separate `softwareEditions` cards in the public catalog.
+The product must be active, digital, untracked, priced at zero, and either
+available or coming soon. Only editions explicitly marked `downloadable: true`
+can be requested. There is no public download URL for these products.
+
+The existing private `STORE_MANIFEST` JSON has a product entry containing
+`beta.codeHash` (SHA-256 of the trimmed, uppercase tester code) and
+`beta.editions`. Each edition maps its catalog ID to the existing private
+`file` and `sha256` fields. Preserve all other entries when updating it. ZIPs
+stay under `STORE_PRIVATE_DIR`; never place packages, raw tester codes, or code
+hashes in the storefront catalog or Git. Use randomly suffixed codes even when
+the readable portion is retro slang. Rotate a code by replacing its hash in
+the manifest; new requests re-read it without restarting the service.
+
+`POST /free-downloads` accepts `editionId` and `testerCode` along with the
+normal required email and idempotency ID. Origin checks and rate limiting
+apply. The server validates the product, edition, code and private file before
+creating an order. It stores the release filename/hash snapshot and edition
+label, never the raw code. Invalid attempts create no order or payment.
+Alpha orders do not run Square or supplier fulfillment. Newsletter consent
+remains optional and unchecked.
+
+The resulting seven-day `/free-download/{ticket}` link streams the private
+ZIP after checking its hash; it does not redirect to a public asset. Download
+starts appear in admin. Owner-issued support links can reissue the exact
+ordered snapshot without a tester code or a new order. A code rotation blocks
+new requests using the old code; already issued links remain valid until their
+expiry. These are downloadable client alphas: the store code is separate from
+BUDDY service credentials and ORBIT lounge invitations.

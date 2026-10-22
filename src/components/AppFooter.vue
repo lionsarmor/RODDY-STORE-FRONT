@@ -2,6 +2,7 @@
 import { useThemeStore } from "../stores/theme";
 import RoddyLogo from "./RoddyLogo.vue";
 import RotatingTagline from "./RotatingTagline.vue";
+import DiscordCommunity from './DiscordCommunity.vue';
 import { useCatalogStore } from '../stores/catalog';
 import { SUPPORT_EMAIL, SALES_EMAIL } from '../forum-api.js';
 
@@ -12,6 +13,7 @@ const catalog = useCatalogStore();
 <template>
   <footer class="mt-auto border-t border-border py-10 transition-colors duration-200">
     <div class="mx-auto max-w-6xl px-6">
+      <DiscordCommunity compact class="mb-10" />
       <div class="grid grid-cols-1 gap-8 sm:grid-cols-[2fr_1fr_1fr]">
         <div>
           <RoddyLogo kind="full_logo" class="h-7 w-auto" />

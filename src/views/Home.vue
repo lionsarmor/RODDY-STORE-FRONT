@@ -3,6 +3,7 @@ import { computed } from "vue";
 import { useCatalogStore, productImageUrl } from "../stores/catalog";
 import { useThemeStore } from "../stores/theme";
 import { useUiStore } from "../stores/ui";
+import SoftwareLabPromo from "../components/SoftwareLabPromo.vue";
 import ProductCard from "../components/ProductCard.vue";
 import ProductArtwork from "../components/ProductArtwork.vue";
 import RoddyLogo from "../components/RoddyLogo.vue";
@@ -96,6 +97,7 @@ const divisions = computed(() =>
   <div class="spectrum-band" aria-hidden="true">
     <i v-for="n in 6" :key="n" />
   </div>
+  <SoftwareLabPromo />
   <section class="division-strip">
     <RouterLink
       v-for="(c, i) in divisions"

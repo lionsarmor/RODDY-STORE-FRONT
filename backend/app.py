@@ -268,7 +268,20 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
     commerce = Commerce(connect, catalog_loader, price_cart, provider, printify_factory, physical_enabled, order_packets)
     app.state.order_packets = order_packets
     app.state.commerce = commerce
-    free_downloads = FreeDownloads(connect, catalog_loader, public_url)
+    def beta_asset(product_id, edition_id, code):
+        config = assets().get(product_id, {}).get('beta', {})
+        # Deliberately use the same response for missing and incorrect codes.
+        digest = hashlib.sha256(code.strip().upper().encode()).hexdigest() if isinstance(code, str) and 1 <= len(code) <= 120 else ''
+        expected = config.get('codeHash', '')
+        if not re.fullmatch(r'[a-f0-9]{64}', expected) or not secrets.compare_digest(digest, expected):
+            raise HTTPException(403, 'That tester code did not unlock this alpha. Ask in the RODDY Discord for access.')
+        asset = config.get('editions', {}).get(edition_id)
+        if not isinstance(asset, dict):
+            raise HTTPException(409, 'This alpha edition is temporarily unavailable.')
+        private_file(asset)
+        return {k: asset[k] for k in ('file', 'sha256', 'sandbox') if k in asset}
+
+    free_downloads = FreeDownloads(connect, catalog_loader, public_url, beta_asset, private_file)
 
     @app.post('/free-downloads')
     def free_download_order(request: Request, body: dict):
@@ -280,7 +293,10 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
     @app.get('/free-download/{ticket}')
     def free_download_file(ticket: str, request: Request):
         rate_limit(request, 'free-download', 60)
-        return RedirectResponse(free_downloads.redeem(ticket), status_code=303)
+        target = free_downloads.redeem(ticket)
+        if isinstance(target, dict):
+            return FileResponse(private_file(target), media_type='application/zip', filename=target['file'])
+        return RedirectResponse(target, status_code=303)
 
     @app.post("/quote")
     def quote(request: Request, body: dict):

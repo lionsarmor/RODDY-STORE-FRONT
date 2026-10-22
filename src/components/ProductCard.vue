@@ -61,6 +61,7 @@ const catalog = useCatalogStore();
       <h3>{{ product.name }}</h3>
       <PrototypeNotice :product="product" compact />
       <p>{{ product.shortDescription || product.description }}</p>
+      <p v-if="product.betaAccess" class="alpha-card-note">{{product.softwareEditions?.length>1?product.softwareEditions.length+' distinct editions · ':''}}Email + tester code to download · Join us on Discord</p>
       <p v-if="product.dynamicPricing" class="shipping-destinations">Price estimate · confirmed with delivery address</p><ProductTags :ids="product.tags" /><p v-if="product.type === 'physical'" class="shipping-destinations">{{ shippingLabel(product) }}</p>
       <div class="product-card-bottom">
         <span

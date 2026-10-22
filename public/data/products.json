@@ -130,6 +130,259 @@
   ],
   "products": [
     {
+      "category": "apps",
+      "price": 0,
+      "stock": 0,
+      "active": true,
+      "featured": true,
+      "status": "coming-soon",
+      "type": "digital",
+      "trackStock": false,
+      "pricePending": false,
+      "betaAccess": true,
+      "availabilityLabel": "ALPHA · TESTER CODE REQUIRED",
+      "downloadUrl": "",
+      "designOrigin": "original",
+      "tags": [],
+      "specs": {
+        "Release": "Alpha — invited testers",
+        "Price": "$0 tester download",
+        "Access": "Email + beta tester code",
+        "Community": "RODDY Discord"
+      },
+      "relatedProductIds": [],
+      "id": "orbit",
+      "sku": "RODDY-ORBIT-ALPHA",
+      "name": "ORBIT",
+      "shortDescription": "Your people. Your little universe. A modern chat alpha with shared lounges, rooms, activities and three distinct skins.",
+      "description": "Make a lounge. Bring your people. Chat, share a little time, and make the space your own. ORBIT is a modern hangout with a softer spot for the good parts of being online.",
+      "launchHeadline": "Your people. Your little universe.",
+      "launchSubheading": "A place to hang out. Not another feed.",
+      "editionIntro": "The current downloadable alpha is the Linux x64 desktop edition. ORBIT, BUDDY and RODDY are three included skins—switch moods inside the same app. Phone images show the responsive web interface; a native phone package is not available yet.",
+      "images": [
+        "img/orbit/lounge.png",
+        "img/orbit/chess.png",
+        "img/orbit/skin-buddy.png",
+        "img/orbit/skin-roddy.png",
+        "img/orbit/phone.png"
+      ],
+      "coverImage": "img/orbit/lounge.png",
+      "softwareFeatures": [
+        {
+          "title": "Make a little universe.",
+          "text": "Create a lounge, share its invitation, and give it rooms, a name and its own look. Keep your people close in a space you shape."
+        },
+        {
+          "title": "Do something together.",
+          "text": "Explore chat, shared activities and chess in the working alpha. Some activities need compatible devices or an optional helper."
+        },
+        {
+          "title": "One app. Three moods.",
+          "text": "ORBIT, BUDDY and RODDY skins let you change the atmosphere while staying in the same session."
+        }
+      ],
+      "releaseNote": "Early development build, with unfinished features and an ongoing security review. Linux x86_64 desktop package only; Windows, macOS and native phone packages are not delivered. Requires a supported Linux desktop and the configured online helper. Ubuntu may ask for administrator approval for the application-specific renderer sandbox. No automatic updater yet.",
+      "softwareEditions": [
+        {
+          "id": "linux-x64",
+          "name": "ORBIT · Linux x64",
+          "image": "img/orbit/lounge.png",
+          "secondImage": "img/orbit/chess.png",
+          "color": "#edbe88",
+          "tagline": "Your desktop. A whole new orbit.",
+          "description": "The current Rust desktop build with its bundled Chromium interface and all three skins. Unzip, read START-HERE.txt, then run the included installer.",
+          "requirements": "Linux x86_64 desktop · Python 3 for installation · Internet connection. Experimental alpha; check the bundled limitations before testing.",
+          "downloadable": true
+        }
+      ],
+      "softwareScreenshots": [
+        {
+          "image": "img/orbit/skin-orbit.png",
+          "caption": "ORBIT skin · a chess break in bronze and midnight"
+        },
+        {
+          "image": "img/orbit/studio.png",
+          "caption": "Shared whiteboard · make something together"
+        },
+        {
+          "image": "img/orbit/designer.png",
+          "caption": "Lounge designer · give your space its own personality"
+        },
+        {
+          "image": "img/orbit/skin-buddy.png",
+          "caption": "BUDDY skin · a brighter kind of hangout"
+        },
+        {
+          "image": "img/orbit/skin-roddy.png",
+          "caption": "RODDY skin · another side of the same app"
+        },
+        {
+          "image": "img/orbit/phone.png",
+          "caption": "Phone-sized web preview · native phone package not yet available"
+        }
+      ]
+    },
+    {
+      "category": "apps",
+      "price": 0,
+      "stock": 0,
+      "active": true,
+      "featured": true,
+      "status": "coming-soon",
+      "type": "digital",
+      "trackStock": false,
+      "pricePending": false,
+      "betaAccess": true,
+      "availabilityLabel": "ALPHA · TESTER CODE REQUIRED",
+      "downloadUrl": "",
+      "designOrigin": "original",
+      "tags": [],
+      "specs": {
+        "Release": "Alpha — invited testers",
+        "Price": "$0 tester download",
+        "Access": "Email + beta tester code",
+        "Community": "RODDY Discord"
+      },
+      "relatedProductIds": [],
+      "id": "buddy",
+      "sku": "RODDY-BUDDY-ALPHA",
+      "name": "BUDDY",
+      "shortDescription": "Seven machines. Seven personalities. One very good reason to sign on. Explore the alpha and join the test crew.",
+      "description": "Your old computer has a new reason to say hello. Meet the messenger with a different personality on every machine—from Commodore blue to classic Windows chrome.",
+      "launchHeadline": "Your old computer misses your friends.",
+      "launchSubheading": "Less scrolling. More “hey, you there?”",
+      "editionIntro": "Choose your machine, meet its BUDDY, and unlock the matching alpha ZIP with your tester code. Every edition gets its own look, its own controls, and its own bit of magic.",
+      "images": [
+        "img/buddy/x16-1.png",
+        "img/buddy/windows98-2.png"
+      ],
+      "coverImage": "img/buddy/x16-1.png",
+      "softwareFeatures": [
+        {
+          "title": "Made for your machine.",
+          "text": "Native clients with platform-specific looks and controls. This is a whole little family of retro messengers."
+        },
+        {
+          "title": "A familiar kind of hello.",
+          "text": "Buddy lists, status, conversations and rooms, with features and network capabilities that vary by client."
+        },
+        {
+          "title": "Help shape what comes next.",
+          "text": "Try the alpha, share what works, and bring the strange bugs to Discord. Your feedback belongs in the build."
+        }
+      ],
+      "releaseNote": "Development prototypes, with emulator and desktop previews. Physical hardware support is still being validated. Retro clients require compatible networking and a trusted local BUDDY adapter/service; these client ZIPs do not include a public hosted service. Ask on Discord about the current tester setup.",
+      "softwareEditions": [
+        {
+          "id": "x16",
+          "name": "BUDDY · Commander X16",
+          "image": "img/buddy/x16-1.png",
+          "secondImage": "img/buddy/x16-2.png",
+          "color": "#175ee0",
+          "tagline": "The new kid with an old soul.",
+          "description": "A full-screen graphical messenger, a proper buddy list, rooms, themes and a little chess between conversations.",
+          "requirements": "Commander X16 client. Requires the supported Wi-Fi setup and trusted local adapter.",
+          "downloadable": true
+        },
+        {
+          "id": "c64",
+          "name": "BUDDY · Commodore 64",
+          "image": "img/buddy/c64-1.png",
+          "secondImage": "img/buddy/c64-2.png",
+          "color": "#5842c8",
+          "tagline": "64K. Plenty of personality.",
+          "description": "Commodore blue, familiar pixels, and a buddy list that looks right at home on your favourite breadbin.",
+          "requirements": "C64 client. Serial Wi-Fi / SwiftLink setup and a trusted local adapter required.",
+          "downloadable": true
+        },
+        {
+          "id": "ultimate",
+          "name": "BUDDY · Ultimate64",
+          "image": "img/buddy/ultimate-1.png",
+          "secondImage": "img/buddy/ultimate-2.png",
+          "color": "#16856e",
+          "tagline": "Classic heart. Ultimate connection.",
+          "description": "The Commodore spirit with its own Ultimate edition, built around the Ultimate native UCI TCP path.",
+          "requirements": "Ultimate64 / supported Ultimate UCI TCP setup. Physical-device validation remains in progress.",
+          "downloadable": true
+        },
+        {
+          "id": "next",
+          "name": "BUDDY · Spectrum Next",
+          "image": "img/buddy/next-1.png",
+          "secondImage": "img/buddy/next-2.png",
+          "color": "#b34169",
+          "tagline": "Rubber-key soul. Next-generation hello.",
+          "description": "A bright Spectrum-inspired world of buddies, themes and chess, made for the Next rather than squeezed into a generic skin.",
+          "requirements": "Spectrum Next alpha client. Requires the supported network setup and trusted local adapter.",
+          "downloadable": true
+        },
+        {
+          "id": "dos",
+          "name": "BUDDY · DOS",
+          "image": "img/buddy/dos-1.png",
+          "secondImage": "img/buddy/dos-2.png",
+          "color": "#967012",
+          "tagline": "C:\\GOOD\\TIMES",
+          "description": "An 8086 graphical messenger with 16-colour charm. Make room beside your favourite DOS games for a few new friends.",
+          "requirements": "8086 graphical DOS prototype, 320×200 / 16 colours. Requires the supported network stack and local adapter.",
+          "downloadable": true
+        },
+        {
+          "id": "windows31",
+          "name": "BUDDY · Windows 3.1",
+          "image": "img/buddy/windows31-1.png",
+          "secondImage": "img/buddy/windows31-2.png",
+          "color": "#975e30",
+          "tagline": "Program Manager has a new best friend.",
+          "description": "Real window chrome, a compact buddy list and unapologetic Windows 3.1 character. Multitasking just got more sociable.",
+          "requirements": "Windows 3.1 client. Requires the supported TCP/IP stack and a trusted adapter on a modern computer.",
+          "downloadable": true
+        },
+        {
+          "id": "windows98",
+          "name": "BUDDY · Windows 98",
+          "image": "img/buddy/windows98-1.png",
+          "secondImage": "img/buddy/windows98-2.png",
+          "color": "#236c83",
+          "tagline": "Your away message called. It misses you.",
+          "description": "A familiar desktop messenger with themes, private chats, emoji and the glorious feeling of signing on after school.",
+          "requirements": "Windows 95/98 client prototype. Wine previews; real Windows 95/98 runtime validation remains open.",
+          "downloadable": true
+        }
+      ],
+      "softwareScreenshots": [
+        {
+          "image": "img/buddy/x16-2.png",
+          "caption": "Commander X16 · alternate alpha view"
+        },
+        {
+          "image": "img/buddy/c64-2.png",
+          "caption": "Commodore 64 · alternate alpha view"
+        },
+        {
+          "image": "img/buddy/ultimate-2.png",
+          "caption": "Ultimate64 · alternate alpha view"
+        },
+        {
+          "image": "img/buddy/next-2.png",
+          "caption": "Spectrum Next · alternate alpha view"
+        },
+        {
+          "image": "img/buddy/dos-2.png",
+          "caption": "DOS · alternate alpha view"
+        },
+        {
+          "image": "img/buddy/windows31-2.png",
+          "caption": "Windows 3.1 · alternate alpha view"
+        },
+        {
+          "image": "img/buddy/windows98-2.png",
+          "caption": "Windows 98 · alternate alpha view"
+        }
+      ]
+    },
+    {
       "id": "x16-keycaps",
       "sku": "C-002",
       "name": "X16 KEYCAPS",

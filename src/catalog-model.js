@@ -230,6 +230,20 @@ export function validateCatalog(data) {
       errors.push(
         `${p.name}: paid products must not have a public free-download URL.`,
       );
+    if (p.betaAccess !== undefined && typeof p.betaAccess !== 'boolean') errors.push(`${p.name}: alpha access must be enabled or disabled.`);
+    if (p.betaAccess) {
+      if (p.type !== 'digital' || p.price !== 0 || p.trackStock !== false || p.downloadUrl || p.pricePending || p.merch || p.supplier)
+        errors.push(`${p.name}: tester releases need a $0 digital product with private downloads and no stock tracking.`);
+      const editions = p.softwareEditions, ids = new Set();
+      if (!Array.isArray(editions) || !editions.length || editions.length > 20) errors.push(`${p.name}: add between one and twenty software editions.`);
+      for (const e of Array.isArray(editions) ? editions : []) {
+        if (!/^[a-z0-9][a-z0-9-]{0,49}$/.test(e.id || '') || ids.has(e.id) || !e.name?.trim() || typeof e.downloadable !== 'boolean' || !/^#[a-f0-9]{6}$/i.test(e.color || '')) errors.push(`${p.name}: editions need unique IDs, names, availability and valid colours.`);
+        ids.add(e.id);
+      }
+      if (!Array.isArray(p.images) || !p.images.length) errors.push(`${p.name}: add an alpha hero screenshot.`);
+      const images = [...(p.images || []), ...(Array.isArray(editions) ? editions.flatMap(e=>[e.image,e.secondImage].filter(Boolean)) : []), ...(p.softwareScreenshots || []).map(s=>s.image)];
+      if (images.some(image => !safeLink(image) && !(/^img\/[a-zA-Z0-9_./-]+\.(png|jpe?g|webp)$/i.test(image) && !image.split('/').includes('..')))) errors.push(`${p.name}: use safe screenshot URLs or storefront image paths.`);
+    }
     if (p.documentationUrl && !safeLink(p.documentationUrl))
       errors.push(`${p.name}: documentation must be an HTTP(S) URL.`);
     else if (p.documentationUrl && !customerLink(p.documentationUrl))

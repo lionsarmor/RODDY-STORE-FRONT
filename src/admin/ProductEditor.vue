@@ -234,6 +234,7 @@ function toggleTag(id) {
       <p class="help-copy">Disconnecting keeps your product and its current price/content. It does not cancel a supplier order or change office stock.</p>
     </div>
     <div v-if="tab === 'links'" class="editor-content">
+      <p v-if="product.betaAccess" class="notice">Alpha tester release: downloads use the private server manifest and a tester code. Keep the public free-download URL empty. This product has {{product.softwareEditions?.length || 0}} edition cards; files and code hashes stay on the server.</p>
       <label
         >Documentation PDF URL<input
           v-model="product.documentationUrl"
@@ -249,8 +250,8 @@ function toggleTag(id) {
           type="url"
           placeholder="https://roddy.world/downloads/project.zip"
         /><small
-          >For an available $0 product with announced pricing, this becomes a
-          direct “Free download” button. It bypasses checkout.</small
+          >For an available $0 product, customers enter their email to create a
+          free download order. Alpha releases use private edition files instead.</small
         ></label
       >
       <p class="notice">

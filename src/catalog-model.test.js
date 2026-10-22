@@ -141,3 +141,19 @@ test('prototype sales allow incomplete testing but require a complete procuremen
  p.status='coming-soon';assert.deepEqual(validateCatalog(c),[]);
  p.supplier.bom.lines.push({...p.supplier.bom.lines[0]});assert.ok(validateCatalog(c).some(e=>e.includes('unique exact Mouser')));
 });
+
+test('alpha editions survive catalog editing and cannot publish public or paid downloads', () => {
+  const catalog=normalizeCatalog(structuredClone(data));
+  const product=catalog.products.find(p=>p.id==='buddy');
+  assert.ok(product.betaAccess);
+  assert.equal(product.softwareEditions.length,7);
+  assert.deepEqual(normalizeCatalog(JSON.parse(JSON.stringify(catalog))).products.find(p=>p.id==='buddy').softwareEditions,product.softwareEditions);
+  assert.deepEqual(validateCatalog(catalog),[]);
+  for(const changes of [{price:1},{downloadUrl:'https://roddy.world/downloads/alpha.zip'},{trackStock:true},{betaAccess:'true'}]){
+    const before=structuredClone(product);Object.assign(product,changes);
+    assert.ok(validateCatalog(catalog).some(e=>/tester releases|alpha access/.test(e)));
+    Object.assign(product,before);
+  }
+  product.softwareEditions[1].id=product.softwareEditions[0].id;
+  assert.ok(validateCatalog(catalog).some(e=>e.includes('unique IDs')));
+});

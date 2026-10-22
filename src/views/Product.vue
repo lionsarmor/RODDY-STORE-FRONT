@@ -23,6 +23,8 @@ import VideoEditions from "../components/VideoEditions.vue";
 import ProductCard from "../components/ProductCard.vue";
 import RoddyLogo from "../components/RoddyLogo.vue";
 import FreeDownload from '../components/FreeDownload.vue';
+import SoftwareShowcase from '../components/SoftwareShowcase.vue';
+import DiscordCommunity from '../components/DiscordCommunity.vue';
 import { departmentDirection } from "../department-data";
 const props = defineProps({ id: { type: String, required: true } });
 const catalog = useCatalogStore();
@@ -182,6 +184,7 @@ async function buyNow() {
     Product not found.
     <RouterLink to="/shop" class="text-button">Back to catalog ↗</RouterLink>
   </div>
+  <SoftwareShowcase v-else-if="product.betaAccess" :key="product.id" :product="product" />
   <div
     v-else
     class="product-page product-launch"
@@ -346,6 +349,7 @@ async function buyNow() {
           }}
         </p>
         <p v-if="product.type === 'physical'" class="release-note">{{ shippingLabel(product) }}.</p>
+        <DiscordCommunity v-if="state==='soon'" compact />
         <div v-if="purchasable" class="purchase-actions">
           <FreeDownload
             v-if="freeDownload"

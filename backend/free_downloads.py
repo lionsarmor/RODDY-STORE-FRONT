@@ -22,8 +22,9 @@ def public_download_url(value):
 
 
 class FreeDownloads:
-    def __init__(self, connect, catalog, public_url):
+    def __init__(self, connect, catalog, public_url, beta_asset=None, private_file=None):
         self.connect, self.catalog, self.public_url = connect, catalog, public_url
+        self.beta_asset, self.private_file = beta_asset, private_file
 
     def create(self, body):
         email = email_address(body.get('email'))
@@ -40,19 +41,32 @@ class FreeDownloads:
         except (ValueError, TypeError, AttributeError):
             raise HTTPException(400, 'Start a new download request.') from None
         product = next((p for p in self.catalog()['products'] if p['id'] == body.get('productId')), None)
-        if not product or not product.get('active') or product.get('status') != 'available' or product.get('type') != 'digital' or type(product.get('price')) not in {int, float} or product['price'] != 0 or product.get('pricePending') or product.get('trackStock', True):
+        beta = bool(product and product.get('betaAccess') is True)
+        if not product or not product.get('active') or product.get('status') not in ({'available', 'coming-soon'} if beta else {'available'}) or product.get('type') != 'digital' or type(product.get('price')) not in {int, float} or product['price'] != 0 or product.get('pricePending') or product.get('trackStock', True):
             raise HTTPException(409, 'This item is not available as a free download.')
         choices = {product.get('downloadUrl'): product.get('downloadLabel') or 'Free download'}
         for edition in product.get('videoEditions', []):
             for file in edition.get('downloads', []):
                 choices[file.get('url')] = edition.get('name', '') + ' · ' + file.get('label', 'Download')
         target = body.get('downloadUrl')
-        if not isinstance(target, str) or target not in choices or not public_download_url(target):
-            raise HTTPException(400, 'Choose a download listed on this product.')
-        cart = json.dumps([{'id': product['id'], 'downloadUrl': target}], sort_keys=True)
-        item = {'id': product['id'], 'name': product['name'], 'qty': 1, 'cents': 0, 'kind': 'free-digital',
-                'label': choices[target], 'download_url': target,
-                'file': PurePosixPath(urlsplit(target).path).name or 'download'}
+        if beta:
+            edition_id = body.get('editionId')
+            edition = next((e for e in product.get('softwareEditions', []) if e.get('id') == edition_id and e.get('downloadable') is True), None)
+            if not edition or not self.beta_asset:
+                raise HTTPException(400, 'Choose an available alpha edition.')
+            # Codes and release paths are server-owned. Neither enters the public catalog.
+            asset = self.beta_asset(product['id'], edition_id, body.get('testerCode'))
+            item = {**asset, 'id': product['id'], 'name': product['name'], 'qty': 1, 'cents': 0,
+                    'kind': 'free-digital', 'label': edition['name'] + ' · Alpha', 'beta': True,
+                    'editionId': edition_id}
+            cart = json.dumps([{'id': product['id'], 'editionId': edition_id}], sort_keys=True)
+        else:
+            if not isinstance(target, str) or target not in choices or not public_download_url(target):
+                raise HTTPException(400, 'Choose a download listed on this product.')
+            cart = json.dumps([{'id': product['id'], 'downloadUrl': target}], sort_keys=True)
+            item = {'id': product['id'], 'name': product['name'], 'qty': 1, 'cents': 0, 'kind': 'free-digital',
+                    'label': choices[target], 'download_url': target,
+                    'file': PurePosixPath(urlsplit(target).path).name or 'download'}
         now = int(time.time())
         with self.connect() as db:
             db.execute('INSERT OR IGNORE INTO orders(request_id,session,cart,items,amount,created,address) VALUES(?,?,?,?,0,?,?)',
@@ -69,7 +83,11 @@ class FreeDownloads:
         return {**self.issue(order, json.loads(order['items'])[0]), 'orderReference': 'RODDY-' + reference}
 
     def issue(self, order, item, lifetime=7 * 86400):
-        if order['amount'] != 0 or item.get('kind') != 'free-digital' or not public_download_url(item.get('download_url')):
+        if order['amount'] != 0 or item.get('kind') != 'free-digital':
+            raise HTTPException(409, 'This is not a free download order.')
+        if item.get('beta') is True and self.private_file:
+            self.private_file(item)
+        elif not public_download_url(item.get('download_url')):
             raise HTTPException(409, 'This is not a free download order.')
         ticket, now = secrets.token_urlsafe(32), int(time.time())
         with self.connect() as db:
@@ -87,9 +105,16 @@ class FreeDownloads:
             if not row:
                 raise HTTPException(410, 'This link has expired. Get a new free download from the product page.')
             item = next((i for i in json.loads(row['items']) if i['id'] == row['product'] and i.get('kind') == 'free-digital'), None)
-            target = public_download_url(item.get('download_url')) if item and row['amount'] == 0 else ''
+            target = ''
+            if item and row['amount'] == 0:
+                if item.get('beta') is True and self.private_file:
+                    target = item
+                else:
+                    target = public_download_url(item.get('download_url'))
             if not target:
                 raise HTTPException(404, 'Download not found.')
+            if isinstance(target, dict):
+                self.private_file(target)
             db.execute('UPDATE free_download_tickets SET started=COALESCE(started,?) WHERE digest=?', (now, digest))
             db.execute('INSERT OR IGNORE INTO free_download_receipts(session,started) VALUES(?,?)', (row['session'], now))
         return target
