@@ -2,6 +2,7 @@
 import { useThemeStore } from "../stores/theme";
 import RoddyLogo from "./RoddyLogo.vue";
 import RotatingTagline from "./RotatingTagline.vue";
+import CommanderX16Partner from './CommanderX16Partner.vue';
 import DiscordCommunity from './DiscordCommunity.vue';
 import { useCatalogStore } from '../stores/catalog';
 import { SUPPORT_EMAIL, SALES_EMAIL } from '../forum-api.js';
@@ -44,6 +45,7 @@ const catalog = useCatalogStore();
           <span class="block font-mono text-sm">PLAY · BUILD · PROGRAM · KEEP</span>
         </div>
       </div>
+      <CommanderX16Partner v-if="catalog.settings.commanderX16PartnerEnabled === true" class="mt-8" />
       <div class="mt-8 flex flex-wrap justify-between gap-2 border-t border-border pt-5 font-mono text-[0.68rem] tracking-wide text-text-dim">
         <span>RODDY ● — established alternate 1983</span>
         <span>Secure checkout. Independent software and hardware.</span>

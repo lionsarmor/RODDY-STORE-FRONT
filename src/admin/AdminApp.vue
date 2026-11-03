@@ -1075,6 +1075,11 @@ function syncPrintify(source, targetId) {
                 </label>
               </section>
               <section class="admin-section">
+                <h2>Commander X16 partnership</h2>
+                <label class="check"><input type="checkbox" v-model="catalog.settings.commanderX16PartnerEnabled" />Show Commander X16 Official Partner branding</label>
+                <p class="help-copy">Keep off until the official artwork has been received and checked. This controls the footer partner text; keycap logo choices are managed separately.</p>
+              </section>
+              <section class="admin-section">
                 <h2>Customer support</h2>
                 <label
                   >Support email<input

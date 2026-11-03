@@ -12,6 +12,7 @@ export const DEFAULT_TAGS = [
 ];
 
 export const DEFAULT_SETTINGS = {
+  commanderX16PartnerEnabled: false,
   announcement: "INDEPENDENT TECHNOLOGY. UNREASONABLE POSSIBILITIES.",
   heroEyebrow: "WELCOME TO THE RODDY WORLD",
   heroTitle: "THE FUTURE\nIS PERSONAL.",

@@ -1,6 +1,7 @@
 {
   "schemaVersion": 2,
   "settings": {
+    "commanderX16PartnerEnabled": false,
     "announcement": "INDEPENDENT TECHNOLOGY. UNREASONABLE POSSIBILITIES.",
     "heroEyebrow": "WELCOME TO THE RODDY WORLD",
     "heroTitle": "THE FUTURE\nIS PERSONAL.",
@@ -4070,8 +4071,6 @@
       "templateId": "x16-v06-cherry-tkl",
       "description": "Choose your colors and symbols. Make your keyboard yours.",
       "marks": [
-        "commander-x16",
-        "commander-x16-rainbow",
         "blank",
         "analog-x",
         "roddy-r",
@@ -4107,8 +4106,6 @@
       "templateId": "standard-cherry-tkl",
       "description": "Classic legends, custom colors. Build your everyday keyboard.",
       "marks": [
-        "commander-x16",
-        "commander-x16-rainbow",
         "blank",
         "analog-x",
         "roddy-r",
