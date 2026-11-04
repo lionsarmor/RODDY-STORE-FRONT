@@ -25,6 +25,7 @@ export const useCatalogStore = defineStore("catalog", {
   getters: {
     visibleCategories: state => state.categories.filter(c => categoryVisible(c, state.categoryPreviewKey, state.preview)),
     visibleProducts: state => visibleProducts(state.products, state.categories, state.categoryPreviewKey, state.preview),
+    listedProducts() { return this.visibleProducts.filter(product => product.catalogListed !== false); },
     unlistedCategory: state => state.categories.find(c => c.visible === false && categoryVisible(c, state.categoryPreviewKey)) || null,
   },
 
@@ -81,8 +82,8 @@ export const useCatalogStore = defineStore("catalog", {
     },
 
     byCategory(categoryId) {
-      if (!categoryId || categoryId === "all") return this.visibleProducts;
-      return this.visibleProducts.filter((p) => p.category === categoryId);
+      if (!categoryId || categoryId === "all") return this.listedProducts;
+      return this.listedProducts.filter((p) => p.category === categoryId);
     },
 
     categoryMeta(id) {

@@ -233,7 +233,8 @@
       "pricingFloor": 0,
       "fulfillmentRef": "",
       "keycaps": null,
-      "merch": null
+      "merch": null,
+      "catalogListed": false
     },
     {
       "category": "apps",
@@ -407,7 +408,8 @@
       "pricingFloor": 0,
       "fulfillmentRef": "",
       "keycaps": null,
-      "merch": null
+      "merch": null,
+      "catalogListed": false
     },
     {
       "id": "x16-keycaps",

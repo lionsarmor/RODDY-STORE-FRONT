@@ -12,7 +12,7 @@ const theme = useThemeStore();
 const ui = useUiStore();
 const settings = computed(() => catalog.settings);
 const featured = computed(() =>
-  catalog.visibleProducts.filter((p) => p.featured),
+  catalog.listedProducts.filter((p) => p.featured),
 );
 const spotlight = computed(() => catalog.byId(settings.value.heroProductId));
 const heroImage = computed(
