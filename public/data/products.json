@@ -135,7 +135,7 @@
       "price": 0,
       "stock": 0,
       "active": true,
-      "featured": true,
+      "featured": false,
       "status": "coming-soon",
       "type": "digital",
       "trackStock": false,
@@ -221,14 +221,26 @@
           "image": "img/orbit/phone.png",
           "caption": "Phone-sized web preview · native phone package not yet available"
         }
-      ]
+      ],
+      "compareAtPrice": 0,
+      "story": "",
+      "documentationUrl": "",
+      "githubUrl": "",
+      "officeShipping": {},
+      "supplier": null,
+      "fulfillment": "",
+      "pricingMode": "automatic",
+      "pricingFloor": 0,
+      "fulfillmentRef": "",
+      "keycaps": null,
+      "merch": null
     },
     {
       "category": "apps",
       "price": 0,
       "stock": 0,
       "active": true,
-      "featured": true,
+      "featured": false,
       "status": "coming-soon",
       "type": "digital",
       "trackStock": false,
@@ -383,7 +395,19 @@
           "caption": "Windows 98 · alternate alpha view"
         }
       ],
-      "cardImage": "img/buddy/login-night-shift.png"
+      "cardImage": "img/buddy/login-night-shift.png",
+      "compareAtPrice": 0,
+      "story": "",
+      "documentationUrl": "",
+      "githubUrl": "",
+      "officeShipping": {},
+      "supplier": null,
+      "fulfillment": "",
+      "pricingMode": "automatic",
+      "pricingFloor": 0,
+      "fulfillmentRef": "",
+      "keycaps": null,
+      "merch": null
     },
     {
       "id": "x16-keycaps",
