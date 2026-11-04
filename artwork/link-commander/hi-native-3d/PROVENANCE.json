@@ -1,0 +1,20 @@
+{
+  "date": "2026-11-04",
+  "method": "Native KiCad renders placed unchanged into SVG brand layouts; no generative reconstruction. Official RODDY logo preserved.",
+  "status": "Announcement only; firmware and physical tests incomplete. PS/2 parts and mounting are concepts.",
+  "sources": {
+    "dongle": {
+      "sha256": "d531476d475d6ff48a0185d015e5fd7d95fec291212884965afbbb678eda3376",
+      "file": "dongle-native.png"
+    },
+    "through-hole-dual": {
+      "sha256": "398adf76f71ab2686835245eca5d854a1195679c9e3d18ea4e5894211f5025dd",
+      "file": "through-hole-dual-native.png"
+    }
+  },
+  "outputs": [
+    "img/products/link-commander/link-commander-overview-3d-v2.png",
+    "img/products/link-commander/link-commander-dongle-3d-v2.png",
+    "img/products/link-commander/link-commander-through-hole-dual-3d-v2.png"
+  ]
+}

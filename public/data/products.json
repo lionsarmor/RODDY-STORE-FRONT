@@ -3083,42 +3083,34 @@
       "stock": 0,
       "active": true,
       "featured": true,
-      "description": "Planned fully assembled edition, built and tested by RODDY before shipping to you. Pricing and release date will be announced after development.\n\nPlanned assembled edition: the RP2040 module will be installed and programmed, with JP1 fitted for normal operation before the case is closed. No customer flashing, module handling or jumper changes will be required. The product remains in development pending working bridge firmware and physical qualification.\n\nPOWER: Use only the rear USB-C socket marked 5V POWER. The internal RP2040 USB port and JP1 jumper are service-only. Do not open the case or change the jumper for normal use. Disconnect all power before connecting or disconnecting PS/2 cables.\n\n# LINK COMMANDER\n\n**Modern peripherals. Classic computers. One connection.**\n\nYour favorite retro computer deserves a modern keyboard and mouse.\n\n**LINK COMMANDER** is a retro peripheral interface designed to bridge the gap between modern input devices and classic computer hardware. Built for enthusiasts who love their vintage machines but appreciate the convenience of today's peripherals, LINK COMMANDER aims to make connecting your favorite keyboard and mouse easier than ever.\n\nNo need to hunt down aging keyboards, struggle with unreliable adapters, or sacrifice your preferred desktop setup just to enjoy classic computing.\n\n### Bridge Two Generations of Technology\n\nDesigned around a flexible peripheral interface, LINK COMMANDER brings together modern USB connectivity, legacy PS/2 interfaces, and support for retro-computer connections.\n\nWith two USB ports and two PS/2 ports, the device is being developed to accommodate a variety of input configurations, including support for compatible wireless receiver dongles.\n\nWhether you're restoring a vintage system, building a modern retro computer setup, or experimenting with new hardware, LINK COMMANDER is designed to help old and new technology work together.\n\n### Built for Retro Enthusiasts\n\nLINK COMMANDER is part of RODDY's growing collection of original hardware projects, developed with a simple philosophy: classic computers should remain useful, accessible, and enjoyable.\n\nWe're exploring compatibility with systems such as the Commander X16 and other retro platforms, with an emphasis on flexible connections, practical functionality, and a clean, compact design.\n\n### Planned Features\n\n- **2× USB-A ports** for compatible modern input devices and wireless receivers.\n- **2× PS/2 ports** for legacy keyboard and mouse connectivity.\n- **Retro-computer connectivity** through system-specific interfaces and adapters.\n- **Wireless peripheral support** for compatible 2.4 GHz receiver-based devices.\n- **Compact desktop design** that fits naturally alongside vintage hardware.\n- **Expandable compatibility** as development continues.\n\n### Modern Convenience. Retro Soul.\n\nWe love classic computers for their simplicity, personality, and the unique experience they offer. LINK COMMANDER is being built to preserve that experience while removing some of the frustrations of connecting modern peripherals.\n\nBecause enjoying yesterday's computers shouldn't mean giving up today's conveniences.\n\n**LINK COMMANDER — Connect the Generations.**\n\n*RODDY — Made for Makers.*\n\n### Release / Availability\n\n**Coming Soon — In Development**\n\nLINK COMMANDER is an original RODDY hardware project currently in development. Hardware specifications, supported systems, compatibility, and availability are subject to change as prototyping and testing continue.",
+      "description": "LINK COMMANDER is being developed to connect compatible USB wireless keyboard and mouse receivers to the Commander X16’s PS/2 ports.\n\nTwo designs are in development:\n\n- **Small dongle:** a 20 × 40 mm PCB for one keyboard or mouse. Use one adapter for each device. The male PS/2 plug and its mounting shown in the preview are mechanical concepts; overall enclosure dimensions are not final.\n- **Through-hole dual:** a 72 × 70 mm PCB for keyboard and mouse together, with two USB-A inputs and two short PS/2 leads. All fitted PCB components are through-hole.\n\nBoth designs target power from the X16 ports. Port-power limits, receiver compatibility, firmware and physical fit still need testing. Wireless operation is planned through compatible USB receivers; there is no onboard Bluetooth radio.\n\nThe gallery uses the actual KiCad board renders with RODDY branding. Plug bodies, leads and the dongle mounting arrangement are illustrative and may change.\n\n**Coming soon — announcement only.** We will finish testing before offering Link Commander for sale. No orders or preorders are being accepted. Pricing, final kit contents and release timing will be announced after validation.",
       "specs": {
-        "Board": "100 × 75 mm · common Rev E / F outline",
-        "Rear connections": "2 × USB-A inputs · USB-C power",
-        "Front connections": "2 × six-pin PS/2 sockets",
-        "Build options": "Rev E through-hole carrier; existing RP2040-Zero layout retained",
-        "Controller": "Removable RP2040-Zero module",
-        "Indicator": "Green power LED at the board edge",
-        "Enclosure": "Common snap-fit shell · free print files",
-        "Development stage": "Engineering prototype · firmware and physical testing pending",
-        "Customer power": "Rear USB-C marked 5V POWER only",
-        "Internal service": "Guarded RP2040 USB · JP1 factory-fitted for normal operation",
-        "Purchase options": "Bare boards, separate Mouser parts kit, or planned RODDY assembled device",
-        "Assembly": "Planned RODDY assembly, programming and testing"
+        "Target computer": "Commander X16",
+        "Small dongle PCB": "20 × 40 mm · one keyboard or mouse · SMT electronics",
+        "Dual PCB": "72 × 70 mm · keyboard and mouse · through-hole components",
+        "Wireless approach": "Compatible USB wireless receivers · no onboard Bluetooth",
+        "PS/2 connection": "Male dongle plug concept or two captive leads · final fit pending",
+        "Power target": "X16 port power · current budget and startup testing pending",
+        "Availability": "Coming soon · no orders or preorders",
+        "Development stage": "Firmware and physical testing incomplete"
       },
       "images": [
-        "img/products/link-commander/link-commander-mystery-v1.png",
-        "img/products/link-commander/link-commander-board-v1.png",
-        "img/products/link-commander/link-commander-white-open-v1.png",
-        "img/products/link-commander/link-commander-white-closed-v1.png",
-        "img/products/link-commander/rev-e-cad.png",
-        "img/products/link-commander/enclosure-rear-cad-a1.png",
-        "img/products/link-commander/enclosure-service-guard-a1.png"
+        "img/products/link-commander/link-commander-overview-3d-v2.png",
+        "img/products/link-commander/link-commander-dongle-3d-v2.png",
+        "img/products/link-commander/link-commander-through-hole-dual-3d-v2.png"
       ],
       "status": "coming-soon",
       "type": "physical",
-      "coverImage": "img/products/link-commander/link-commander-mystery-v1.png",
+      "coverImage": "img/products/link-commander/link-commander-overview-3d-v2.png",
       "tags": [
         "new-tag-2"
       ],
       "trackStock": true,
       "compareAtPrice": 0,
-      "shortDescription": "Fully assembled and tested by RODDY. Pricing to be announced.",
+      "shortDescription": "Wireless input for the Commander X16. Small dongle and through-hole dual versions in development. Testing before sale.",
       "story": "We love retro computers, but we don't love being limited to decades-old keyboards, worn-out mice, and complicated adapters.\n\nWhile working with systems like the Commander X16, we wanted the freedom to use our favorite modern peripherals without sacrificing the authentic retro computing experience.\n\nSo we started building LINK COMMANDER.\n\nOur goal is simple: make classic computers easier to use with modern hardware, reduce cable clutter, and create a flexible solution that works across multiple systems.\n\nBecause the best part of retro computing is exploring what these machines can do, not fighting to get your keyboard connected.\n\n**RODDY — Made for Makers.**",
-      "documentationUrl": "https://roddy.world/downloads/docs/link-commander-guide.pdf",
-      "releaseNote": "In development. Branding images are CAD-based illustrations; the gallery also includes direct CAD views. Bridge firmware and physical prototype testing are still required. The snap-fit enclosure files are available as a separate free download. Parts-kit sourcing is being checked against the existing hardware; current images show the prototype design.",
+      "documentationUrl": "https://roddy.world/downloads/docs/link-commander-development-preview.pdf",
+      "releaseNote": "In development. Firmware, receiver compatibility, port-power operation and physical fit still require testing. The PS/2 plugs and mounting arrangements shown are concepts. Sales will open only after testing is complete.",
       "downloadUrl": "",
       "githubUrl": "",
       "merch": null,
@@ -3129,10 +3121,14 @@
       "fulfillmentRef": "",
       "keycaps": null,
       "relatedProductIds": [],
-      "safetyNotice": "POWER: Use only the rear USB-C socket marked 5V POWER. The internal RP2040 USB port and JP1 jumper are service-only. Do not open the case or change the jumper for normal use. Disconnect all power before connecting or disconnecting PS/2 cables.",
+      "safetyNotice": "Hardware and power arrangements are still being validated. Final connection and assembly instructions will be published after testing.",
       "designOrigin": "original",
       "pricingMode": "automatic",
-      "pricingFloor": 0
+      "pricingFloor": 0,
+      "cardImage": "img/products/link-commander/link-commander-overview-3d-v2.png",
+      "socialImage": "img/products/link-commander/link-commander-overview-3d-v2.png",
+      "prototypeWarning": "Engineering prototypes. Testing must be completed before sale. No orders or preorders are being accepted.",
+      "cardImageNote": "Actual KiCad board renders with conceptual PS/2 connections. Previewed assemblies do not establish final kit contents."
     },
     {
       "id": "link-commander-snap-fit-enclosure",
@@ -3552,7 +3548,7 @@
       "stock": 17,
       "trackStock": false,
       "shortDescription": "15W wall power with an attached 1.5 m USB-C cable. US plug, ready for your desk.",
-      "description": "A compact black wall adapter delivering a fixed 5V DC at up to 3A. The attached 1.5 m USB-C cable is included, so there is no separate cable to buy.\n\nIncludes one power adapter with a US Type A plug and its permanently attached USB-C cable. Supports 100–240V AC, 50/60Hz input. Ships to the United States and Canada.\n\nFor devices requiring a 5V USB-C power input of up to 3A. This is a fixed-voltage power supply; it does not provide higher-voltage USB Power Delivery charging for laptops.\n\nFor LINK COMMANDER, use the rear socket marked 5V POWER. The electrical rating matches the planned requirement; verification with the physical Link Commander prototype is still pending. Adapter sold separately.",
+      "description": "A compact black wall adapter delivering a fixed 5V DC at up to 3A. The attached 1.5 m USB-C cable is included, so there is no separate cable to buy.\n\nIncludes one power adapter with a US Type A plug and its permanently attached USB-C cable. Supports 100–240V AC, 50/60Hz input. Ships to the United States and Canada.\n\nFor devices requiring a 5V USB-C power input of up to 3A. This is a fixed-voltage power supply; it does not provide higher-voltage USB Power Delivery charging for laptops.\n\nEarlier Link Commander revisions explored an external USB-C supply. The new dongle and dual-board designs instead target X16 port power and remain under test; this adapter is not specified for those designs. Adapter sold separately.",
       "specs": {
         "Manufacturer": "DFRobot",
         "Model": "FIT0640",
@@ -3907,29 +3903,30 @@
       "stock": 0,
       "active": true,
       "featured": false,
-      "description": "One unpopulated Link Commander carrier PCB plus one separately sourced loose RP2040-Zero module, shipped together by RODDY. PCBWay manufactures the bare board and supplies it to RODDY. The module is not soldered onto the carrier.\n\nAll remaining kit components are supplied by the matching Mouser parts kit, purchased separately. A printed case and assembly tools are not included; STL files are free. The existing RP2040-Zero layout is retained. Exact module sourcing, board stock and pricing are being finalized.",
+      "description": "Planned bare-board options for the new Link Commander designs: a 20 × 40 mm single-device dongle PCB and a 72 × 70 mm through-hole keyboard-and-mouse PCB.\n\nThe pictures show populated design previews so you can see the planned connections. They do not represent the contents of a bare-board kit. Components, PS/2 connections, enclosure and programming requirements will be listed for each validated revision before sale.\n\nThe new designs use PIC32 controllers; the previous RP2040-Zero board package is not the design pictured here.\n\nAnnouncement only. No orders or preorders are being accepted. Physical testing, final sourcing, pricing and release timing remain pending.",
       "specs": {
-        "Contents": "Bare unpopulated carrier PCB + one loose RP2040-Zero module",
-        "Manufacturing": "PCBWay → RODDY",
-        "Shipping": "RODDY → customer, board and module together",
-        "Required separately": "Mouser parts kit, enclosure, assembly tools and firmware",
-        "Revision status": "Current prototype hardware; exact sourcing under review"
+        "Planned options": "Single-device dongle PCB or through-hole dual PCB",
+        "Images": "Populated CAD previews · not a kit contents photograph",
+        "Kit contents": "To be confirmed for each tested revision",
+        "Availability": "Coming soon · testing before sale"
       },
       "images": [
-        "img/products/kit-listings-01/lc-board-v1.png"
+        "img/products/link-commander/link-commander-overview-3d-v2.png",
+        "img/products/link-commander/link-commander-dongle-3d-v2.png",
+        "img/products/link-commander/link-commander-through-hole-dual-3d-v2.png"
       ],
       "status": "coming-soon",
       "type": "physical",
-      "coverImage": "img/products/kit-listings-01/lc-board-v1.png",
+      "coverImage": "img/products/link-commander/link-commander-overview-3d-v2.png",
       "tags": [
         "new-tag-2"
       ],
       "trackStock": true,
       "compareAtPrice": 0,
-      "shortDescription": "RODDY ships the bare PCB and loose RP2040-Zero module. Order the remaining Mouser parts separately.",
+      "shortDescription": "Planned bare PCBs for the new dongle and through-hole dual designs. Testing and final kit contents pending.",
       "story": "",
-      "documentationUrl": "https://roddy.world/downloads/docs/hardware-kit-options.pdf",
-      "releaseNote": "Board price and stocked revision will be published when confirmed. Physical prototype testing remains incomplete.",
+      "documentationUrl": "https://roddy.world/downloads/docs/link-commander-development-preview.pdf",
+      "releaseNote": "In development. Firmware, receiver compatibility, port-power operation and physical fit still require testing. The PS/2 plugs and mounting arrangements shown are concepts. Sales will open only after testing is complete.",
       "downloadUrl": "",
       "githubUrl": "",
       "merch": null,
@@ -3941,16 +3938,16 @@
       "keycaps": null,
       "relatedProductIds": [
         "link-commander-e",
-        "link-commander-parts-kit",
-        "link-commander-snap-fit-enclosure"
+        "link-commander-parts-kit"
       ],
-      "safetyNotice": "POWER: Use only the rear USB-C socket marked 5V POWER. The internal RP2040 USB port and JP1 jumper are service-only. Do not open the case or change the jumper for normal use. Disconnect all power before connecting or disconnecting PS/2 cables.",
+      "safetyNotice": "Hardware and power arrangements are still being validated. Final connection and assembly instructions will be published after testing.",
       "designOrigin": "original",
-      "prototypeWarning": "Prototype hardware: testing has not been completed. Assembly, fault-finding and firmware development are required. This is not a finished working device; parts or board revisions may need changes.",
-      "cardImageNote": "Native CAD preview of the bare mainboard. Included modules are listed; completion components and case are separate.",
-      "cardImage": "img/products/kit-listings-01/lc-board-v1.png",
+      "prototypeWarning": "Engineering prototypes. Testing must be completed before sale. No orders or preorders are being accepted.",
+      "cardImageNote": "Actual KiCad board renders with conceptual PS/2 connections. Previewed assemblies do not establish final kit contents.",
+      "cardImage": "img/products/link-commander/link-commander-overview-3d-v2.png",
       "pricingMode": "automatic",
-      "pricingFloor": 0
+      "pricingFloor": 0,
+      "socialImage": "img/products/link-commander/link-commander-overview-3d-v2.png"
     },
     {
       "id": "link-commander-parts-kit",
@@ -3961,31 +3958,31 @@
       "stock": 0,
       "active": true,
       "featured": false,
-      "description": "A revision-specific component kit for assembling LINK COMMANDER. Mouser will ship the listed electronic parts directly to you. RODDY ships bare boards separately; add the matching board set to your order if needed. Download the STL files free and print your own case. Soldering and assembly tools are not included.\n\nPrototype parts kits may be sold while testing is incomplete, with the red notice shown here. The parts list must first be complete and matched to the board revision. Exact component sourcing and compatible alternatives are being verified; this listing is not accepting payment for an incomplete kit.\n\nPrices will follow the store markup on live supplier landed costs. Delivery charges and the final total are confirmed for your address before payment.\n\nThe RP2040-Zero is the only non-Mouser component. RODDY includes it with the separately purchased bare-board package; it is not duplicated in this Mouser parts kit.",
+      "description": "Planned revision-specific component kits for the new Link Commander dongle and through-hole dual boards. Our sourcing target is 100% Mouser catalog components.\n\nThe renders show the planned completed assemblies, not a confirmed list of supplied parts. Final connector selection, complete kit contents, stock and compatible alternatives remain under review. Boards and enclosures will be identified separately before ordering opens.\n\nDirect shipment or kit fulfillment by Mouser is being explored and is not yet confirmed. No fulfillment arrangement or delivery promise is established by this announcement.\n\nWe will complete testing before sale. No orders or preorders are being accepted; pricing and availability will be announced after validation.",
       "specs": {
-        "Contents": "Exact BOM for one matching hardware revision; final list pending",
-        "Shipping": "Mouser → customer",
-        "Bare boards": "Separate RODDY purchase",
-        "Enclosure": "Free STL download; printed case not included",
-        "Testing": "Incomplete; prototype assembly and firmware work required",
-        "Parts-list status": "Exact sourcing under review; no complete kit yet",
-        "RP2040 module": "Excluded here; RODDY includes it with the bare board"
+        "Sourcing target": "100% Mouser catalog components",
+        "Kit contents": "Revision-specific · final complete BOM pending",
+        "Shipping": "Mouser direct fulfillment under consideration · not confirmed",
+        "Images": "Populated CAD previews · not final supplied quantities",
+        "Availability": "Coming soon · testing before sale"
       },
       "images": [
-        "img/products/kit-listings-01/lc-parts-v1.png"
+        "img/products/link-commander/link-commander-overview-3d-v2.png",
+        "img/products/link-commander/link-commander-dongle-3d-v2.png",
+        "img/products/link-commander/link-commander-through-hole-dual-3d-v2.png"
       ],
       "status": "coming-soon",
       "type": "physical",
-      "coverImage": "img/products/kit-listings-01/lc-parts-v1.png",
+      "coverImage": "img/products/link-commander/link-commander-overview-3d-v2.png",
       "tags": [
         "new-tag-2"
       ],
       "trackStock": false,
       "compareAtPrice": 0,
-      "shortDescription": "Component kit shipped directly by Mouser. Bare boards and printed case are not included.",
+      "shortDescription": "Planned Mouser-sourced component kits for the new Link Commander boards. Testing and fulfillment confirmation pending.",
       "story": "",
-      "documentationUrl": "https://roddy.world/downloads/docs/hardware-kit-options.pdf",
-      "releaseNote": "Parts-kit sourcing is being checked against the current revision. Artwork illustrates loose component types, not final quantities or a finished device. Prototype testing is incomplete.",
+      "documentationUrl": "https://roddy.world/downloads/docs/link-commander-development-preview.pdf",
+      "releaseNote": "In development. Firmware, receiver compatibility, port-power operation and physical fit still require testing. The PS/2 plugs and mounting arrangements shown are concepts. Sales will open only after testing is complete.",
       "downloadUrl": "",
       "githubUrl": "",
       "merch": null,
@@ -3997,16 +3994,16 @@
       "keycaps": null,
       "relatedProductIds": [
         "link-commander-e",
-        "link-commander-bare-boards",
-        "link-commander-snap-fit-enclosure"
+        "link-commander-bare-boards"
       ],
-      "safetyNotice": "POWER: Use only the rear USB-C socket marked 5V POWER. The internal RP2040 USB port and JP1 jumper are service-only. Do not open the case or change the jumper for normal use. Disconnect all power before connecting or disconnecting PS/2 cables.",
+      "safetyNotice": "Hardware and power arrangements are still being validated. Final connection and assembly instructions will be published after testing.",
       "designOrigin": "original",
-      "prototypeWarning": "Prototype hardware: testing has not been completed. Assembly, fault-finding and firmware development are required. This is not a finished working device; parts or board revisions may need changes.",
-      "cardImageNote": "Illustrative component selection; final contents follow the revision-specific BOM. Board kit and printed case excluded.",
-      "cardImage": "img/products/kit-listings-01/lc-parts-v1.png",
+      "prototypeWarning": "Engineering prototypes. Testing must be completed before sale. No orders or preorders are being accepted.",
+      "cardImageNote": "Actual KiCad board renders with conceptual PS/2 connections. Previewed assemblies do not establish final kit contents.",
+      "cardImage": "img/products/link-commander/link-commander-overview-3d-v2.png",
       "pricingMode": "automatic",
-      "pricingFloor": 0
+      "pricingFloor": 0,
+      "socialImage": "img/products/link-commander/link-commander-overview-3d-v2.png"
     },
     {
       "id": "keychain-kreatures-snap-fit-enclosure",

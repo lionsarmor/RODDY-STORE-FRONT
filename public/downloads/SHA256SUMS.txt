@@ -7,3 +7,4 @@ c85bd4db55689ac917208235607ed2ae76a8f922b0aaa11798db2a407f6bcf01  docs/weather-c
 a5d950305fde912b64f19cc187a5f39976c997d107e5be85a5bf4c068bad3e48  software/Shadow_Over_space-v0.1.0.bin
 2bcf91334a7e12fcb8e0ce785ca4bef6e4cadadebdfe0b8510ebb854dfb55b30  software/WEATHERCMD-v0.2.1.zip
 5a6ee4bace6e88212cbc48e9fd529cf5cabbe311ce6a3406467059de286ee9d8  software/WEATHERCMD-v0.2.2.zip
+469d6ba2c6c6520eb3010cd228bb0c4bf01f712c3ee4e028adfc424b38cd383c  docs/link-commander-development-preview.pdf
