@@ -351,8 +351,12 @@ async function buyNow() {
         <p v-if="product.type === 'physical'" class="release-note">{{ shippingLabel(product) }}.</p>
         <DiscordCommunity v-if="state==='soon'" compact />
         <div v-if="purchasable" class="purchase-actions">
+          <a
+            v-if="freeDownload && product.fulfillment === 'public-download'"
+            :href="freeDownload" download class="button primary"
+          >↓ {{ product.downloadLabel || 'Free download' }}</a>
           <FreeDownload
-            v-if="freeDownload"
+            v-else-if="freeDownload"
             :product="product" :url="freeDownload" :label="product.downloadLabel || 'Free download'"
           />
           <template v-else>
