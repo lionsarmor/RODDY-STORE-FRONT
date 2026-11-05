@@ -131,6 +131,169 @@
   ],
   "products": [
     {
+      "id": "x16-keycaps",
+      "sku": "C-002",
+      "name": "X16 KEYCAPS",
+      "category": "computers",
+      "price": 99.99,
+      "stock": 10,
+      "active": true,
+      "featured": true,
+      "description": "RODDY X16 — 87-Key Retro Keycap Set\n\nGive your modern mechanical keyboard the soul of a classic computer.\n\nDesigned for Commander X16 enthusiasts, the RODDY X16 Keycap Set brings authentic retro-inspired styling to a modern 80% TKL keyboard. Featuring custom PETSCII legends, classic computing symbols, and a distinctive charcoal, cream, and blue color scheme, every key celebrates the golden age of home computing.\n\nFrom the dedicated RUN/STOP, RESTORE, and 40/80 DISPLAY keys to the custom X16 modifier and vibrant blue accents, this 87-key layout combines vintage character with modern keyboard convenience.\n\nClassic computing. Modern hardware. Pure nostalgia.\n\nDesigned for the AULA 87-key keyboard layout. Keyboard sold separately.",
+      "specs": {
+        "Layout": "ANSI 87-key TKL · 6.25u spacebar",
+        "Keycap profile": "Cherry · MX stems",
+        "Artwork": "V6 · 62 framed PETSCII graphics · 16 color swatches"
+      },
+      "images": [
+        "img/products/x16-v06-roddy-keycap-pile.png",
+        "img/products/x16-v06-roddy-desk-setup-v2.png",
+        "img/products/x16-v06-roddy-collection.png"
+      ],
+      "status": "available",
+      "type": "physical",
+      "coverImage": "img/products/x16-v06-roddy-desk-setup-v2.png",
+      "tags": [
+        "new-tag-2",
+        "new-tag-3"
+      ],
+      "trackStock": false,
+      "compareAtPrice": 0,
+      "shortDescription": "Custom retro keycaps. Your colors, your symbols, your keyboard.",
+      "story": "We love the Commander X16, but finding a modern keyboard that truly captures the spirit of classic home computing isn't easy. So we designed our own keycap set, bringing back the familiar PETSCII symbols, iconic function keys, and retro colors we grew up with. It's our way of celebrating the machines that inspired us while making the X16 experience feel a little more authentic.",
+      "documentationUrl": "",
+      "releaseNote": "",
+      "downloadUrl": "",
+      "githubUrl": "",
+      "officeShipping": {
+        "US": {
+          "firstItem": 15,
+          "additionalItem": 15
+        },
+        "CA": {
+          "firstItem": 25,
+          "additionalItem": 25
+        }
+      },
+      "supplier": null,
+      "merch": null,
+      "pricePending": false,
+      "keycaps": {
+        "profileId": "x16-compatible"
+      },
+      "fulfillment": "",
+      "fulfillmentRef": "",
+      "designOrigin": "design",
+      "pricingMode": "automatic",
+      "pricingFloor": 0,
+      "socialImage": "img/social/products/x16-keycaps-v1.jpg"
+    },
+    {
+      "id": "link-commander-e",
+      "sku": "L-001",
+      "name": "LINK COMMANDER",
+      "category": "labs",
+      "price": 0,
+      "stock": 0,
+      "active": true,
+      "featured": true,
+      "description": "LINK COMMANDER is being developed to connect compatible USB wireless keyboard and mouse receivers to the Commander X16’s PS/2 ports.\n\nTwo designs are in development:\n\n- **Small dongle:** a 20 × 40 mm PCB for one keyboard or mouse. Use one adapter for each device. The male PS/2 plug and its mounting shown in the preview are mechanical concepts; overall enclosure dimensions are not final.\n- **Through-hole dual:** a 72 × 70 mm PCB for keyboard and mouse together, with two USB-A inputs and two short PS/2 leads. All fitted PCB components are through-hole.\n\nBoth designs target power from the X16 ports. Port-power limits, receiver compatibility, firmware and physical fit still need testing. Wireless operation is planned through compatible USB receivers; there is no onboard Bluetooth radio.\n\nThe gallery uses the actual KiCad board renders with RODDY branding. Plug bodies, leads and the dongle mounting arrangement are illustrative and may change.\n\n**Coming soon — announcement only.** We will finish testing before offering Link Commander for sale. No orders or preorders are being accepted. Pricing, final kit contents and release timing will be announced after validation.",
+      "specs": {
+        "Target computer": "Commander X16",
+        "Small dongle PCB": "20 × 40 mm · one keyboard or mouse · SMT electronics",
+        "Dual PCB": "72 × 70 mm · keyboard and mouse · through-hole components",
+        "Wireless approach": "Compatible USB wireless receivers · no onboard Bluetooth",
+        "PS/2 connection": "Male dongle plug concept or two captive leads · final fit pending",
+        "Power target": "X16 port power · current budget and startup testing pending",
+        "Availability": "Coming soon · no orders or preorders",
+        "Development stage": "Firmware and physical testing incomplete"
+      },
+      "images": [
+        "img/products/link-commander/link-commander-overview-3d-v2.png",
+        "img/products/link-commander/link-commander-dongle-3d-v2.png",
+        "img/products/link-commander/link-commander-through-hole-dual-3d-v2.png"
+      ],
+      "status": "coming-soon",
+      "type": "physical",
+      "coverImage": "img/products/link-commander/link-commander-overview-3d-v2.png",
+      "tags": [
+        "new-tag-2"
+      ],
+      "trackStock": true,
+      "compareAtPrice": 0,
+      "shortDescription": "Wireless input for the Commander X16. Small dongle and through-hole dual versions in development. Testing before sale.",
+      "story": "We love retro computers, but we don't love being limited to decades-old keyboards, worn-out mice, and complicated adapters.\n\nWhile working with systems like the Commander X16, we wanted the freedom to use our favorite modern peripherals without sacrificing the authentic retro computing experience.\n\nSo we started building LINK COMMANDER.\n\nOur goal is simple: make classic computers easier to use with modern hardware, reduce cable clutter, and create a flexible solution that works across multiple systems.\n\nBecause the best part of retro computing is exploring what these machines can do, not fighting to get your keyboard connected.\n\n**RODDY — Made for Makers.**",
+      "documentationUrl": "https://roddy.world/downloads/docs/link-commander-development-preview.pdf",
+      "releaseNote": "In development. Firmware, receiver compatibility, port-power operation and physical fit still require testing. The PS/2 plugs and mounting arrangements shown are concepts. Sales will open only after testing is complete.",
+      "downloadUrl": "",
+      "githubUrl": "",
+      "merch": null,
+      "pricePending": true,
+      "officeShipping": {},
+      "supplier": null,
+      "fulfillment": "",
+      "fulfillmentRef": "",
+      "keycaps": null,
+      "relatedProductIds": [
+        "link-commander-snap-fit-enclosure"
+      ],
+      "safetyNotice": "Hardware and power arrangements are still being validated. Final connection and assembly instructions will be published after testing.",
+      "designOrigin": "original",
+      "pricingMode": "automatic",
+      "pricingFloor": 0,
+      "cardImage": "img/products/link-commander/link-commander-overview-3d-v2.png",
+      "socialImage": "img/social/products/link-commander-e-v1.jpg",
+      "prototypeWarning": "Engineering prototypes. Testing must be completed before sale. No orders or preorders are being accepted.",
+      "cardImageNote": "Actual KiCad board renders with conceptual PS/2 connections. Previewed assemblies do not establish final kit contents."
+    },
+    {
+      "id": "aula-f87-pro",
+      "sku": "C-019",
+      "name": "AULA F87 PRO",
+      "category": "computers",
+      "type": "physical",
+      "status": "available",
+      "active": true,
+      "featured": true,
+      "price": 99.99,
+      "pricePending": false,
+      "stock": 3,
+      "trackStock": false,
+      "description": "AULA F87 Pro Wireless Mechanical Keyboard TKL 87Keys Hot Swap Gasket RGB PBT Keycaps TriMode 2.4G BT USB‑C Gaming Keyboard",
+      "shortDescription": "",
+      "images": [
+        "img/products/roddy-93862dd8-01d0-422e-8821-f25733c924a4.jpg",
+        "img/products/roddy-41df339e-d69b-485b-ae7c-a1e355d03143.jpg",
+        "img/products/roddy-7b817797-d599-40e5-a10b-0b5c32e023ad.jpg"
+      ],
+      "coverImage": "img/products/roddy-93862dd8-01d0-422e-8821-f25733c924a4.jpg",
+      "tags": [
+        "new-tag-3"
+      ],
+      "specs": {
+        "Variant": "Blue-Black-White / Gray Switch"
+      },
+      "supplier": null,
+      "officeShipping": {},
+      "releaseNote": "",
+      "compareAtPrice": 0,
+      "story": "",
+      "documentationUrl": "",
+      "downloadUrl": "",
+      "githubUrl": "",
+      "merch": null,
+      "fulfillmentRef": "a1dff8ebfb0b74b586666f78bffb133629aea4af4552a28d95c81bf42d4b9dab",
+      "fulfillment": "manual",
+      "keycaps": null,
+      "shippingCountries": [
+        "US"
+      ],
+      "designOrigin": "selected",
+      "pricingMode": "automatic",
+      "pricingFloor": 0,
+      "socialImage": "img/social/products/aula-f87-pro-v1.jpg"
+    },
+    {
       "category": "apps",
       "price": 0,
       "stock": 0,
@@ -412,64 +575,6 @@
       "merch": null,
       "catalogListed": false,
       "socialImage": "img/social/products/buddy-v1.jpg"
-    },
-    {
-      "id": "x16-keycaps",
-      "sku": "C-002",
-      "name": "X16 KEYCAPS",
-      "category": "computers",
-      "price": 99.99,
-      "stock": 10,
-      "active": true,
-      "featured": true,
-      "description": "RODDY X16 — 87-Key Retro Keycap Set\n\nGive your modern mechanical keyboard the soul of a classic computer.\n\nDesigned for Commander X16 enthusiasts, the RODDY X16 Keycap Set brings authentic retro-inspired styling to a modern 80% TKL keyboard. Featuring custom PETSCII legends, classic computing symbols, and a distinctive charcoal, cream, and blue color scheme, every key celebrates the golden age of home computing.\n\nFrom the dedicated RUN/STOP, RESTORE, and 40/80 DISPLAY keys to the custom X16 modifier and vibrant blue accents, this 87-key layout combines vintage character with modern keyboard convenience.\n\nClassic computing. Modern hardware. Pure nostalgia.\n\nDesigned for the AULA 87-key keyboard layout. Keyboard sold separately.",
-      "specs": {
-        "Layout": "ANSI 87-key TKL · 6.25u spacebar",
-        "Keycap profile": "Cherry · MX stems",
-        "Artwork": "V6 · 62 framed PETSCII graphics · 16 color swatches"
-      },
-      "images": [
-        "img/products/x16-v06-roddy-keycap-pile.png",
-        "img/products/x16-v06-roddy-desk-setup-v2.png",
-        "img/products/x16-v06-roddy-collection.png"
-      ],
-      "status": "available",
-      "type": "physical",
-      "coverImage": "img/products/x16-v06-roddy-desk-setup-v2.png",
-      "tags": [
-        "new-tag-2",
-        "new-tag-3"
-      ],
-      "trackStock": false,
-      "compareAtPrice": 0,
-      "shortDescription": "Custom retro keycaps. Your colors, your symbols, your keyboard.",
-      "story": "We love the Commander X16, but finding a modern keyboard that truly captures the spirit of classic home computing isn't easy. So we designed our own keycap set, bringing back the familiar PETSCII symbols, iconic function keys, and retro colors we grew up with. It's our way of celebrating the machines that inspired us while making the X16 experience feel a little more authentic.",
-      "documentationUrl": "",
-      "releaseNote": "",
-      "downloadUrl": "",
-      "githubUrl": "",
-      "officeShipping": {
-        "US": {
-          "firstItem": 15,
-          "additionalItem": 15
-        },
-        "CA": {
-          "firstItem": 25,
-          "additionalItem": 25
-        }
-      },
-      "supplier": null,
-      "merch": null,
-      "pricePending": false,
-      "keycaps": {
-        "profileId": "x16-compatible"
-      },
-      "fulfillment": "",
-      "fulfillmentRef": "",
-      "designOrigin": "design",
-      "pricingMode": "automatic",
-      "pricingFloor": 0,
-      "socialImage": "img/social/products/x16-keycaps-v1.jpg"
     },
     {
       "id": "standard-keycaps",
@@ -3112,64 +3217,6 @@
       "socialImage": "img/social/products/hoodie-v1.jpg"
     },
     {
-      "id": "link-commander-e",
-      "sku": "L-001",
-      "name": "LINK COMMANDER",
-      "category": "labs",
-      "price": 0,
-      "stock": 0,
-      "active": true,
-      "featured": true,
-      "description": "LINK COMMANDER is being developed to connect compatible USB wireless keyboard and mouse receivers to the Commander X16’s PS/2 ports.\n\nTwo designs are in development:\n\n- **Small dongle:** a 20 × 40 mm PCB for one keyboard or mouse. Use one adapter for each device. The male PS/2 plug and its mounting shown in the preview are mechanical concepts; overall enclosure dimensions are not final.\n- **Through-hole dual:** a 72 × 70 mm PCB for keyboard and mouse together, with two USB-A inputs and two short PS/2 leads. All fitted PCB components are through-hole.\n\nBoth designs target power from the X16 ports. Port-power limits, receiver compatibility, firmware and physical fit still need testing. Wireless operation is planned through compatible USB receivers; there is no onboard Bluetooth radio.\n\nThe gallery uses the actual KiCad board renders with RODDY branding. Plug bodies, leads and the dongle mounting arrangement are illustrative and may change.\n\n**Coming soon — announcement only.** We will finish testing before offering Link Commander for sale. No orders or preorders are being accepted. Pricing, final kit contents and release timing will be announced after validation.",
-      "specs": {
-        "Target computer": "Commander X16",
-        "Small dongle PCB": "20 × 40 mm · one keyboard or mouse · SMT electronics",
-        "Dual PCB": "72 × 70 mm · keyboard and mouse · through-hole components",
-        "Wireless approach": "Compatible USB wireless receivers · no onboard Bluetooth",
-        "PS/2 connection": "Male dongle plug concept or two captive leads · final fit pending",
-        "Power target": "X16 port power · current budget and startup testing pending",
-        "Availability": "Coming soon · no orders or preorders",
-        "Development stage": "Firmware and physical testing incomplete"
-      },
-      "images": [
-        "img/products/link-commander/link-commander-overview-3d-v2.png",
-        "img/products/link-commander/link-commander-dongle-3d-v2.png",
-        "img/products/link-commander/link-commander-through-hole-dual-3d-v2.png"
-      ],
-      "status": "coming-soon",
-      "type": "physical",
-      "coverImage": "img/products/link-commander/link-commander-overview-3d-v2.png",
-      "tags": [
-        "new-tag-2"
-      ],
-      "trackStock": true,
-      "compareAtPrice": 0,
-      "shortDescription": "Wireless input for the Commander X16. Small dongle and through-hole dual versions in development. Testing before sale.",
-      "story": "We love retro computers, but we don't love being limited to decades-old keyboards, worn-out mice, and complicated adapters.\n\nWhile working with systems like the Commander X16, we wanted the freedom to use our favorite modern peripherals without sacrificing the authentic retro computing experience.\n\nSo we started building LINK COMMANDER.\n\nOur goal is simple: make classic computers easier to use with modern hardware, reduce cable clutter, and create a flexible solution that works across multiple systems.\n\nBecause the best part of retro computing is exploring what these machines can do, not fighting to get your keyboard connected.\n\n**RODDY — Made for Makers.**",
-      "documentationUrl": "https://roddy.world/downloads/docs/link-commander-development-preview.pdf",
-      "releaseNote": "In development. Firmware, receiver compatibility, port-power operation and physical fit still require testing. The PS/2 plugs and mounting arrangements shown are concepts. Sales will open only after testing is complete.",
-      "downloadUrl": "",
-      "githubUrl": "",
-      "merch": null,
-      "pricePending": true,
-      "officeShipping": {},
-      "supplier": null,
-      "fulfillment": "",
-      "fulfillmentRef": "",
-      "keycaps": null,
-      "relatedProductIds": [
-        "link-commander-snap-fit-enclosure"
-      ],
-      "safetyNotice": "Hardware and power arrangements are still being validated. Final connection and assembly instructions will be published after testing.",
-      "designOrigin": "original",
-      "pricingMode": "automatic",
-      "pricingFloor": 0,
-      "cardImage": "img/products/link-commander/link-commander-overview-3d-v2.png",
-      "socialImage": "img/social/products/link-commander-e-v1.jpg",
-      "prototypeWarning": "Engineering prototypes. Testing must be completed before sale. No orders or preorders are being accepted.",
-      "cardImageNote": "Actual KiCad board renders with conceptual PS/2 connections. Previewed assemblies do not establish final kit contents."
-    },
-    {
       "id": "link-commander-snap-fit-enclosure",
       "sku": "L-002",
       "name": "LINK COMMANDER · FREE 3D CASE FILES",
@@ -3231,53 +3278,6 @@
       "socialImage": "img/social/products/link-commander-snap-fit-enclosure-v1.jpg",
       "downloadLabel": "Download STL + STEP cases · FREE",
       "catalogListed": false
-    },
-    {
-      "id": "aula-f87-pro",
-      "sku": "C-019",
-      "name": "AULA F87 PRO",
-      "category": "computers",
-      "type": "physical",
-      "status": "available",
-      "active": true,
-      "featured": true,
-      "price": 99.99,
-      "pricePending": false,
-      "stock": 3,
-      "trackStock": false,
-      "description": "AULA F87 Pro Wireless Mechanical Keyboard TKL 87Keys Hot Swap Gasket RGB PBT Keycaps TriMode 2.4G BT USB‑C Gaming Keyboard",
-      "shortDescription": "",
-      "images": [
-        "img/products/roddy-93862dd8-01d0-422e-8821-f25733c924a4.jpg",
-        "img/products/roddy-41df339e-d69b-485b-ae7c-a1e355d03143.jpg",
-        "img/products/roddy-7b817797-d599-40e5-a10b-0b5c32e023ad.jpg"
-      ],
-      "coverImage": "img/products/roddy-93862dd8-01d0-422e-8821-f25733c924a4.jpg",
-      "tags": [
-        "new-tag-3"
-      ],
-      "specs": {
-        "Variant": "Blue-Black-White / Gray Switch"
-      },
-      "supplier": null,
-      "officeShipping": {},
-      "releaseNote": "",
-      "compareAtPrice": 0,
-      "story": "",
-      "documentationUrl": "",
-      "downloadUrl": "",
-      "githubUrl": "",
-      "merch": null,
-      "fulfillmentRef": "a1dff8ebfb0b74b586666f78bffb133629aea4af4552a28d95c81bf42d4b9dab",
-      "fulfillment": "manual",
-      "keycaps": null,
-      "shippingCountries": [
-        "US"
-      ],
-      "designOrigin": "selected",
-      "pricingMode": "automatic",
-      "pricingFloor": 0,
-      "socialImage": "img/social/products/aula-f87-pro-v1.jpg"
     },
     {
       "id": "roddy-de10-nano",

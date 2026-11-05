@@ -11,6 +11,7 @@ import {
 } from "../stores/catalog";
 import { departmentDirection } from "../department-data";
 import ProductCard from "../components/ProductCard.vue";
+import X16SetupNote from "../components/X16SetupNote.vue";
 import ProductArtwork from "../components/ProductArtwork.vue";
 import ProductTags from "../components/ProductTags.vue";
 import RoddyLogo from "../components/RoddyLogo.vue";
@@ -243,9 +244,12 @@ function clearFilters() {
           Try again ↗
         </button>
       </div>
-      <div v-else-if="list.length" class="catalog-grid">
-        <ProductCard v-for="p in list" :key="p.id" :product="p" />
-      </div>
+      <template v-else-if="list.length">
+        <X16SetupNote v-if="sort === 'featured' && ['x16-keycaps','link-commander-e','aula-f87-pro'].every(id => list.some(p => p.id === id))" />
+        <div class="catalog-grid">
+          <ProductCard v-for="p in list" :key="p.id" :product="p" />
+        </div>
+      </template>
       <div v-else class="directory-empty">
         <p class="eyebrow">ROOM FOR POSSIBILITY</p>
         <h3>

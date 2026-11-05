@@ -6,6 +6,7 @@ import { useThemeStore } from "../stores/theme";
 import { useUiStore } from "../stores/ui";
 import SoftwareLabPromo from "../components/SoftwareLabPromo.vue";
 import ProductCard from "../components/ProductCard.vue";
+import X16SetupNote from "../components/X16SetupNote.vue";
 import ProductArtwork from "../components/ProductArtwork.vue";
 import RoddyLogo from "../components/RoddyLogo.vue";
 const catalog = useCatalogStore();
@@ -131,6 +132,7 @@ const divisions = computed(() =>
       </div>
       <RouterLink to="/shop" class="text-button">All departments ↗</RouterLink>
     </div>
+    <X16SetupNote v-if="['x16-keycaps','link-commander-e','aula-f87-pro'].every(id => featured.some(p => p.id === id))" />
     <div class="catalog-grid">
       <ProductCard v-for="p in featured" :key="p.id" :product="p" />
     </div>
