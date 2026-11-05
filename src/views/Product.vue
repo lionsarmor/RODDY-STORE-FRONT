@@ -1,4 +1,5 @@
 <script setup>
+import X16ProductIdentity from "../components/X16ProductIdentity.vue";
 import CommanderX16Partner from "../components/CommanderX16Partner.vue";
 import { X16_PARTNER_PRODUCTS } from "../partner-placement.js";
 import PrototypeNotice from '../components/PrototypeNotice.vue';
@@ -34,6 +35,7 @@ const cart = useCartStore();
 const ui = useUiStore();
 const checkout = useCheckoutStore();
 const product = computed(() => catalog.byId(props.id));
+const hasX16Identity = computed(() => catalog.settings.commanderX16PartnerEnabled === true && ["x16-keycaps", "link-commander-e"].includes(props.id));
 const keyboardProfile = computed(()=>profileFor(catalog,product.value));
 const keycapSelection = ref(null);
 watch(keyboardProfile,p=>{keycapSelection.value=p?defaultDesign(p):null;},{immediate:true});
@@ -274,6 +276,7 @@ async function buyNow() {
         </p>
       </div>
       <div class="product-information">
+        <X16ProductIdentity v-if="hasX16Identity" />
         <a v-if="creatorUrl" :href="creatorUrl" target="_blank" rel="noopener noreferrer" class="movie-creator-banner">
           <span>{{ product.projectCredit.projectName }} · CREATED BY</span>
           <strong>{{ product.projectCredit.name }} ↗</strong>
@@ -285,6 +288,7 @@ async function buyNow() {
         </p>
         <h1>{{ product.name }}</h1>
         <p v-if="creatorUrl" class="release-note product-origin"><strong>{{ product.projectCredit.projectName }}</strong> · Playback tools for both X16 editions.</p>
+        <p v-else-if="product.id === 'x16-keycaps'" class="release-note product-origin"><strong>Custom keycaps by RODDY</strong> · For your Commander X16 keyboard.</p>
         <p v-else class="release-note product-origin"><strong>{{ productOrigin(product).label }}</strong> · {{ productOrigin(product).description }}</p>
         <p v-if="product.dynamicPricing" class="text-sm text-text-dim">Price estimate. Current pricing and shipping are confirmed for your address before payment.</p><ProductTags :ids="product.tags" />
         <PrototypeNotice :product="product" />
@@ -423,7 +427,8 @@ async function buyNow() {
       <section class="product-story" aria-labelledby="product-story-heading">
         <p class="eyebrow">01 / THE IDEA</p>
         <h2 id="product-story-heading">
-          A LITTLE MORE<br />TO THE STORY<span>.</span>
+          <template v-if="product.id === 'x16-keycaps'">YOUR KEYBOARD.<br />YOUR COLORS<span>.</span></template>
+          <template v-else>A LITTLE MORE<br />TO THE STORY<span>.</span></template>
         </h2>
         <p class="product-description">
           {{ product.description || product.shortDescription }}
@@ -432,7 +437,7 @@ async function buyNow() {
           ><h3>{{ ['original', 'design'].includes(product.designOrigin) ? 'WHY WE MADE IT' : 'ABOUT THIS PRODUCT' }}</h3>
           <p class="product-description">{{ product.story }}</p></template
         >
-        <CommanderX16Partner v-if="catalog.settings.commanderX16PartnerEnabled === true && X16_PARTNER_PRODUCTS.has(product.id)" />
+        <CommanderX16Partner v-if="catalog.settings.commanderX16PartnerEnabled === true && X16_PARTNER_PRODUCTS.has(product.id) && !hasX16Identity" />
         <div v-else-if="!creatorUrl" class="makers-signature">
           <RoddyLogo kind="full_logo" /><span
             >FROM OUR CORNER<br />OF THE FUTURE.</span
