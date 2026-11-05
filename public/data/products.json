@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "settings": {
-    "commanderX16PartnerEnabled": false,
+    "commanderX16PartnerEnabled": true,
     "announcement": "INDEPENDENT TECHNOLOGY. UNREASONABLE POSSIBILITIES.",
     "heroEyebrow": "WELCOME TO THE RODDY WORLD",
     "heroTitle": "THE FUTURE\nIS PERSONAL.",

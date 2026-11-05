@@ -1,4 +1,7 @@
 <script setup>
+import { useRoute } from "vue-router";
+import { X16_PARTNER_PRODUCTS } from "../partner-placement.js";
+const route = useRoute();
 import { useThemeStore } from "../stores/theme";
 import RoddyLogo from "./RoddyLogo.vue";
 import RotatingTagline from "./RotatingTagline.vue";
@@ -45,7 +48,7 @@ const catalog = useCatalogStore();
           <span class="block font-mono text-sm">PLAY · BUILD · PROGRAM · KEEP</span>
         </div>
       </div>
-      <CommanderX16Partner v-if="catalog.settings.commanderX16PartnerEnabled === true" class="mt-8" />
+      <CommanderX16Partner v-if="catalog.settings.commanderX16PartnerEnabled === true && !X16_PARTNER_PRODUCTS.has(route.params.id)" class="mt-8" />
       <div class="mt-8 flex flex-wrap justify-between gap-2 border-t border-border pt-5 font-mono text-[0.68rem] tracking-wide text-text-dim">
         <span>RODDY ● — established alternate 1983</span>
         <span>Secure checkout. Independent software and hardware.</span>

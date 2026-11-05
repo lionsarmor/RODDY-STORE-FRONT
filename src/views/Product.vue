@@ -1,4 +1,6 @@
 <script setup>
+import CommanderX16Partner from "../components/CommanderX16Partner.vue";
+import { X16_PARTNER_PRODUCTS } from "../partner-placement.js";
 import PrototypeNotice from '../components/PrototypeNotice.vue';
 import { computed, ref, watch } from "vue";
 import {
@@ -430,7 +432,8 @@ async function buyNow() {
           ><h3>{{ ['original', 'design'].includes(product.designOrigin) ? 'WHY WE MADE IT' : 'ABOUT THIS PRODUCT' }}</h3>
           <p class="product-description">{{ product.story }}</p></template
         >
-        <div v-if="!creatorUrl" class="makers-signature">
+        <CommanderX16Partner v-if="catalog.settings.commanderX16PartnerEnabled === true && X16_PARTNER_PRODUCTS.has(product.id)" />
+        <div v-else-if="!creatorUrl" class="makers-signature">
           <RoddyLogo kind="full_logo" /><span
             >FROM OUR CORNER<br />OF THE FUTURE.</span
           >

@@ -1,4 +1,5 @@
 <script setup>
+import RoddyPartnerSticker from "../components/RoddyPartnerSticker.vue";
 import { computed } from "vue";
 import { useCatalogStore, productImageUrl } from "../stores/catalog";
 import { useThemeStore } from "../stores/theme";
@@ -126,7 +127,8 @@ const divisions = computed(() =>
       <p>{{ settings.manifestoText }}</p>
       <RouterLink to="/about" class="button">Meet RODDY ↗</RouterLink>
     </div>
-    <div class="possibility-art" aria-hidden="true">
+    <RoddyPartnerSticker v-if="settings.commanderX16PartnerEnabled === true" />
+    <div v-else class="possibility-art" aria-hidden="true">
       <span class="orbit orbit-a" /><span class="orbit orbit-b" /><span
         class="orbit orbit-c"
       />
