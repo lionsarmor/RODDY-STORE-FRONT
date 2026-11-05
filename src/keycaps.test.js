@@ -27,6 +27,31 @@ test('X16 number-row swatches match the approved color audit in every preview',(
     }
   }
 });
+test('number-row swatches stay centered inside consistent outlines on light and dark keys',()=>{
+  let commonSize,commonBorder;
+  for(const alpha of ['GR001','GR002']){
+    const preview=generatePreview(profile,{...defaultDesign(profile),alpha});
+    for(const key of preview.keys.filter(k=>/^[1-8]$/.test(k.id))){
+      const source=template.keys.find(k=>k.id===key.id),top=source.numberRowText[0].path;
+      assert.ok(key.shapes[0].path.startsWith(top),'upper legends remain unchanged');
+      assert.equal(key.shapes[0].fill,colorHex(legendColorId(alpha)));
+      const frames=key.shapes[0].path.slice(top.length).match(/M[^M]+/g);
+      assert.equal(frames.length,4);
+      for(let side=0;side<2;side++){
+        const nums=p=>p.match(/-?\d+(?:\.\d+)?/g).map(Number);
+        const [x,y,right,bottom]=nums(frames[side*2]);
+        const [ix,iy,iright,ibottom]=nums(key.shapes[side+1].path);
+        const inner=nums(frames[side*2+1]);
+        assert.deepEqual(inner,[ix,iy,ibottom,iright,iy]);
+        const edges=[ix-x,iy-y,right-iright,bottom-ibottom];
+        assert.ok(edges.every(n=>n===edges[0] && n>=10),'visible, equal inset on every edge');
+        commonSize??=iright-ix;commonBorder??=edges[0];
+        assert.equal(iright-ix,commonSize);assert.equal(ibottom-iy,commonSize);assert.equal(edges[0],commonBorder);
+        assert.ok(x>250 && right<750 && y>450 && bottom<750,'inside the key face');
+      }
+    }
+  }
+});
 test('both profiles support a genuinely blank Commander key and a stock-color X16 rainbow',()=>{
   for(const saved of catalog.keycapProfiles){
     const p={...saved,marks:Object.keys(MARKS)};
