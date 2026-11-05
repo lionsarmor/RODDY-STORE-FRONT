@@ -1,4 +1,5 @@
 <script setup>
+import X16ProductIdentity from './X16ProductIdentity.vue';
 import PrototypeNotice from './PrototypeNotice.vue';
 import BuddyListingArtwork from './BuddyListingArtwork.vue';
 import {
@@ -60,7 +61,12 @@ const catalog = useCatalogStore();
       }}</span>
     </div>
     <div class="product-card-body">
-      <h3>{{ product.name }}</h3>
+      <X16ProductIdentity
+        v-if="catalog.settings.commanderX16PartnerEnabled === true && ['x16-keycaps', 'link-commander-e'].includes(product.id)"
+        :label="product.id === 'x16-keycaps' ? 'Keycaps' : 'Link Commander'"
+        compact
+      />
+      <h3 v-else>{{ product.name }}</h3>
       <PrototypeNotice :product="product" compact />
       <p>{{ product.shortDescription || product.description }}</p>
       <p v-if="product.betaAccess" class="alpha-card-note">{{product.softwareEditions?.length>1?product.softwareEditions.length+' distinct editions · ':''}}Email + tester code to download · Join us on Discord</p>

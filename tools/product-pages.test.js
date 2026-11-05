@@ -12,6 +12,16 @@ test('every public product gets its own image, canonical URL and metadata in cra
   assert.equal(metadata.url,'https://roddy.world/product/'+product.id+'/');
   assert.notEqual(metadata.image,STORE_IMAGE,product.id+' needs an actual product image');
   assert.ok(existsSync(new URL('../public/'+new URL(metadata.image).pathname.slice(1),import.meta.url)),product.id);
+  const image=readFileSync(new URL('../public/'+new URL(metadata.image).pathname.slice(1),import.meta.url));
+  assert.equal(image.readUInt16BE(0),0xffd8,product.id+' needs a JPEG sharing card');
+  let offset=2,dimensions;
+  while(offset<image.length){
+   const marker=image.readUInt16BE(offset);offset+=2;
+   if(marker===0xffc0||marker===0xffc2){dimensions=[image.readUInt16BE(offset+5),image.readUInt16BE(offset+3)];break;}
+   if(marker===0xffda||marker===0xffd9)break;
+   offset+=image.readUInt16BE(offset);
+  }
+  assert.deepEqual(dimensions,[1200,630],product.id+' sharing dimensions');
   assert.equal((html.match(/property="og:image"/g)||[]).length,1);
   assert.equal((html.match(/name="twitter:image"/g)||[]).length,1);
   assert.ok(html.includes('<noscript>'));assert.ok(html.includes(metadata.image));

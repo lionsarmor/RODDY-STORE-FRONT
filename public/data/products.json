@@ -234,7 +234,8 @@
       "fulfillmentRef": "",
       "keycaps": null,
       "merch": null,
-      "catalogListed": false
+      "catalogListed": false,
+      "socialImage": "img/social/products/orbit-v1.jpg"
     },
     {
       "category": "apps",
@@ -409,7 +410,8 @@
       "fulfillmentRef": "",
       "keycaps": null,
       "merch": null,
-      "catalogListed": false
+      "catalogListed": false,
+      "socialImage": "img/social/products/buddy-v1.jpg"
     },
     {
       "id": "x16-keycaps",
@@ -466,7 +468,8 @@
       "fulfillmentRef": "",
       "designOrigin": "design",
       "pricingMode": "automatic",
-      "pricingFloor": 0
+      "pricingFloor": 0,
+      "socialImage": "img/social/products/x16-keycaps-v1.jpg"
     },
     {
       "id": "standard-keycaps",
@@ -522,7 +525,8 @@
       "fulfillmentRef": "",
       "designOrigin": "design",
       "pricingMode": "automatic",
-      "pricingFloor": 0
+      "pricingFloor": 0,
+      "socialImage": "img/social/products/standard-keycaps-v1.jpg"
     },
     {
       "id": "weather-commander-x16",
@@ -586,7 +590,8 @@
       "keycaps": null,
       "designOrigin": "original",
       "pricingMode": "automatic",
-      "pricingFloor": 0
+      "pricingFloor": 0,
+      "socialImage": "img/social/products/weather-commander-x16-v1.jpg"
     },
     {
       "id": "shadow-over-space",
@@ -654,7 +659,8 @@
       "keycaps": null,
       "designOrigin": "original",
       "pricingMode": "automatic",
-      "pricingFloor": 0
+      "pricingFloor": 0,
+      "socialImage": "img/social/products/shadow-over-space-v1.jpg"
     },
     {
       "id": "desk-commander",
@@ -726,7 +732,8 @@
       "keycaps": null,
       "designOrigin": "original",
       "pricingMode": "automatic",
-      "pricingFloor": 0
+      "pricingFloor": 0,
+      "socialImage": "img/social/products/desk-commander-v1.jpg"
     },
     {
       "id": "iknowwhatisaw",
@@ -784,7 +791,8 @@
       "keycaps": null,
       "designOrigin": "original",
       "pricingMode": "automatic",
-      "pricingFloor": 0
+      "pricingFloor": 0,
+      "socialImage": "img/social/products/iknowwhatisaw-v1.jpg"
     },
     {
       "id": "keychain-kreatures",
@@ -850,7 +858,8 @@
       "designOrigin": "original",
       "relatedProductIds": [],
       "pricingMode": "automatic",
-      "pricingFloor": 0
+      "pricingFloor": 0,
+      "socialImage": "img/social/products/keychain-kreatures-v1.jpg"
     },
     {
       "id": "kestrel-computer",
@@ -1011,7 +1020,8 @@
       "keycaps": null,
       "designOrigin": "design",
       "pricingMode": "automatic",
-      "pricingFloor": 0
+      "pricingFloor": 0,
+      "socialImage": "img/social/products/desk-mat-v1.jpg"
     },
     {
       "id": "hoodie",
@@ -3098,7 +3108,8 @@
       "keycaps": null,
       "designOrigin": "design",
       "pricingMode": "automatic",
-      "pricingFloor": 0
+      "pricingFloor": 0,
+      "socialImage": "img/social/products/hoodie-v1.jpg"
     },
     {
       "id": "link-commander-e",
@@ -3154,7 +3165,7 @@
       "pricingMode": "automatic",
       "pricingFloor": 0,
       "cardImage": "img/products/link-commander/link-commander-overview-3d-v2.png",
-      "socialImage": "img/products/link-commander/link-commander-overview-3d-v2.png",
+      "socialImage": "img/social/products/link-commander-e-v1.jpg",
       "prototypeWarning": "Engineering prototypes. Testing must be completed before sale. No orders or preorders are being accepted.",
       "cardImageNote": "Actual KiCad board renders with conceptual PS/2 connections. Previewed assemblies do not establish final kit contents."
     },
@@ -3217,7 +3228,7 @@
       "cardImageNote": "Actual CAD renders of the downloadable first-fit cases. Electronics and connectors are illustrative and not included.",
       "pricingMode": "automatic",
       "pricingFloor": 0,
-      "socialImage": "img/products/link-commander/dongle-direct-concept-closed-fdm-v1.png",
+      "socialImage": "img/social/products/link-commander-snap-fit-enclosure-v1.jpg",
       "downloadLabel": "Download STL + STEP cases · FREE"
     },
     {
@@ -3264,7 +3275,8 @@
       ],
       "designOrigin": "selected",
       "pricingMode": "automatic",
-      "pricingFloor": 0
+      "pricingFloor": 0,
+      "socialImage": "img/social/products/aula-f87-pro-v1.jpg"
     },
     {
       "id": "roddy-de10-nano",
@@ -3339,7 +3351,8 @@
       "merch": null,
       "designOrigin": "selected",
       "pricingMode": "automatic",
-      "pricingFloor": 0
+      "pricingFloor": 0,
+      "socialImage": "img/social/products/roddy-de10-nano-v1.jpg"
     },
     {
       "id": "mister-sdram-128mb",
@@ -3634,7 +3647,8 @@
       "merch": null,
       "designOrigin": "selected",
       "pricingMode": "automatic",
-      "pricingFloor": 0
+      "pricingFloor": 0,
+      "socialImage": "img/social/products/usb-c-power-supply-5v-3a-v1.jpg"
     },
     {
       "category": "video",
@@ -3812,7 +3826,7 @@
       "merch": null,
       "pricingMode": "automatic",
       "pricingFloor": 0,
-      "socialImage": "img/products/plan-9-vhs-render-social.png"
+      "socialImage": "img/social/products/plan-9-original-and-x16-v1.jpg"
     },
     {
       "id": "keychain-kreatures-hardware-bundle",
