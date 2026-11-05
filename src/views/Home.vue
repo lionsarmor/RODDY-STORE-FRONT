@@ -14,7 +14,9 @@ const theme = useThemeStore();
 const ui = useUiStore();
 const settings = computed(() => catalog.settings);
 const featured = computed(() =>
-  catalog.listedProducts.filter((p) => p.featured),
+  ['x16-keycaps', 'link-commander-e', 'aula-f87-pro']
+    .map(id => catalog.listedProducts.find(p => p.id === id))
+    .filter(Boolean),
 );
 const spotlight = computed(() => catalog.byId(settings.value.heroProductId));
 const heroImage = computed(
