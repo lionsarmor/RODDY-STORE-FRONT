@@ -41,7 +41,6 @@ const catalog = useCatalogStore();
       />
       <ProductArtwork v-else :product="product" />
     </div>
-    <p v-if="product.cardImageNote" class="movie-artwork-note">{{ product.cardImageNote }}</p>
     <div class="product-plate-caption">
       <span
         >{{
@@ -61,16 +60,25 @@ const catalog = useCatalogStore();
       }}</span>
     </div>
     <div class="product-card-body">
+      <div class="product-card-title">
       <X16ProductIdentity
         v-if="catalog.settings.commanderX16PartnerEnabled === true && ['x16-keycaps', 'link-commander-e'].includes(product.id)"
         :label="product.id === 'x16-keycaps' ? 'Keycaps' : 'Link Commander'"
         compact
       />
       <h3 v-else>{{ product.name }}</h3>
-      <PrototypeNotice :product="product" compact />
-      <p>{{ product.shortDescription || product.description }}</p>
-      <p v-if="product.betaAccess" class="alpha-card-note">{{product.softwareEditions?.length>1?product.softwareEditions.length+' distinct editions · ':''}}Email + tester code to download · Join us on Discord</p>
-      <p v-if="product.dynamicPricing" class="shipping-destinations">Price estimate · confirmed with delivery address</p><ProductTags :ids="product.tags" /><p v-if="product.type === 'physical'" class="shipping-destinations">{{ shippingLabel(product) }}</p>
+      </div>
+      <p class="product-card-description">{{ product.shortDescription || product.description }}</p>
+      <ProductTags :ids="product.tags" />
+      <div class="product-card-shipping">
+        <p v-if="product.type === 'physical'" class="shipping-destinations">{{ shippingLabel(product) }}</p>
+        <p v-if="product.dynamicPricing" class="shipping-destinations">Price estimate · confirmed with delivery address</p>
+      </div>
+      <div class="product-card-notes">
+        <PrototypeNotice :product="product" compact />
+        <p v-if="product.cardImageNote" class="movie-artwork-note">{{ product.cardImageNote }}</p>
+        <p v-if="product.betaAccess" class="alpha-card-note">{{product.softwareEditions?.length>1?product.softwareEditions.length+' distinct editions · ':''}}Email + tester code to download · Join us on Discord</p>
+      </div>
       <div class="product-card-bottom">
         <span
           >{{

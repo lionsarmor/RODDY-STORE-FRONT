@@ -39,7 +39,7 @@ for(const p of publicProducts(catalog)){
  footer{height:68px;margin:0 38px;border-top:2px solid #242823;display:flex;align-items:center;justify-content:space-between;font:700 14px monospace;letter-spacing:.08em}footer b{color:#b42b27}
  </style><body><header><svg viewBox="233.5 263.6 1012.2 285.4" aria-label="RODDY">${roddy}</svg><span>${e(p.category)} / THE RODDY COLLECTION</span></header><main><div class="photo"><img src="/${e(image)}" alt="${e(p.name)}"></div><div class="copy"><p class="origin">${e(productOrigin(p).label)}</p><div>${heading}</div><p class="description">${e(description)}</p><p class="status">${status}</p></div></main><footer><span>RODDY.WORLD</span><span>PLAY. BUILD. MAKE IT YOURS. <b>↗</b></span></footer></body></html>`;
  await writeFile(`${output}/${p.id}.html`,html);
- manifest.push({id:p.id,source:image,html:`/${output}/${p.id}.html`,image:`img/social/products/${p.id}-v1.jpg`});
+ manifest.push({id:p.id,source:image,html:`/${output}/${p.id}.html`,image:p.socialImage?.startsWith('img/social/products/')?p.socialImage:`img/social/products/${p.id}-v1.jpg`});
 }
 await writeFile(`${output}/manifest.json`,JSON.stringify(manifest,null,2)+'\n');
 console.log(`Prepared ${manifest.length} product sharing cards in ${output}. Render at 1200 × 630 before publishing.`);

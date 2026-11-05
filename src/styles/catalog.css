@@ -875,3 +875,25 @@
 .movie-creator-banner strong { font-size: clamp(27px, 3vw, 42px); line-height: 1.05; font-weight: 900; letter-spacing: -.035em; }
 .movie-creator-banner:hover { background: #ffe274; color: #201337; }
 .movie-creator-banner:focus-visible { outline: 3px solid #a13ae4; outline-offset: 5px; }
+
+/* Shared row tracks keep neighboring card sections aligned despite different copy. */
+.catalog-grid > .product-card {
+  display: grid;
+  grid-row: span 9;
+  grid-template-rows: subgrid;
+  row-gap: 0;
+}
+.catalog-grid > .product-card > .product-card-body {
+  display: grid;
+  grid-row: span 6;
+  grid-template-rows: subgrid;
+  row-gap: 0;
+}
+.product-card-title { padding-bottom: 12px; }
+.product-card-description { margin: 0 0 12px; }
+.product-card-shipping { padding-bottom: 12px; }
+.product-card-notes { padding-bottom: 12px; }
+.product-card-notes:empty { padding: 0; }
+.product-card-notes .movie-artwork-note { padding: 0; background: none; font: 9px/1.5 var(--font-mono); }
+.product-card-bottom { margin-top: 0; }
+@media(min-width:1001px) { .world-catalog .catalog-grid { grid-template-columns: repeat(3,minmax(0,1fr)); } }

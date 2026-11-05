@@ -209,13 +209,14 @@
         "Development stage": "Firmware and physical testing incomplete"
       },
       "images": [
+        "img/products/link-commander/link-commander-pair-v3.png",
         "img/products/link-commander/link-commander-overview-3d-v2.png",
         "img/products/link-commander/link-commander-dongle-3d-v2.png",
         "img/products/link-commander/link-commander-through-hole-dual-3d-v2.png"
       ],
       "status": "coming-soon",
       "type": "physical",
-      "coverImage": "img/products/link-commander/link-commander-overview-3d-v2.png",
+      "coverImage": "img/products/link-commander/link-commander-pair-v3.png",
       "tags": [
         "new-tag-2"
       ],
@@ -241,10 +242,10 @@
       "designOrigin": "original",
       "pricingMode": "automatic",
       "pricingFloor": 0,
-      "cardImage": "img/products/link-commander/link-commander-overview-3d-v2.png",
-      "socialImage": "img/social/products/link-commander-e-v1.jpg",
+      "cardImage": "img/products/link-commander/link-commander-pair-v3.png",
+      "socialImage": "img/social/products/link-commander-e-v2.jpg",
       "prototypeWarning": "Engineering prototypes. Testing must be completed before sale. No orders or preorders are being accepted.",
-      "cardImageNote": "Actual KiCad board renders with conceptual PS/2 connections. Previewed assemblies do not establish final kit contents."
+      "cardImageNote": "CAD-based concept illustration · final hardware and connections may change."
     },
     {
       "id": "aula-f87-pro",
