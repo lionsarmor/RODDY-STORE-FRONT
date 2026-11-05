@@ -117,6 +117,9 @@ const linkedProducts = computed(() =>
   (Array.isArray(product.value?.relatedProductIds) ? product.value.relatedProductIds : [])
     .map(id => catalog.byId(id)).filter(Boolean),
 );
+const cadDownloads = computed(() => linkedProducts.value.filter(p =>
+  p.type === 'digital' && p.downloadUrl?.includes('/downloads/3d-print/'),
+));
 const related = computed(() =>
   catalog
     .byCategory("all")
@@ -474,7 +477,7 @@ async function buyNow() {
       </section>
     </div>
     <section
-      v-if="isHardware || documentationLink"
+      v-if="isHardware || documentationLink || cadDownloads.length"
       class="product-documentation"
       aria-labelledby="documentation-heading"
     >
@@ -508,7 +511,11 @@ async function buyNow() {
                 : "Read the documentation"
             }}
             ↗</a
-          ><RouterLink v-if="isHardware" to="/about" class="text-button"
+          >
+          <RouterLink v-for="files in cadDownloads" :key="files.id"
+            :to="`/product/${files.id}`" class="button"
+          >3D case files · STL / CAD ↓</RouterLink>
+          <RouterLink v-if="isHardware" to="/about" class="text-button"
             >Read our promise ↗</RouterLink
           >
         </div>

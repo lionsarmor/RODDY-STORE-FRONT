@@ -3229,7 +3229,8 @@
       "pricingMode": "automatic",
       "pricingFloor": 0,
       "socialImage": "img/social/products/link-commander-snap-fit-enclosure-v1.jpg",
-      "downloadLabel": "Download STL + STEP cases · FREE"
+      "downloadLabel": "Download STL + STEP cases · FREE",
+      "catalogListed": false
     },
     {
       "id": "aula-f87-pro",
@@ -4104,7 +4105,8 @@
       "cardImage": "img/products/kit-listings-01/kk-stl-v1.png",
       "cardImageNote": "Print your own case. Free digital files; no physical parts or printer included.",
       "pricingMode": "automatic",
-      "pricingFloor": 0
+      "pricingFloor": 0,
+      "catalogListed": false
     }
   ],
   "keycapProfiles": [
