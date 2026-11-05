@@ -27,7 +27,6 @@ import ProductCard from "../components/ProductCard.vue";
 import RoddyLogo from "../components/RoddyLogo.vue";
 import FreeDownload from '../components/FreeDownload.vue';
 import SoftwareShowcase from '../components/SoftwareShowcase.vue';
-import DiscordCommunity from '../components/DiscordCommunity.vue';
 import { departmentDirection } from "../department-data";
 const props = defineProps({ id: { type: String, required: true } });
 const catalog = useCatalogStore();
@@ -276,7 +275,6 @@ async function buyNow() {
         </p>
       </div>
       <div class="product-information">
-        <X16ProductIdentity v-if="hasX16Identity" />
         <a v-if="creatorUrl" :href="creatorUrl" target="_blank" rel="noopener noreferrer" class="movie-creator-banner">
           <span>{{ product.projectCredit.projectName }} · CREATED BY</span>
           <strong>{{ product.projectCredit.name }} ↗</strong>
@@ -286,7 +284,8 @@ async function buyNow() {
         <p class="eyebrow">
           {{ product.sku }} / {{ product.category }} DIVISION
         </p>
-        <h1>{{ product.name }}</h1>
+        <X16ProductIdentity v-if="hasX16Identity" :label="product.id === 'x16-keycaps' ? 'Keycaps' : 'Link Commander'" />
+        <h1 v-else>{{ product.name }}</h1>
         <p v-if="creatorUrl" class="release-note product-origin"><strong>{{ product.projectCredit.projectName }}</strong> · Playback tools for both X16 editions.</p>
         <p v-else-if="product.id === 'x16-keycaps'" class="release-note product-origin"><strong>Custom keycaps by RODDY</strong> · For your Commander X16 keyboard.</p>
         <p v-else class="release-note product-origin"><strong>{{ productOrigin(product).label }}</strong> · {{ productOrigin(product).description }}</p>
@@ -355,7 +354,6 @@ async function buyNow() {
           }}
         </p>
         <p v-if="product.type === 'physical'" class="release-note">{{ shippingLabel(product) }}.</p>
-        <DiscordCommunity v-if="state==='soon'" compact />
         <div v-if="purchasable" class="purchase-actions">
           <a
             v-if="freeDownload && product.fulfillment === 'public-download'"

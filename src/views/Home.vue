@@ -98,7 +98,22 @@ const divisions = computed(() =>
   <div class="spectrum-band" aria-hidden="true">
     <i v-for="n in 6" :key="n" />
   </div>
-  <SoftwareLabPromo />
+  <section class="world-manifesto">
+    <div>
+      <p class="eyebrow">A NOTE FROM THE DEPARTMENT OF POSSIBILITY</p>
+      <h2>{{ settings.manifestoTitle }}</h2>
+      <p>{{ settings.manifestoText }}</p>
+      <RouterLink to="/about" class="button">Meet RODDY ↗</RouterLink>
+    </div>
+    <RoddyPartnerSticker v-if="settings.commanderX16PartnerEnabled === true" />
+    <div v-else class="possibility-art" aria-hidden="true">
+      <span class="orbit orbit-a" /><span class="orbit orbit-b" /><span
+        class="orbit orbit-c"
+      />
+      <RoddyLogo kind="badge" on-accent class="possibility-logo" />
+      <small>HUMAN CURIOSITY / ALWAYS COMPATIBLE</small>
+    </div>
+  </section>
   <section class="division-strip">
     <RouterLink
       v-for="(c, i) in divisions"
@@ -120,22 +135,7 @@ const divisions = computed(() =>
       <ProductCard v-for="p in featured" :key="p.id" :product="p" />
     </div>
   </section>
-  <section class="world-manifesto">
-    <div>
-      <p class="eyebrow">A NOTE FROM THE DEPARTMENT OF POSSIBILITY</p>
-      <h2>{{ settings.manifestoTitle }}</h2>
-      <p>{{ settings.manifestoText }}</p>
-      <RouterLink to="/about" class="button">Meet RODDY ↗</RouterLink>
-    </div>
-    <RoddyPartnerSticker v-if="settings.commanderX16PartnerEnabled === true" />
-    <div v-else class="possibility-art" aria-hidden="true">
-      <span class="orbit orbit-a" /><span class="orbit orbit-b" /><span
-        class="orbit orbit-c"
-      />
-      <RoddyLogo kind="badge" on-accent class="possibility-logo" />
-      <small>HUMAN CURIOSITY / ALWAYS COMPATIBLE</small>
-    </div>
-  </section>
+  <SoftwareLabPromo />
   <section class="world-themes">
     <div>
       <p class="eyebrow">SAME WORLD. DIFFERENT FREQUENCY.</p>
