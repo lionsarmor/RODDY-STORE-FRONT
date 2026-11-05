@@ -98,6 +98,15 @@ const divisions = computed(() =>
   <div class="spectrum-band" aria-hidden="true">
     <i v-for="n in 6" :key="n" />
   </div>
+  <section class="division-strip">
+    <RouterLink
+      v-for="(c, i) in divisions"
+      :key="c.id"
+      :to="{ path: '/shop', query: { cat: c.id } }"
+      ><small>0{{ i + 1 }} / {{ c.code }}</small
+      ><span>{{ c.name }} <b>↗</b></span></RouterLink
+    >
+  </section>
   <section class="world-manifesto">
     <div>
       <p class="eyebrow">A NOTE FROM THE DEPARTMENT OF POSSIBILITY</p>
@@ -113,15 +122,6 @@ const divisions = computed(() =>
       <RoddyLogo kind="badge" on-accent class="possibility-logo" />
       <small>HUMAN CURIOSITY / ALWAYS COMPATIBLE</small>
     </div>
-  </section>
-  <section class="division-strip">
-    <RouterLink
-      v-for="(c, i) in divisions"
-      :key="c.id"
-      :to="{ path: '/shop', query: { cat: c.id } }"
-      ><small>0{{ i + 1 }} / {{ c.code }}</small
-      ><span>{{ c.name }} <b>↗</b></span></RouterLink
-    >
   </section>
   <section class="world-catalog">
     <div class="section-heading">

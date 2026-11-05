@@ -17,8 +17,9 @@ const artwork = source.match(/<g id="Rectangle_Color">([\s\S]*)<\/g>/)[1]
 </template>
 
 <style scoped>
-h1.x16-product-title{display:flex;flex-direction:column;gap:16px;margin:22px 0 24px;text-transform:none;letter-spacing:-.055em;color:var(--color-text)}
-.x16-title-wordmark{display:block;width:100%;max-width:390px;height:auto;overflow:visible}
-.x16-title-name{display:block;font:800 clamp(38px,4.5vw,58px)/1.03 var(--font-sans);letter-spacing:-.055em;text-transform:none;text-wrap:balance}
-@media(max-width:480px){.x16-title-name{font-size:40px}.x16-title-wordmark{max-width:330px}}
+@font-face{font-family:"X16 Product";src:url("/fonts/michroma/Michroma-Regular.ttf") format("truetype");font-weight:400;font-style:normal;font-display:swap}
+h1.x16-product-title{display:flex;flex-direction:column;gap:0;width:100%;max-width:390px;margin:22px 0 24px;color:var(--color-text)}
+.x16-title-wordmark{display:block;width:100%;height:auto;overflow:visible}
+.x16-title-name{display:block;font:400 clamp(20px,2.3vw,27px)/1.25 "X16 Product",sans-serif;letter-spacing:.025em;text-transform:uppercase;white-space:nowrap;-webkit-text-stroke:.4px currentColor}
+@media(max-width:480px){h1.x16-product-title{max-width:330px}.x16-title-name{font-size:clamp(17px,5.3vw,23px)}}
 </style>
