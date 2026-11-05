@@ -58,7 +58,7 @@ for index, names_for_key in enumerate(names, 1):
     top, frames = [], []
     for subpath in subpaths:
         b = bounds(subpath)
-        if b[1] >= 500:
+        if b[1] >= 450:
             frames.append(subpath)
         else:
             assert b[3] < 400, 'Unexpected number-row geometry'
