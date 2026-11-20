@@ -33,6 +33,8 @@ import {
   validateCatalog,
 } from "../catalog-model.js";
 import { productImageUrl, formatPrice } from "../stores/catalog";
+import { CATALOG_URL, PRIVATE_ADMIN, STOREFRONT_BASE, rawAssetUrl } from "../config";
+import { openDraftPreview } from "../draft-preview";
 import { fetchCatalog, fetchCatalogRevision, saveCatalog, uploadFile, listRepoImages } from "./api";
 import { mergeCatalog } from "./catalog-merge.js";
 import { commerceRequest } from "./commerce-api";
@@ -159,7 +161,7 @@ onMounted(async () => {
   try {
     const saved = JSON.parse(localStorage.getItem(CONFIG_KEY) || "null");
     if (saved) Object.assign(form, saved, { remember: !!saved.token });
-    const res = await fetch("./data/products.json", { cache: "no-store" });
+    const res = await fetch(CATALOG_URL, { cache: "no-store" });
     if (!res.ok) throw new Error("Could not load the catalog.");
     installCatalog(await res.json());
     draftAvailable.value = !!localStorage.getItem(draftKey.value);
@@ -501,11 +503,9 @@ async function importCatalog(event) {
 }
 function preview() {
   try {
-    sessionStorage.setItem("roddy:preview", JSON.stringify(catalog.value));
-    window.open("./index.html?preview=1#/", "_blank");
+    openDraftPreview(JSON.stringify(catalog.value));
   } catch {
-    error.value =
-      "Preview storage is full. Export a backup, then reduce the number or size of draft images.";
+    error.value = "Could not open the draft preview. Allow pop-ups for this page and try again.";
   }
 }
 async function commerce(action) {
@@ -552,7 +552,7 @@ function syncPrintify(source, targetId) {
 <template>
   <div class="admin-app">
     <header class="admin-header">
-      <a href="./index.html"
+      <a :href="STOREFRONT_BASE"
         ><RoddyLogo kind="full_logo" class="h-8 w-auto" /></a
       ><span class="admin-wordmark"
         >CONTROL DESK <small>STORE OPERATIONS / V2</small></span
@@ -560,9 +560,12 @@ function syncPrintify(source, targetId) {
       <div>
         <button class="button small" @click="ui.openThemeOverlay()">
           ◧ Theme</button
-        ><a href="./index.html" target="_blank" class="button small"
+        ><a :href="STOREFRONT_BASE" target="_blank" class="button small"
           >View store ↗</a
         >
+        <form v-if="PRIVATE_ADMIN" method="post" action="/control/logout">
+          <button class="button small" type="submit">Sign out</button>
+        </form>
       </div>
     </header>
     <div class="admin-layout">
@@ -1232,12 +1235,12 @@ function syncPrintify(source, targetId) {
               </ol>
               <pre class="setup-command">python3 /opt/roddy-store/backend/deploy/configure-printify.py</pre>
               <p class="help-copy">Hoodie artwork: the full RODDY logo in white with a red dot, on a transparent 3531 × 2352 px canvas. Select a black hoodie and upload this file to the front print area.</p>
-              <p><a class="button small" href="./downloads/merch/roddy-hoodie-white-red-front.png" download="RODDY-hoodie-white-red-front.png">Download hoodie print PNG ↓</a></p>
+              <p><a class="button small" :href="rawAssetUrl('downloads/merch/roddy-hoodie-white-red-front.png')" download="RODDY-hoodie-white-red-front.png">Download hoodie print PNG ↓</a></p>
               <p class="help-copy">Desk-mat artwork follows the storefront ad: black, cream curves, red circle, and the original RODDY logo. Choose the file matching your selected SPOKE mat size. Each layout keeps the logo and curves in proportion. Apply a separate design to each size in Printify, then check the template bleed and safe area before ordering.</p>
               <div class="admin-actions">
-                <a class="button small" href="./downloads/merch/roddy-deskmat-spoke-12x18-printify.png" download="RODDY-deskmat-spoke-12x18-printify.png">Desk mat 12 × 18 inches PNG ↓</a>
-                <a class="button small" href="./downloads/merch/roddy-deskmat-spoke-12x22-printify.png" download="RODDY-deskmat-spoke-12x22-printify.png">Desk mat 12 × 22 inches PNG ↓</a>
-                <a class="button small" href="./downloads/merch/roddy-deskmat-spoke-16x32.png" download="RODDY-deskmat-spoke-16x32.png">Desk mat 16 × 32 inches PNG ↓</a>
+                <a class="button small" :href="rawAssetUrl('downloads/merch/roddy-deskmat-spoke-12x18-printify.png')" download="RODDY-deskmat-spoke-12x18-printify.png">Desk mat 12 × 18 inches PNG ↓</a>
+                <a class="button small" :href="rawAssetUrl('downloads/merch/roddy-deskmat-spoke-12x22-printify.png')" download="RODDY-deskmat-spoke-12x22-printify.png">Desk mat 12 × 22 inches PNG ↓</a>
+                <a class="button small" :href="rawAssetUrl('downloads/merch/roddy-deskmat-spoke-16x32.png')" download="RODDY-deskmat-spoke-16x32.png">Desk mat 16 × 32 inches PNG ↓</a>
               </div>
               <div class="admin-actions">
                 <a class="button small" href="https://printify.com/" target="_blank" rel="noopener noreferrer">Open Printify ↗</a>

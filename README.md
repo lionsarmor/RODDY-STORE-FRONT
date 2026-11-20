@@ -207,6 +207,11 @@ backend both read that file straight from `raw.githubusercontent.com`
 published change shows up on the live site within moments — it doesn't wait
 on the GitHub Actions rebuild that redeploys the rest of the app.
 
+The production admin bundle is built separately with `npm run build:admin`.
+Install `dist-admin/` under `/var/lib/roddy-store/admin-ui` or `STORE_ADMIN_DIR`,
+readable by the backend service. The public Pages build publishes only redirects
+at the old admin URLs. Deploy the private bundle with the checkout backend.
+
 ### One-time setup
 
 1. Go to **github.com → Settings → Developer settings → Personal access
@@ -219,8 +224,8 @@ on the GitHub Actions rebuild that redeploys the rest of the app.
 
 ### Using it
 
-1. Open `/admin.html` on your deployed site (it's not linked from the main
-   nav on purpose — bookmark it).
+1. Open `/admin.html` on the deployed site. It redirects to the private
+   backend’s staff sign-in. Unlock with the owner’s GitHub token.
 2. Fill in your GitHub username, repo name, and branch (these auto-fill
    correctly on a standard `*.github.io` project page), paste the token, hit
    **Connect**.

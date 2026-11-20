@@ -1,11 +1,10 @@
-// Deploy /backend to the droplet, then configure its HTTPS base URL in
-// Admin → Checkout & Square (catalog.settings.checkoutEndpoint).
+export const STOREFRONT_ORIGIN = "https://roddy.world";
+export const ADMIN_ORIGIN = "https://store-api.143-244-168-180.sslip.io";
+export const PRIVATE_ADMIN = import.meta.env.MODE === "private-admin";
+export const STOREFRONT_BASE = PRIVATE_ADMIN ? STOREFRONT_ORIGIN + "/" : import.meta.env.BASE_URL;
+export const CATALOG_URL = `${STOREFRONT_BASE}data/products.json`;
 
-// Customer assets stay on the storefront. Admin publication becomes visible
-// after the Pages deployment completes, together with its matching images.
-export const CATALOG_URL = `${import.meta.env.BASE_URL}data/products.json`;
-
-/** Resolve public assets on this site, without exposing repository links. */
+/** Resolve public storefront assets independently of the private dashboard. */
 export function rawAssetUrl(path) {
-  return `${import.meta.env.BASE_URL}${path}`;
+  return `${STOREFRONT_BASE}${path}`;
 }

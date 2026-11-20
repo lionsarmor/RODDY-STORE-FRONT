@@ -15,10 +15,10 @@ The private contact modal opens an email draft addressed to
 Visitors review and send through their own email app, or copy the draft into
 webmail. Private messages do not appear on the public board or in store admin.
 
-Open `/admin.html` on the store, or the same path on your local Vite server.
-The editor opens in local draft mode, so you can explore it without credentials.
-Connect to GitHub before publishing. Nothing is deployed by merely opening or
-previewing the editor.
+Open `/admin.html` on the store and enter the owner’s GitHub token on the
+staff sign-in page. After unlocking, use the GitHub connection inside Control
+Desk to publish or manage orders. On a local Vite server, `/admin.html` remains
+available for development.
 
 ## Products and departments
 

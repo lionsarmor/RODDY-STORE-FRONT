@@ -1,6 +1,6 @@
 <script setup>
 import {ref,reactive,onMounted,onUnmounted,watch} from 'vue';
-import {commerceRequest} from './commerce-api';
+import {commerceFetch,commerceRequest} from './commerce-api';
 import SupplierDispatch from './SupplierDispatch.vue';
 import OrderMessage from './OrderMessage.vue';
 import DigitalDownloads from './DigitalDownloads.vue';
@@ -50,7 +50,7 @@ async function run(fn){busy.value=true;error.value='';message.value='';try{await
 const load=()=>run(refresh);
 function lane(id){view.value=id;status.value='all';load();}
 function more(){return run(async()=>{refreshSequence++;const data=await request('/admin/orders?'+new URLSearchParams({...filters(),cursor:nextCursor.value}));orders.value.push(...data.data);nextCursor.value=data.next_cursor || '';});}
-async function download(path,filename,body={}){const response=await fetch(props.endpoint.replace(/\/$/,'')+path,{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+props.token},body:JSON.stringify(body)});if(!response.ok)throw new Error((await response.json()).error || 'Download failed.');const url=URL.createObjectURL(await response.blob());const a=document.createElement('a');a.href=url;a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+async function download(path,filename,body={}){const response=await commerceFetch(props.endpoint,path,props.token,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)});if(!response.ok)throw new Error((await response.json()).error || 'Download failed.');const url=URL.createObjectURL(await response.blob());const a=document.createElement('a');a.href=url;a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
 function packet(order,kind){return run(()=>download('/admin/orders/'+order.id+(kind==='keycaps'?'/keycaps':'/supplier'),'RODDY-'+order.id+'-'+kind+'.zip',{action:'download',kind}));}
 function pendingPackets(){return run(()=>download('/admin/keycaps/packets','RODDY-pending-keycap-orders.zip'));}
 function exportRecords(){return run(()=>download('/admin/orders/export','RODDY-'+exportKind.value+'.csv',{...filters(),view:'all',kind:exportKind.value}));}

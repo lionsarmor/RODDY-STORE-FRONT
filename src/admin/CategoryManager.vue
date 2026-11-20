@@ -1,12 +1,13 @@
 <script setup>
 import { ref } from 'vue';
 import { categoryPreviewUrl } from '../category-visibility.js';
+import { PRIVATE_ADMIN, STOREFRONT_BASE } from '../config';
 import { slugify } from './utils';
 const props = defineProps({ catalog: { type: Object, required: true } });
 const message = ref('');
 const error = ref('');
 const key = () => crypto.randomUUID().replaceAll('-', '');
-const link = c => categoryPreviewUrl(window.location.href, c);
+const link = c => categoryPreviewUrl(PRIVATE_ADMIN ? STOREFRONT_BASE : window.location.href, c);
 function add() {
   let id = 'new-category', n = 2;
   while (props.catalog.categories.some(c => c.id === id)) id = 'new-category-' + n++;

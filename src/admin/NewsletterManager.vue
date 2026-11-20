@@ -2,7 +2,7 @@
 import { computed, onBeforeUnmount, ref, watch } from 'vue';
 import { SUPPORT_EMAIL } from '../forum-api.js';
 import MediaEditor from './MediaEditor.vue';
-import { commerceRequest } from './commerce-api';
+import { commerceFetch, commerceRequest } from './commerce-api';
 import { uploadFile } from './api';
 import { dataUrlToBase64 } from './image';
 import { formatPrice } from '../stores/catalog';
@@ -105,7 +105,7 @@ function download(value, name, type) {
   const url = URL.createObjectURL(new Blob([value], {type})); const a = document.createElement('a'); a.href = url; a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 async function exportCsv() {
-  const res = await fetch(props.endpoint.replace(/\/$/, '') + '/admin/newsletters/subscribers.csv', {headers: {authorization: `Bearer ${props.token}`}});
+  const res = await commerceFetch(props.endpoint, '/admin/newsletters/subscribers.csv', props.token);
   if (!res.ok) throw new Error('Subscriber export failed. Sign in and try again.');
   download(await res.text(), 'RODDY-newsletter-subscribers.csv', 'text/csv');
 }

@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import { CATALOG_URL, rawAssetUrl } from "../config";
+import { readDraftPreview } from "../draft-preview";
 import { normalizeCatalog, DEFAULT_SETTINGS } from '../catalog-model.js';
 import { CATEGORY_PREVIEW_PARAM, categoryVisible, visibleProducts } from '../category-visibility.js';
 export { normalizeProduct } from '../catalog-model.js';
@@ -37,7 +38,7 @@ export const useCatalogStore = defineStore("catalog", {
         const url = CATALOG_URL;
         let source;
         if (new URLSearchParams(location.search).get('preview') === '1') {
-          const draft = sessionStorage.getItem('roddy:preview');
+          const draft = await readDraftPreview();
           if (draft) { source = JSON.parse(draft); this.preview = true; }
         }
         if (!source) {

@@ -36,6 +36,7 @@ from .pcb_projects import register_pcb_projects
 from .project_workshop import register_project_workshop
 from .catalog_sourcing import register_catalog_sourcing
 from .free_downloads import FreeDownloads
+from .admin_control import register_admin_control
 
 
 def checkout_url(value):
@@ -422,9 +423,8 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
         item = next(i for i in json.loads(order["items"]) if i["id"] == row["product"])
         return FileResponse(private_file(item), media_type="application/zip", filename=item["file"])
 
-    def require_admin(request):
+    def verify_admin(request, token):
         rate_limit(request, "admin", 60)
-        token = request.headers.get("authorization", "")
         if not token.startswith("Bearer "):
             raise HTTPException(401, "Sign in with GitHub first.")
         try:
@@ -434,6 +434,11 @@ def create_app(*, database=None, private_dir=None, manifest=None, provider=None,
                 raise HTTPException(403, "This GitHub account cannot access store administration.")
         except (httpx.HTTPError, ValueError) as exc:
             raise HTTPException(401, "Could not verify GitHub sign-in.") from exc
+
+    def require_admin(request):
+        verify_admin(request, request.headers.get("authorization", ""))
+
+    register_admin_control(app, verify_admin, public_url)
 
     @app.post("/admin/orders/{reference}/downloads")
     def admin_download(reference: str, request: Request, body: dict):
