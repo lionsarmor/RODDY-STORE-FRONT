@@ -154,6 +154,7 @@
         "img/products/celluloid/workspace.png"
       ],
       "coverImage": "img/products/celluloid/celluloid-box-art.webp",
+      "socialImage": "img/social/products/celluloid-v1.jpg",
       "specs": {
         "Platform": "Commander X16",
         "Version": "1.0",
