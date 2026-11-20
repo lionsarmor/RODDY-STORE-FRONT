@@ -131,6 +131,42 @@
   ],
   "products": [
     {
+      "id": "celluloid",
+      "sku": "RODDY-CELLULOID-X16",
+      "name": "CELLULOID",
+      "category": "apps",
+      "type": "digital",
+      "status": "available",
+      "active": true,
+      "featured": true,
+      "price": 0,
+      "pricePending": false,
+      "stock": 0,
+      "trackStock": false,
+      "compareAtPrice": 0,
+      "tags": [
+        "free"
+      ],
+      "shortDescription": "An offline Fountain screenplay editor for the Commander X16. Free 1.0 download.",
+      "description": "Write and revise a screenplay on your Commander X16. CELLULOID combines a Fountain text editor with scene navigation, outline cards, notes, cast profiles, and a Focus view. Save your working project to the SD card and export a reader copy as a .FOU file when you’re ready to share it.\n\nThe free ZIP includes a ready-to-mount SD image, the program and companion assets, two sample screenplays, and a quick-start guide. Tested with x16emu R49, the matching ROM, and 512 KiB RAM. The emulator and ROM are supplied separately.",
+      "images": [
+        "img/products/celluloid/celluloid-box-art.webp",
+        "img/products/celluloid/workspace.png"
+      ],
+      "coverImage": "img/products/celluloid/celluloid-box-art.webp",
+      "specs": {
+        "Platform": "Commander X16",
+        "Version": "1.0",
+        "Download": "Free ZIP · SD image, program files, two samples, and quick-start guide",
+        "Tested setup": "x16emu R49 · matching ROM · 512 KiB RAM",
+        "File format": "Fountain (.FOU)",
+        "Project capacity": "Up to 120 KiB of text plus 32 KiB for cast data"
+      },
+      "downloadUrl": "https://roddy.world/downloads/software/Celluloid-X16-1.0.zip",
+      "releaseNote": "Extract the ZIP and open QUICKSTART.txt. Mount a working copy of CELLULOID.IMG as the emulator’s SD card, then load CELLULOID.PRG and run it.",
+      "designOrigin": "original"
+    },
+    {
       "id": "x16-keycaps",
       "sku": "C-002",
       "name": "X16 KEYCAPS",
